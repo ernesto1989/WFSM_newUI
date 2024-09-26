@@ -14,6 +14,24 @@ const constants = require("../../constants")
 const scenariosService = require("../../Service/scenarioService")
 
 
+const scenario_type = [
+    //{id:"0",desc:"Real Time"},
+    {id:"1",desc:"Proposed"},
+    {id:"2",desc:"Empty"}
+]
+
+//Must create catalogs for these three guys
+const capacity_units = [
+    "M3", "LTS"
+]
+
+const time_units = [
+    "MINS", "HRS","DAYS"
+]
+
+let types = ['fijo','variable'];
+
+
 
 /**
  * Index handler. It redirects to the main route of the project.
@@ -41,7 +59,7 @@ async function homePage(req,res){
     
     let scenarios = await scenariosService.getScenarios();
 
-    res.render('index', {user_info:session[0],scenarios_list:scenarios});
+    res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
 

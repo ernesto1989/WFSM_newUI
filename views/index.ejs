@@ -81,7 +81,7 @@
             let record = {
                 new_scenario_id : '',
                 new_description: '',
-                new_type: {id:1,text:'Proposed'},
+                new_type: {id:<%=scenario_types[0].id%>,text:'<%=scenario_types[0].desc%>'},
                 new_capacity_units  : {id:selectedScenario.capacity_units,text:selectedScenario.capacity_units},
                 new_time_units       : {id:selectedScenario.time_units,text:selectedScenario.time_units},
                 new_base_scenario : {id:selectedScenario.scenario_id,text:selectedScenario.scenario_id}
@@ -106,16 +106,28 @@
                     },
                     { field: 'new_type', type: 'list',
                         html: { label: 'Scenario Type', attr: 'style="width: 100%"' },
-                        options: { items: [{id:1,text:'Proposed'}, {id:2,text:'Empty'}]},
+                        options: { items: [
+                            <% for(let i = 0; i<scenario_types.length;i++){ %>
+                            {id:<%=scenario_types[i].id%>,text:'<%=scenario_types[i].desc%>'}, //{id:2,text:'Empty'}
+                            <%}%>
+                        ]},
                         
                     },
                     { field: 'new_capacity_units', type: 'list',
                         html: { label: 'Capacity Units',attr: 'style="width: 100%"' },
-                        options: { items: [{id:'M3',text:'M3'}, {id:'LTS',text:'LTS'}]},
+                        options: { items: [
+                            <% for(let i =0;i<capacity_units.length;i++){%>
+                            {id:'<%=capacity_units[i]%>',text:'<%=capacity_units[i]%>'}, //{id:'LTS',text:'LTS'}]
+                            <%}%>
+                        ]},
                     },
                     { field: 'new_time_units', type: 'list',
                         html: { label: 'Time Units', attr: 'style="width: 100%"' },
-                        options: { items: [{id:'Hrs',text:'Hrs'}, {id:'Days',text:'Days'}]},
+                        options: { items: [
+                            <% for(let i =0;i<time_units.length;i++){%>
+                            {id:'<%=time_units[i]%>',text:'<%=time_units[i]%>'}, //{id:'Days',text:'Days'}
+                            <%}%>
+                        ]},
                     },
                     { field: 'new_base_scenario', type: 'list',
                         html: { label: 'Base Scenario', attr: 'style="width: 100%"' },
@@ -241,8 +253,6 @@
 
                 let scenario = substrings[0];
                 let requiredInfo = substrings[1];
-
-                selected_scenario = scenario;
 
                 if(requiredInfo === 'D'){
                     showScenario(scenario);
