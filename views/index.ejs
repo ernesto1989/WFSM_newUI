@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WF Scenario Manager</title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #contenido {
+            margin:auto;
+            width: 98%;
+            height: 98%;
+            padding: 2px;
+        }
+
+        
+    </style>
+    <script type="module">
+
+        let scenarios = new Map;
+        $("document").ready(function(){
+            let scenario;
+            <%for(let i = 0; i<scenarios_list.length;i++){%>
+                //scenarios.scenarios_list[i].scenario_id = scenarios_list[i];
+                scenario = {
+                    scenario_id:'<%=scenarios_list[i].scenario_id%>',
+                    description: '<%=scenarios_list[i].description%>',
+                    origin_id: '<%=scenarios_list[i].origin_id%>',
+                    type: <%=scenarios_list[i].type%>,
+                    capacity_units:'<%=scenarios_list[i].capacity_units%>',
+                    time_units:'<%=scenarios_list[i].time_units%>'
+                };
+                scenarios.set('<%=scenarios_list[i].scenario_id%>',scenario)
+            <%}%>
+        });
+
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+
+        function showScenario(scenarioID){
+            let scenario = {scenario_id:scenarioID}
+            $.post('/WF/api/getScenario', scenario, function(respuesta){
+                if(respuesta){
+                    let scenario = respuesta.records.scenario_details[0];
+                    form.record = scenario;
+                    form.refresh();
+
+                    let trl = respuesta.records.scenario_trl;
+                    grid.header = "Scenario Details - Capacity Units: " + scenario.capacity_units + " - Time Units: " + scenario.time_units;
+                    grid.records = trl;
+                    grid.refresh();
+                }
+                    
+                else
+                    alert("Something went wrong")
+            });
+        }
+
+        function newScenarioForm(){
+        }
+
+        function deleteScenario(){
+        }
+
+        function clearNewScenarioForm(){
+            let selectedScenario = scenarios.get('ESC-BASE')
+            let record = {
+                new_scenario_id : '',
+                new_description: '',
+                new_type: {id:1,text:'Proposed'},
+                new_capacity_units  : {id:selectedScenario.capacity_units,text:selectedScenario.capacity_units},
+                new_time_units       : {id:selectedScenario.time_units,text:selectedScenario.time_units},
+                new_base_scenario : {id:selectedScenario.scenario_id,text:selectedScenario.scenario_id}
+            };
+            w2ui.scenarioCreator.record = record;
+            w2ui.scenarioCreator.disable('new_capacity_units','new_time_units');
+            w2ui.scenarioCreator.show('new_base_scenario');
+            w2ui.scenarioCreator.refresh();
+        }
+
+        function openNewScenarioPopup(){
+            
+            let cForm = new w2form({
+                name: 'scenarioCreator',
+                style: 'border: 0px; background-color: transparent;',
+                fields: [
+                    { field: 'new_scenario_id', type: 'text', required: true, editable:true, 
+                        html: { label: 'Scenario ID', attr: 'style="width: 100%"; placeholder="Give the Scenario a name" ' }
+                    },
+                    { field: 'new_description', type: 'textarea', required: false, editable:true, 
+                        html: { label: 'Scenario ID', attr: 'style="width: 100%;"placeholder="About this scenario" ' }
+                    },
+                    { field: 'new_type', type: 'list',
+                        html: { label: 'Scenario Type', attr: 'style="width: 100%"' },
+                        options: { items: [{id:1,text:'Proposed'}, {id:2,text:'Empty'}]},
+                        
+                    },
+                    { field: 'new_capacity_units', type: 'list',
+                        html: { label: 'Capacity Units',attr: 'style="width: 100%"' },
+                        options: { items: [{id:'M3',text:'M3'}, {id:'LTS',text:'LTS'}]},
+                    },
+                    { field: 'new_time_units', type: 'list',
+                        html: { label: 'Time Units', attr: 'style="width: 100%"' },
+                        options: { items: [{id:'Hrs',text:'Hrs'}, {id:'Days',text:'Days'}]},
+                    },
+                    { field: 'new_base_scenario', type: 'list',
+                        html: { label: 'Base Scenario', attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <%for(let i = 0; i<scenarios_list.length;i++){%>
+                            {id:'<%=scenarios_list[i].scenario_id%>',text:'<%=scenarios_list[i].scenario_id%>'},
+                            <%}%>
+                        ]},
+                    }
+                ],
+                onChange:function(event){
+                    let modifiedField = event.target;
+
+                    if(modifiedField === 'new_base_scenario'){
+                        let selectedBaseScenarioId = w2ui.scenarioCreator.record.new_base_scenario;
+                        let selectedScenario = scenarios.get(selectedBaseScenarioId.text);
+                        w2ui.scenarioCreator.record.new_capacity_units = {id:selectedScenario.capacity_units,text:selectedScenario.capacity_units};
+                        w2ui.scenarioCreator.record.new_time_units = {id:selectedScenario.time_units,text:selectedScenario.time_units};
+                        w2ui.scenarioCreator.refresh();
+                        cForm.show('new_base_scenario');
+                    }
+
+                    if(modifiedField === 'new_type'){
+                        let selectedType = cForm.record.new_type;
+                        
+                        if(selectedType.id === 2){
+                            //empty
+                            cForm.hide('new_base_scenario');
+                            w2ui.scenarioCreator.enable('new_capacity_units','new_time_units');
+                        }
+                        if(selectedType.id === 1){
+                            let selectedBaseScenarioId = w2ui.scenarioCreator.record.new_base_scenario;
+                            let selectedScenario = scenarios.get(selectedBaseScenarioId.text);
+                            w2ui.scenarioCreator.record.new_capacity_units = {id:selectedScenario.capacity_units,text:selectedScenario.capacity_units};
+                            w2ui.scenarioCreator.record.new_time_units = {id:selectedScenario.time_units,text:selectedScenario.time_units};
+                            w2ui.scenarioCreator.disable('new_capacity_units','new_time_units');
+                            w2ui.scenarioCreator.refresh();
+                            cForm.show('new_base_scenario');
+
+                        }
+                    }
+                },
+                actions: {
+                    Reset() { 
+                        clearNewScenarioForm();
+                    },
+                    Save() { 
+                        this.validate() 
+                        let record = cForm.record;
+                        alert(record.type.id);
+                    }
+                }
+            });
+            
+            w2popup.open({
+                title   : 'New Scenario',
+                body    : '<div id="newScenarioForm" style="width: 100%; height: 100%;"></div>',
+                style   : 'padding: 15px 0px 0px 0px',
+                width   : 400,
+                height  : 420,
+                showMax : false
+            })
+            .then((event) => {
+                
+                w2ui.scenarioCreator.render('#newScenarioForm');
+                clearNewScenarioForm();
+            });
+        }
+
+        new w2toolbar({
+            box: '#toolbar',
+            name: 'toolbar',
+            items: [
+                { type: 'button', id: 'home', text: 'Water Flow Scenario Management', icon: 'fa fa-house' },
+                { type: 'break' },
+                { type: 'button', id: 'new', text: 'Create', icon: 'fa fa-pencil' },
+                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash' },
+                { type: 'spacer' },
+                { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
+                    { type: 'button', id: 'pref', text: 'Preferences', icon: 'fa fa-circle-info' },
+                    { type: 'button', id: 'sout', text: 'Sign Out', icon: 'fa fa-user-slash' }
+                ] 
+            }],
+            onClick(event) {
+                
+                let selectedOp = event.target;
+                
+                if(selectedOp === 'home'){
+                    window.location.reload();
+                }
+                if(selectedOp === 'new'){
+                    openNewScenarioPopup();
+                }
+                if(selectedOp === 'delete'){
+
+                }
+            }
+        });
+
+
+        new w2sidebar({
+            box: '#sidebar',
+            name: 'sidebar',
+            style:'height:100%;',
+            nodes: [
+                <% for(let i =0; i<scenarios_list.length;i++){ %>
+                { id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', expanded: false, group: true, icon:"fa fa-house",
+                    nodes: [
+                        { id: '<%=scenarios_list[i].scenario_id%>_D', text: 'Scenario Details', icon: 'fa fa-circle-info' },
+                        { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house' },
+                        { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet' },
+                        { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info' },
+                    ]
+                },
+                <%}%>
+            ],
+            onClick:function(evt){
+                let id = evt.target;
+                let substrings = id.split("_")
+
+                if(substrings.length === 0)
+                    return;
+
+                let scenario = substrings[0];
+                let requiredInfo = substrings[1];
+
+                selected_scenario = scenario;
+
+                if(requiredInfo === 'D'){
+                    showScenario(scenario);
+                }
+                    
+
+                if(requiredInfo === 'N'){
+                    alert("opening nodes window for scenario " + scenario);
+                }
+                    
+                
+                if(requiredInfo === 'F'){
+                    alert("opening nodes window for scenario " + scenario);
+                }
+
+                if(requiredInfo === 'S')
+                    alert(scenario + " - " + 'Solution');
+            }
+        });
+
+
+        let form = new w2form({
+            box: '#scenario_details',
+            name: 'scenario_details',
+            header:"Scenario Details",
+            fields: [
+                { field: 'scenario_id', type: 'text', required: true, editable:false, 
+                    html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'origin_id', type: 'text', required: true, 
+                    html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'cdate', type: 'text', required: true, 
+                    html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+                { field: 'type', type: 'text', required: true, 
+                    html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+
+                { field: 'description', type: 'textarea', 
+                    html: { label: 'About this', attr: 'style="width: 100%; height: 60px" readonly' }
+                }
+            ]
+        });
+
+        let grid = new w2grid({
+            name: 'details',
+            box: '#trl_grid',
+            header:"Time to reach the Limit.",
+            show: { header: true },
+            //url: 'data/list2.json',
+            //method: 'GET', // need this to avoid 412 error on Safari
+            columns: [
+                { field: 'node_id', text: 'Node', size: '5%' },
+                { field: 'current_vol', text: 'Current', size: '15%' },
+                { field: 'min_vol', text: 'Min.', size: '15%' },
+                { field: 'max_vol', text: 'Max.', size: '15%' },
+                { field: 'incoming_flow', text: 'In', size: '15%' },
+                { field: 'outcoming_flow', text: 'Out', size: '15%' },
+                { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
+            ]
+        })
+        
+       
+    </script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row" style="height:7%;">
+            <div id="toolbar">
+            </div>
+        </div>
+        <div class="row" id="contenido">
+            <div class="col-sm-3 col-md-3" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
+            </div>
+            <div class="col-sm-9 col-md-9" id="main-content" style="height: 100%;position:relative;left:10px;">
+                <div class="row" style="height: 50%;">
+                    <div id="scenario_details" style="width:100%;height: 100%;">
+                    </div>
+                </div>
+                <div class="row" style="height: 50%;">
+                    <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
