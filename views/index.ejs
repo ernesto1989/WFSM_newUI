@@ -175,9 +175,23 @@
                         clearNewScenarioForm();
                     },
                     Save() { 
-                        this.validate() 
-                        let record = cForm.record;
-                        alert(record.type.id);
+                        this.validate(); 
+                        let scenario = {
+                            scenario_id:cForm.record.new_scenario_id,
+                            description:cForm.record.new_description,
+                            type:cForm.record.new_type.id,
+                            capacity_units: cForm.record.new_capacity_units.id,
+                            time_units: cForm.record.new_time_units.id,
+                            base_scenario_id: cForm.record.new_base_scenario.id
+                        }
+
+                        //post to web service and on return, reload page.
+                        $.post('/WF/api/saveScenario', scenario, function(response){
+                            if(response)
+                                window.location.reload();
+                            else
+                                alert("Something went wrong")
+                        });
                     }
                 }
             });

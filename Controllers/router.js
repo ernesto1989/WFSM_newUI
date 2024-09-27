@@ -13,7 +13,7 @@
 const express = require('express');
 const router = express.Router();
 const templates = require('./Template/templates')
-const api = require("./API/scenariosRest")
+const scenariosApi = require("./API/scenariosRest")
 const constants = require("../constants")
 
 
@@ -22,6 +22,7 @@ router.get(constants.indexURL, templates.index);
 router.get(constants.contextURL, templates.homePage);
 
 
-router.post(constants.contextURL + constants.apiURL+'/getScenario', api.getScenario);
+router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
+router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);
 
 module.exports = router;
