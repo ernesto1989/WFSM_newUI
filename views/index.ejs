@@ -49,7 +49,7 @@
             <%}%>
         });
 
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
         function showScenario(scenarioID){
             let scenario = {scenario_id:scenarioID}
@@ -70,10 +70,40 @@
             });
         }
 
-        function newScenarioForm(){
-        }
-
         function deleteScenario(){
+            let scenario = {'scenario_id':form.record.scenario_id}
+            w2confirm({
+                msg: 'Do you want to delete the following scenario: ' + scenario,
+                title: "DELETE SCENARIO",
+                width: 450,        // width of the dialog
+                height: 220,       // height of the dialog
+                btn_yes: {
+                    text: 'yes',   // text for yes button (or yes_text)
+                    class: 'btn-danger',     // class for yes button (or yes_class)
+                    style: 'background-color:red;',     // style for yes button (or yes_style)
+                    onClick: null  // callBack for yes button (or yes_callBack)
+                },
+                btn_no: {
+                    text: 'No',    // text for no button (or no_text)
+                    class: '',     // class for no button (or no_class)
+                    style: '',     // style for no button (or no_style)
+                    onClick: null  // callBack for no button (or no_callBack)
+                },
+                callBack: function(answer){
+                    if(answer === 'yes'){
+                        $.post('/WF/api/deleteScenario', scenario, function(respuesta){
+                            if(respuesta)
+                                window.location.reload();
+                            else
+                                alert("Something went wrong")
+                        });
+                    } 
+                }
+            });
+
+            
+
+            
         }
 
         function clearNewScenarioForm(){
@@ -211,14 +241,14 @@
             });
         }
 
-        new w2toolbar({
+        let toolbar = new w2toolbar({
             box: '#toolbar',
             name: 'toolbar',
             items: [
                 { type: 'button', id: 'home', text: 'Water Flow Scenario Management', icon: 'fa fa-house' },
                 { type: 'break' },
                 { type: 'button', id: 'new', text: 'Create', icon: 'fa fa-pencil' },
-                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash' },
+                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', disabled: true },
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
                     { type: 'button', id: 'pref', text: 'Preferences', icon: 'fa fa-circle-info' },
@@ -236,7 +266,8 @@
                     openNewScenarioPopup();
                 }
                 if(selectedOp === 'delete'){
-
+                    //deleting selected scenario.
+                    deleteScenario();
                 }
             }
         });
@@ -267,9 +298,12 @@
 
                 let scenario = substrings[0];
                 let requiredInfo = substrings[1];
+                
+                toolbar.disable('delete')
 
                 if(requiredInfo === 'D'){
                     showScenario(scenario);
+                    toolbar.enable('delete');
                 }
                     
 

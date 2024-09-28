@@ -6,6 +6,8 @@ const getScenarioByIdQuery = "SELECT scenario_id,cdate, description, case when `
 const getScenarioTRLQuery = "select a01.node_id, a03.current_vol, a03.min_vol, a03.max_vol, a03.incoming_flow, a03.outcoming_flow, a03.time_to_reach_limit from a03_time_to_reach_limit a03 left join a01_nodes a01 on a01.scenario_id = a03.scenario_id and a01.id = a03.node_id where a03.scenario_id = ? "
 const insertNewScenario = 'INSERT into z01_scenarios(scenario_id, description, `type`, capacity_units, time_units, origin_id) VALUES (?,?,?,?,?,?)';
 const insertCalcA03 = 'INSERT INTO a03_time_to_reach_limit(scenario_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit) VALUES ?';
+const deleteScenarioQuery = "call delete_scenario(?)"
+
 
 /**
  * Service that obtains the whole Scenario's list
@@ -84,7 +86,7 @@ async function createEmptyScenario(scenarioObj){
   */
 async function deleteScenario(scenarioId){
     try{
-        let query = "call delete_scenario(?)"
+        let query = deleteScenarioQuery;
         let params = [scenarioId];
 
         qResult = await dataSource.getDataWithParams(query,params);

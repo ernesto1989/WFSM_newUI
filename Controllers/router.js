@@ -24,5 +24,6 @@ router.get(constants.contextURL, templates.homePage);
 
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);
+router.post(constants.contextURL + constants.apiURL + '/deleteScenario', scenariosApi.deleteScenario);
 
 module.exports = router;

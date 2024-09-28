@@ -4,6 +4,11 @@ const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
 const axios = require('axios')
 
+/**
+ * Method that gets a scenario by its ID
+ * @param {Object} req Request Object
+ * @param {Object} res Response to the client.
+ */
 async function getScenario(req,res){
     try{
         const id_scenario = params = [req.body.scenario_id];
@@ -79,6 +84,11 @@ async function saveScenario(req,res){
     }
 }
 
+/**
+ * Method that deletes a scenario.
+ * @param {Object} req Request Object.
+ * @param {Object} res Response Object.
+ */
 async function deleteScenario(req,res){
     try{
         const scenario_id = params = [req.body.scenario_id];
