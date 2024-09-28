@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WF Scenario Manager</title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #content-grid {
+            margin:auto;
+            width: 98%;
+            height: 95%;
+            padding: 2px;
+        }
+    </style>  
+    <script type="module">
+
+        import { w2grid, w2alert } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+
+
+        let grid = new w2grid({
+            name: 'grid',
+            box: '#content-grid',
+            header  : 'Nodes - <%=scenarioId%>',
+            show: {
+                header:true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true,
+                toolbarSave: true,
+                toolbarEdit: true
+            },
+            url:'/WF/api/getNodes/<%=scenarioId%>',
+            columns: [
+                { field: 'recid', text: 'Id', size:'10%' },
+                { field: 'node_id', text: 'Node', size:'20%' },
+                { field: 'description', text: 'Description', size:'25%' },
+                { field: 'current_vol', text: 'Current', size:'15%' },
+                { field: 'min_capacity', text: 'Min V.', size:'15%' },
+                { field: 'max_capacity', text: 'Max V.', size:'15%' }
+            ],
+            onAdd: function (event) {
+                w2alert('add');
+            },
+            onEdit: function (event) {
+                w2alert('edit');
+            },
+            onDelete: function (event) {
+                console.log('delete has default behavior');
+            },
+            onSave: function (event) {
+                w2alert('save');
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container-fluid" style="width:100%;height:100%;">
+        <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
+            nodes gird
+        </div>
+    </div>
+</body>
+</html>

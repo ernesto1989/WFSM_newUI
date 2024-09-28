@@ -62,5 +62,15 @@ async function homePage(req,res){
     res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
+/**
+ * Method that shows the nodes view.
+ * @param {Object} req Request Object
+ * @param {Object} res Response Object
+ */
+async function nodesGrid(req,res){
+    let scenarioId = req.params.scenarioId;
+    res.render("nodes",{scenarioId:scenarioId});
+}
 
-module.exports = {index,homePage}
+
+module.exports = {index,homePage,nodesGrid}

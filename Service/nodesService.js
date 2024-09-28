@@ -1,6 +1,6 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
-const getNodesQuery = 'SELECT * FROM a01_nodes WHERE scenario_id = ?';
+const getNodesQuery = 'select id as recid,node_id,description,max_capacity,min_capacity,current_vol from a01_nodes where scenario_id = ?';
 const selectInsertA01 = 'INSERT INTO a01_nodes(scenario_id,id, node_id, description, max_capacity, min_capacity, current_vol) SELECT ?, a01.id as id, a01.node_id as node_id,a01.description,a01.max_capacity,a01.min_capacity,a01.current_vol FROM a01_nodes a01 WHERE a01.scenario_id = ?';
 
 

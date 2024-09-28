@@ -31,6 +31,8 @@
         
     </style>
     <script type="module">
+        
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
         let scenarios = new Map;
         $("document").ready(function(){
@@ -49,7 +51,17 @@
             <%}%>
         });
 
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        function openWindow(url,width,height, tgt){
+            window.open(url,'targetWindow' + tgt,
+                                   `toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=${width}
+                                    height=${height}`);
+        }
 
         function showScenario(scenarioID){
             let scenario = {scenario_id:scenarioID}
@@ -307,7 +319,7 @@
                     
 
                 if(requiredInfo === 'N'){
-                    alert("opening nodes window for scenario " + scenario);
+                    openWindow("/WF/nodes/" + scenario,750,350,'nodes');
                 }
                     
                 
