@@ -282,9 +282,9 @@
                 { id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', expanded: false, group: true, icon:"fa fa-house",
                     nodes: [
                         { id: '<%=scenarios_list[i].scenario_id%>_D', text: 'Scenario Details', icon: 'fa fa-circle-info' },
-                        { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house' },
-                        { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet' },
-                        { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info' },
+                        { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house', count: <%=scenarios_list[i].nodes%> },
+                        { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet',count: <%=scenarios_list[i].flows%> },
+                        { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info',count: '<%=scenarios_list[i].Status%>' },
                     ]
                 },
                 <%}%>
@@ -300,9 +300,8 @@
                 let requiredInfo = substrings[1];
                 
                 toolbar.disable('delete')
-
+                showScenario(scenario);
                 if(requiredInfo === 'D'){
-                    showScenario(scenario);
                     toolbar.enable('delete');
                 }
                     
