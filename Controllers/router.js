@@ -16,6 +16,7 @@ const templates = require('./Template/templates')
 const scenariosApi = require("./API/scenariosRest")
 const nodesApi = require("./API/nodesRest")
 const flowsApi = require("./API/flowsRest")
+const solutionsApi = require("./API/solutionsRest")
 const constants = require("../constants")
 
 
@@ -34,5 +35,6 @@ router.post(constants.contextURL + constants.apiURL + '/deleteScenario', scenari
 
 router.get(constants.contextURL + constants.apiURL + "/getNodes/:scenarioId",nodesApi.getScenarioNodes);
 router.get(constants.contextURL + constants.apiURL + "/getFlows/:scenarioId",flowsApi.getScenarioFlows);
+router.get(constants.contextURL + constants.apiURL + "/getSolution/:scenarioId",solutionsApi.getScenarioSolution);
 
 module.exports = router;
