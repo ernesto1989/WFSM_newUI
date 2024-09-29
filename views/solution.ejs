@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nodes - <%=scenarioId%> </title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #content-grid {
+            margin:auto;
+            width: 98%;
+            height: 95%;
+            padding: 2px;
+        }
+    </style>  
+    <script type="module">
+
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        
+        let grid = new w2grid({
+            name: 'details',
+            box: '#trl_grid',
+            header:"Time to reach the Limit.",
+            show: { header: true,toolbar:true },
+            toolbar: {
+                items: [
+                    { type: 'button', id: 'mybutton', text: 'Solve', icon: 'fa fa-faucet' }
+                ],
+                onClick: function (target, data) {
+                    alert(target)
+                }
+            },
+            //url: 'data/list2.json',
+            //method: 'GET', // need this to avoid 412 error on Safari
+            columns: [
+                { field: 'node_id', text: 'Node', size: '5%' },
+                { field: 'current_vol', text: 'Current', size: '15%' },
+                { field: 'min_vol', text: 'Min.', size: '15%' },
+                { field: 'max_vol', text: 'Max.', size: '15%' },
+                { field: 'incoming_flow', text: 'In', size: '15%' },
+                { field: 'outcoming_flow', text: 'Out', size: '15%' },
+                { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
+            ]
+        });
+
+    </script>
+</head>
+<body>
+    <div class="container-fluid" style="width:100%;height:100%;">
+        <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 100%;">
+        </div>
+    </div>
+</body>
+</html>

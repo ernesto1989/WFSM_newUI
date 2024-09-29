@@ -24,6 +24,7 @@ router.get(constants.indexURL, templates.index);
 router.get(constants.contextURL, templates.homePage);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
+router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
 
 

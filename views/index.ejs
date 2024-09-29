@@ -328,7 +328,7 @@
                 }
 
                 if(requiredInfo === 'S')
-                    alert(scenario + " - " + 'Solution');
+                    openWindow("/WF/solution/" + scenario,750,650,'solution');
             }
         });
 
@@ -361,7 +361,15 @@
             name: 'details',
             box: '#trl_grid',
             header:"Time to reach the Limit.",
-            show: { header: true },
+            show: { header: true,toolbar:true },
+            toolbar: {
+                items: [
+                    { type: 'button', id: 'mybutton', text: 'TRL', icon: 'fa fa-faucet' }
+                ],
+                onClick: function (target, data) {
+                    alert(target)
+                }
+            },
             //url: 'data/list2.json',
             //method: 'GET', // need this to avoid 412 error on Safari
             columns: [
@@ -388,11 +396,11 @@
             <div class="col-sm-3 col-md-3" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
             </div>
             <div class="col-sm-9 col-md-9" id="main-content" style="height: 100%;position:relative;left:10px;">
-                <div class="row" style="height: 50%;">
+                <div class="row" style="height: 48%;">
                     <div id="scenario_details" style="width:100%;height: 100%;">
                     </div>
                 </div>
-                <div class="row" style="height: 50%;">
+                <div class="row" style="height: 52%;">
                     <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 100%;">
                     </div>
                 </div>
