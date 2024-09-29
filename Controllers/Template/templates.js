@@ -69,12 +69,14 @@ async function homePage(req,res){
  */
 async function nodesGrid(req,res){
     let scenarioId = req.params.scenarioId;
-    res.render("nodes",{scenarioId:scenarioId});
+    let units = await scenariosService.getScenarioUnits(scenarioId);
+    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 async function flowsGrid(req,res){
     let scenarioId = req.params.scenarioId;
-    res.render("flows",{scenarioId:scenarioId});
+    let units = await scenariosService.getScenarioUnits(scenarioId);
+    res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 

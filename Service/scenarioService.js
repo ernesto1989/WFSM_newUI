@@ -6,7 +6,8 @@ const getScenarioByIdQuery = "SELECT scenario_id,cdate, description, case when `
 const getScenarioTRLQuery = "select a01.node_id, a03.current_vol, a03.min_vol, a03.max_vol, a03.incoming_flow, a03.outcoming_flow, a03.time_to_reach_limit from a03_time_to_reach_limit a03 left join a01_nodes a01 on a01.scenario_id = a03.scenario_id and a01.id = a03.node_id where a03.scenario_id = ? "
 const insertNewScenario = 'INSERT into z01_scenarios(scenario_id, description, `type`, capacity_units, time_units, origin_id) VALUES (?,?,?,?,?,?)';
 const insertCalcA03 = 'INSERT INTO a03_time_to_reach_limit(scenario_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit) VALUES ?';
-const deleteScenarioQuery = "call delete_scenario(?)"
+const deleteScenarioQuery = "call delete_scenario(?)";
+const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenarios z01 where scenario_id = ?";
 
 
 /**
@@ -69,10 +70,10 @@ async function getScenarioTRLById(scenarioId){
  */
 async function createEmptyScenario(scenarioObj){
     try{
-         let query = insertNewScenario;
-         let params = [scenarioObj.scenario_id, scenarioObj.description,parseInt(scenarioObj.type),scenarioObj.capacity_units,scenarioObj.time_units,scenarioObj.base_scenario_id]
-         qResult = await dataSource.insertData(query,params);
-         return qResult;
+        let query = insertNewScenario;
+        let params = [scenarioObj.scenario_id, scenarioObj.description,parseInt(scenarioObj.type),scenarioObj.capacity_units,scenarioObj.time_units,scenarioObj.base_scenario_id]
+        qResult = await dataSource.insertData(query,params);
+        return qResult;
     }catch(err){
        return err;
     }
@@ -120,4 +121,15 @@ async function insertA03(scenarioId,a03List){
     }
 }
 
-module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,insertA03};
+async function getScenarioUnits(scenarioId){
+    try{
+        let query = scenarioUnitsQuery;
+        let params = [scenarioId]
+        qResult = await dataSource.getDataWithParams(query,params);
+        return qResult.rows;
+    }catch(err){
+        return err;
+    }
+}
+
+module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,insertA03,getScenarioUnits};
