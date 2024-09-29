@@ -72,5 +72,10 @@ async function nodesGrid(req,res){
     res.render("nodes",{scenarioId:scenarioId});
 }
 
+async function flowsGrid(req,res){
+    let scenarioId = req.params.scenarioId;
+    res.render("flows",{scenarioId:scenarioId});
+}
 
-module.exports = {index,homePage,nodesGrid}
+
+module.exports = {index,homePage,nodesGrid,flowsGrid}
