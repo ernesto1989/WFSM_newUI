@@ -31,6 +31,7 @@ router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView
 
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);
+router.post(constants.contextURL + constants.apiURL + '/recalcTRL', scenariosApi.recalcTRL);
 router.post(constants.contextURL + constants.apiURL + '/deleteScenario', scenariosApi.deleteScenario);
 
 router.get(constants.contextURL + constants.apiURL + "/getNodes/:scenarioId",nodesApi.getScenarioNodes);

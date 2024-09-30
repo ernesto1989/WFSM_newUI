@@ -367,7 +367,42 @@
                     { type: 'button', id: 'mybutton', text: 'TRL', icon: 'fa fa-faucet' }
                 ],
                 onClick: function (target, data) {
-                    alert(target)
+                    
+                    let scenario = {'scenario_id':form.record.scenario_id}
+
+                    w2confirm({
+                        msg: 'Do you want to compute Time To Reach Limit?',
+                        title: "Time to Reach Limit",
+                        width: 250,        // width of the dialog
+                        height: 220,       // height of the dialog
+                        btn_yes: {
+                            text: 'yes',   // text for yes button (or yes_text)
+                            class: 'btn-danger',     // class for yes button (or yes_class)
+                            style: 'background-color:red;',     // style for yes button (or yes_style)
+                            onClick: null  // callBack for yes button (or yes_callBack)
+                        },
+                        btn_no: {
+                            text: 'No',    // text for no button (or no_text)
+                            class: '',     // class for no button (or no_class)
+                            style: '',     // style for no button (or no_style)
+                            onClick: null  // callBack for no button (or no_callBack)
+                        },
+                        callBack: function(answer){
+                            if(answer === 'yes'){
+                                $.post('/WF/api/recalcTRL', scenario, function(respuesta){
+                                    if(respuesta){
+                                        alert("Computing finished")
+                                        window.location.reload();
+                                    }
+                                        
+                                    else{
+                                        alert("Something went wrong");
+                                        window.location.reload();
+                                    }
+                                });
+                            } 
+                        }
+                    });
                 }
             },
             //url: 'data/list2.json',

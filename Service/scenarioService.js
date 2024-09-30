@@ -7,6 +7,7 @@ const getScenarioTRLQuery = "select a01.node_id, a03.current_vol, a03.min_vol, a
 const insertNewScenario = 'INSERT into z01_scenarios(scenario_id, description, `type`, capacity_units, time_units, origin_id) VALUES (?,?,?,?,?,?)';
 const insertCalcA03 = 'INSERT INTO a03_time_to_reach_limit(scenario_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit) VALUES ?';
 const deleteScenarioQuery = "call delete_scenario(?)";
+const deleteA03Query = "delete from a03_time_to_reach_limit where scenario_id = ?";
 const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenarios z01 where scenario_id = ?";
 
 
@@ -97,6 +98,16 @@ async function deleteScenario(scenarioId){
     }
 }
 
+async function deleteA03(scenarioId){
+    try{
+        let query = deleteA03Query;
+        let params = [scenarioId];
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
 
 /**
  * Makes the real time calc for the given scenario.
@@ -132,4 +143,4 @@ async function getScenarioUnits(scenarioId){
     }
 }
 
-module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,insertA03,getScenarioUnits};
+module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,deleteA03,insertA03,getScenarioUnits};

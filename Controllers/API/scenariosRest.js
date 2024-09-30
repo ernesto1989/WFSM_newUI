@@ -84,6 +84,42 @@ async function saveScenario(req,res){
     }
 }
 
+
+async function recalcTRL(req,res){
+    try{
+        const scenario = req.body;
+
+        let nodes = await nodesService.getNodes(scenario.scenario_id);
+        let flows = await flowsService.getFlows(scenario.scenario_id);
+
+        const timeToLimit = await axios({
+            method: 'get',
+            url: 'http://localhost:5000/WF/TimeToLimit',
+            data:{
+                'nodes':nodes,
+                'flows':flows
+            },
+            headers:{'Content-Type':'application/json'}
+        });
+        
+        let r1 = await scenarioService.deleteA03(scenario.scenario_id);
+        let r = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data)
+
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : r.changes , //change
+            "records" : 
+            {}
+        });
+
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
 /**
  * Method that deletes a scenario.
  * @param {Object} req Request Object.
@@ -107,4 +143,4 @@ async function deleteScenario(req,res){
 }
 
 
-module.exports = {getScenario,saveScenario,deleteScenario};
+module.exports = {getScenario,saveScenario,recalcTRL,deleteScenario};
