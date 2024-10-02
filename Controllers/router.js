@@ -33,9 +33,12 @@ router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);
 router.post(constants.contextURL + constants.apiURL + '/recalcTRL', scenariosApi.recalcTRL);
 router.post(constants.contextURL + constants.apiURL + '/deleteScenario', scenariosApi.deleteScenario);
+router.get(constants.contextURL + constants.apiURL + "/getSolution/:scenarioId",solutionsApi.getScenarioSolution);
+router.post(constants.contextURL + constants.apiURL + '/solve', solutionsApi.solve);
 
+//Grid management
 router.get(constants.contextURL + constants.apiURL + "/getNodes/:scenarioId",nodesApi.getScenarioNodes);
 router.get(constants.contextURL + constants.apiURL + "/getFlows/:scenarioId",flowsApi.getScenarioFlows);
-router.get(constants.contextURL + constants.apiURL + "/getSolution/:scenarioId",solutionsApi.getScenarioSolution);
+
 
 module.exports = router;
