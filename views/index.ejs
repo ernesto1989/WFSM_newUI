@@ -62,19 +62,54 @@
                                     width=${width}
                                     height=${height}`);
         }
+    
+
+        function hola(){alert("hola")}
 
         function showScenario(scenarioID){
             let scenario = {scenario_id:scenarioID}
             $.post('/WF/api/getScenario', scenario, function(respuesta){
                 if(respuesta){
-                    let scenario = respuesta.records.scenario_details[0];
-                    form.record = scenario;
+                    let s = respuesta.records.scenario_details[0];
+                    form.record = s;
                     form.refresh();
 
+                    let details = [
+                        {element:'Nodes',number:`<a href="javascript:window.open('/WF/nodes/${s.scenario_id}','nodes','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=750
+                                    height=350');">${s.nodes}</a>`},
+                        {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','nodes','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=750
+                                    height=650');">${s.flows}</a>`},
+                        {element:"Status",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','nodes','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=750
+                                    height=450');">${s.Status}</a>`}
+                    ];
+
+                    details_grid.records = details;
+                    details_grid.refresh();
+
                     let trl = respuesta.records.scenario_trl;
-                    grid.header = "Scenario Details - Capacity Units: " + scenario.capacity_units + " - Time Units: " + scenario.time_units;
+                    grid.header = "Scenario Details - Capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
                     grid.records = trl;
                     grid.refresh();
+
+                    let selectedS = scenarios.get(s);
                 }
                     
                 else
@@ -291,44 +326,39 @@
             style:'height:100%;',
             nodes: [
                 <% for(let i =0; i<scenarios_list.length;i++){ %>
-                { id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', expanded: false, group: true, icon:"fa fa-house",
-                    nodes: [
-                        { id: '<%=scenarios_list[i].scenario_id%>_D', text: 'Scenario Details', icon: 'fa fa-circle-info' },
-                        { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house', count: <%=scenarios_list[i].nodes%> },
-                        { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet',count: <%=scenarios_list[i].flows%> },
-                        { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info',count: '<%=scenarios_list[i].Status%>' },
-                    ]
+                { id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
+                    //nodes: [
+                    //     { id: '<%=scenarios_list[i].scenario_id%>_D', text: 'Scenario Details', icon: 'fa fa-circle-info' },
+                    //     { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house', count: <%=scenarios_list[i].nodes%> },
+                    //     { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet',count: <%=scenarios_list[i].flows%> },
+                    //     { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info',count: '<%=scenarios_list[i].Status%>' },
+                    // ]
                 },
                 <%}%>
             ],
             onClick:function(evt){
                 let id = evt.target;
-                let substrings = id.split("_")
 
-                if(substrings.length === 0)
-                    return;
-
-                let scenario = substrings[0];
-                let requiredInfo = substrings[1];
+                let scenario = id;//substrings[0];
                 
-                toolbar.disable('delete')
+                toolbar.enable('delete')
                 showScenario(scenario);
-                if(requiredInfo === 'D'){
-                    toolbar.enable('delete');
-                }
+                // if(requiredInfo === 'D'){
+                    
+                // }
                     
 
-                if(requiredInfo === 'N'){
-                    openWindow("/WF/nodes/" + scenario,750,350,'nodes');
-                }
+                // if(requiredInfo === 'N'){
+                //     openWindow("/WF/nodes/" + scenario,750,350,'nodes');
+                // }
                     
                 
-                if(requiredInfo === 'F'){
-                    openWindow("/WF/flows/" + scenario,750,650,'flows');
-                }
+                // if(requiredInfo === 'F'){
+                //     openWindow("/WF/flows/" + scenario,750,650,'flows');
+                // }
 
-                if(requiredInfo === 'S')
-                    openWindow("/WF/solution/" + scenario,750,450,'solution');
+                // if(requiredInfo === 'S')
+                //     openWindow("/WF/solution/" + scenario,750,450,'solution');
             }
         });
 
@@ -357,8 +387,26 @@
             ]
         });
 
+        let details_grid = new w2grid({
+            name: 'scenario_details',
+            box: '#scenario_details_grid',
+            header:"Scenario Details",
+            show: { header: true },
+            //url: 'data/list2.json',
+            //method: 'GET', // need this to avoid 412 error on Safari
+            columns: [
+                { field: 'element', text: '', size: '50%' },
+                { field: 'number', text: '#', size: '50%' }
+            ],
+            // onClick:function(event){
+            //     let selection = details_grid.getSelection();
+            //     if(selection >0)
+            //         alert(selection)
+            // }
+        })
+
         let grid = new w2grid({
-            name: 'details',
+            name: 'trl_details',
             box: '#trl_grid',
             header:"Time to reach the Limit.",
             show: { header: true,toolbar:true },
@@ -428,15 +476,17 @@
             </div>
         </div>
         <div class="row" id="contenido">
-            <div class="col-sm-3 col-md-3" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
+            <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
             </div>
-            <div class="col-sm-9 col-md-9" id="main-content" style="height: 100%;position:relative;left:10px;">
+            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
                 <div class="row" style="height: 48%;">
                     <div id="scenario_details" style="width:100%;height: 100%;">
                     </div>
                 </div>
                 <div class="row" style="height: 52%;">
-                    <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 100%;">
+                    <div id="scenario_details_grid" style="margin-top: 5px; margin-right: 8px; width: 24%; height: 100%;">
+                    </div>
+                    <div id="trl_grid" style="margin-top: 5px; width: 75%; height: 100%;">
                     </div>
                 </div>
             </div>
