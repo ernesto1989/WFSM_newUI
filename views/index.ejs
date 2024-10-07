@@ -82,7 +82,7 @@
                                     scrollbars=yes,
                                     resizable=yes,
                                     width=750
-                                    height=350');">${s.nodes}</a>`},
+                                    height=550');">${s.nodes}</a>`},
                         {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','nodes','toolbar=no,
                                     location=no,
                                     status=no,
@@ -409,7 +409,7 @@
             name: 'trl_details',
             box: '#trl_grid',
             header:"Time to reach the Limit.",
-            show: { header: true,toolbar:true },
+            show: { header: true,toolbar:true,toolbarSearch:false },
             toolbar: {
                 items: [
                     { type: 'button', id: 'mybutton', text: 'TRL', icon: 'fa fa-faucet' }
@@ -458,11 +458,11 @@
             columns: [
                 { field: 'node_id', text: 'Node', size: '5%' },
                 { field: 'current_vol', text: 'Current', size: '15%' },
-                { field: 'min_vol', text: 'Min.', size: '15%' },
-                { field: 'max_vol', text: 'Max.', size: '15%' },
-                { field: 'incoming_flow', text: 'In', size: '15%' },
-                { field: 'outcoming_flow', text: 'Out', size: '15%' },
-                { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
+                { field: 'min_vol', text: 'Min.', size: '15%',render:'float:02' },
+                { field: 'max_vol', text: 'Max.', size: '15%',render:'float:02' },
+                { field: 'incoming_flow', text: 'In', size: '15%',render:'float:02' },
+                { field: 'outcoming_flow', text: 'Out', size: '15%',render:'float:02' },
+                { field: 'time_to_reach_limit', text: 'TRL', size: '10%',render:'float:02' }
             ]
         })
         

@@ -30,8 +30,15 @@
     </style>  
     <script type="module">
 
-        import { w2grid, w2alert } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2grid, w2utils } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
+        $("document").ready(function(){
+            $.get("/WF/api/getFlows/<%=scenarioId%>", function(data, status){
+                let recs = data.records;
+                grid.records = recs;
+                grid.refresh();
+            });
+        })
 
         let grid = new w2grid({
             name: 'grid',
@@ -44,18 +51,23 @@
                 toolbarDelete: true,
                 toolbarSave: true,
                 toolbarEdit: true
-            },
-            url:'/WF/api/getFlows/<%=scenarioId%>',
+            },  
+            searches: [
+                { field: 'recid', label: 'ID ', type: 'int' },
+                { field: 'origin_node', label: 'Origin', type: 'text' },
+                { field: 'destiny_node', label: 'Destiny', type: 'text' },
+                { field: 'type', label: 'Type', type: 'text' }
+            ],          
             columns: [
-                { field: 'recid', text: 'Id',size:'5%' },
+                { field: 'recid', text: 'Id',sortable:true,size:'5%' },
                 { field: 'origin', hidden:true },
-                { field: 'origin_node', text: 'Origin', size:'10%' },
+                { field: 'origin_node', text: 'Origin',sortable:true, size:'10%' },
                 { field: 'destiny', hidden:true },
-                { field: 'destiny_node', text: 'Destiny', size:'10%' },
+                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
                 { field: 'type', text: 'Min V.', size:'10%' },
-                { field: 'current_flow', text: 'Current', size:'15%' },
-                { field: 'fmin', text: 'Min F', size:'15%' },
-                { field: 'fmax', text: 'Max F.', size:'15%' }
+                { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },
+                { field: 'fmin', text: 'Min F', size:'15%',sortable:true,render:'float:02' },
+                { field: 'fmax', text: 'Max F.', size:'15%',sortable:true,render:'float:02' }
             ],
             onAdd: function (event) {
                 w2alert('add');

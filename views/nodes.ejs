@@ -30,8 +30,15 @@
     </style>  
     <script type="module">
 
-        import { w2grid, w2alert } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
-
+        import { w2grid, w2utils } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        
+        $("document").ready(function(){
+            $.get("/WF/api/getNodes/<%=scenarioId%>", function(data, status){
+                let recs = data.records;
+                grid.records = recs;
+                grid.refresh();
+            });
+        });
 
         let grid = new w2grid({
             name: 'grid',
@@ -45,14 +52,21 @@
                 toolbarSave: true,
                 toolbarEdit: true
             },
-            url:'/WF/api/getNodes/<%=scenarioId%>',
+            multiSearch: true,
+            searches: [
+                { field: 'recid', label: 'ID ', type: 'int' },
+                { field: 'node_id', label: 'Node', type: 'text' },
+                { field: 'current_vol', label: 'Current', type: 'int' },
+                { field: 'min_capacity', label: 'Min', type: 'int' },
+                { field: 'max_capacity', label: 'Max', type: 'int' },
+            ],
             columns: [
-                { field: 'recid', text: 'Id', size:'10%' },
-                { field: 'node_id', text: 'Node', size:'20%' },
+                { field: 'recid', text: 'Id', size:'10%', sortable:true, attr: 'align=center' },
+                { field: 'node_id', text: 'Node',sortable:true,size:'20%', },
                 { field: 'description', text: 'Description', size:'25%' },
-                { field: 'current_vol', text: 'Current', size:'15%' },
-                { field: 'min_capacity', text: 'Min V.', size:'15%' },
-                { field: 'max_capacity', text: 'Max V.', size:'15%' }
+                { field: 'current_vol', text: 'Current',sortable:true,size:'15%',render:'float:02'},
+                { field: 'min_capacity', text: 'Min V.',sortable:true,size:'15%',render:'float:02' },
+                { field: 'max_capacity', text: 'Max V.',sortable:true, size:'15%',render:'float:02' }
             ],
             onAdd: function (event) {
                 w2alert('add');
@@ -72,7 +86,6 @@
 <body>
     <div class="container-fluid" style="width:100%;height:100%;">
         <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
-            nodes gird
         </div>
     </div>
 </body>

@@ -1,6 +1,8 @@
 const mysql = require('mysql2')
 const constants = require("../constants");
 
+
+
 /**
  * Class that responds with an object of the result of a database interaction.
  */
@@ -33,7 +35,8 @@ async function open(){
       user: constants.dbUser,
       port: constants.dbPort,
       password: constants.dbPass,
-      database: constants.dbName
+      database: constants.dbName,
+      decimalNumbers:true
     });
   
     return connection;
