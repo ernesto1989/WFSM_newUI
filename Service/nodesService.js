@@ -3,7 +3,9 @@ const dataSource = require('../Datasource/MySQLMngr');
 //added id 2 toimes in order to use it on W2UI and Python Web Service
 const getNodesQuery = 'select id as recid,id,scenario_id,node_id,description,max_capacity,min_capacity,current_vol from a01_nodes where scenario_id = ?';
 const selectInsertA01 = 'INSERT INTO a01_nodes(scenario_id,id, node_id, description, max_capacity, min_capacity, current_vol) SELECT ?, a01.id as id, a01.node_id as node_id,a01.description,a01.max_capacity,a01.min_capacity,a01.current_vol FROM a01_nodes a01 WHERE a01.scenario_id = ?';
-
+const insertNodeQuery = 'Insert into a01_nodes(scenario_id,id, node_id, description, max_capacity, min_capacity, current_vol) Values (?,?,?,?,?,?,?)'
+const updateNodeQuery = 'Update a01_nodes set node_id = ?, description = ?, max_capacity = ?, min_capacity = ?, current_vol = ? Where scenario_id = ? and id = ?';
+const deleteNodeQuery = 'Delete from a01_nodes where scenario_id = ? and id = ?'
 
 /**
  * This method gets the nodes list
@@ -38,5 +40,42 @@ async function copyA01(scenarioObj){
     }
 }
 
+async function insertNode(node){
+    try{
+        let query = insertNodeQuery;
+        //scenario_id,id, node_id, description, max_capacity, min_capacity, current_vol
+        let params =[node.scenario_id,node.id,node.node_id,node.description, node.max_capacity,node.min_capacity,node.current_vol];
+        
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
 
-module.exports = {getNodes,copyA01}
+
+async function updateNode(node){
+    try{
+        let query = updateNodeQuery;
+        let params = [node.node_id,node.description, node.max_capacity,node.min_capacity,node.current_vol,node.scenario_id,node.id];
+        
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+
+async function deleteNode(node){
+    try{
+        let query = deleteNodeQuery;
+        let params = [node.scenario_id,node.id]
+        
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+
+module.exports = {getNodes,copyA01,insertNode,updateNode,deleteNode}

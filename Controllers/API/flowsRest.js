@@ -26,4 +26,54 @@ async function getScenarioFlows(req,res){
 }
 
 
-module.exports = {getScenarioFlows};
+async function saveFlow(req,res){
+    try{
+        let flow = req.body;
+        let result;
+        if(flow.new_record === 'false'){
+            //update
+            result = flowsService.updateFlow(flow);  
+            res.status(200);
+            res.json({
+                "status"  : "success",
+                "total"   : result.length,
+                "records" : []
+            });          
+        }else{
+            //insert
+            result = flowsService.insertFlow(flow);
+            res.status(200);
+            res.json({
+                "status"  : "success",
+                "total"   : result.changes,
+                "records" : []
+            });
+        }
+        
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+async function deleteFlow(req,res){
+    try{
+        let flow = req.body;
+        let result = flowsService.deleteFlow(node);
+       
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : result.changes,
+            "records" : []
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+
+module.exports = {getScenarioFlows,saveFlow,deleteFlow};

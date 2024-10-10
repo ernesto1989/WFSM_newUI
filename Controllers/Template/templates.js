@@ -70,7 +70,7 @@ async function homePage(req,res){
 async function nodesGrid(req,res){
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId);
-    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, node_types:types});
 }
 
 async function flowsGrid(req,res){

@@ -27,4 +27,63 @@ async function getScenarioNodes(req,res){
     }
 }
 
-module.exports={getScenarioNodes}
+/**
+ * Endpoint that handles Nodes table modifications.
+ * 
+ * Changes can be:
+ * a) New records -> New Records must be identified and sotred
+ * b) Updates
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
+async function saveNode(req,res){
+    try{
+        let node = req.body;
+        let result;
+        if(node.new_record === 'false'){
+            //update
+            result = nodesService.updateNode(node);  
+            res.status(200);
+            res.json({
+                "status"  : "success",
+                "total"   : result.length,
+                "records" : []
+            });          
+        }else{
+            //insert
+            result = nodesService.insertNode(node);
+            res.status(200);
+            res.json({
+                "status"  : "success",
+                "total"   : result.changes,
+                "records" : []
+            });
+        }
+        
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+async function deleteNode(req,res){
+    try{
+        let node = req.body;
+        let result = nodesService.deleteNode(node);
+       
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : result.changes,
+            "records" : []
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+module.exports={getScenarioNodes, saveNode,deleteNode}

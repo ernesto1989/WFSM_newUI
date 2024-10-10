@@ -62,9 +62,6 @@
                                     width=${width}
                                     height=${height}`);
         }
-    
-
-        function hola(){alert("hola")}
 
         function showScenario(scenarioID){
             let scenario = {scenario_id:scenarioID}
@@ -81,7 +78,7 @@
                                     menubar=no,
                                     scrollbars=yes,
                                     resizable=yes,
-                                    width=750
+                                    width=950
                                     height=550');">${s.nodes}</a>`},
                         {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','nodes','toolbar=no,
                                     location=no,
@@ -89,7 +86,7 @@
                                     menubar=no,
                                     scrollbars=yes,
                                     resizable=yes,
-                                    width=750
+                                    width=1050
                                     height=650');">${s.flows}</a>`},
                         {element:"Status",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','nodes','toolbar=no,
                                     location=no,
@@ -146,11 +143,7 @@
                         });
                     } 
                 }
-            });
-
-            
-
-            
+            });            
         }
 
         function clearNewScenarioForm(){
