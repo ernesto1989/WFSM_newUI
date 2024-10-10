@@ -12,6 +12,7 @@
  */
 const constants = require("../../constants")
 const scenariosService = require("../../Service/scenarioService")
+const nodesService = require("../../Service/nodesService")
 
 
 const scenario_type = [
@@ -75,8 +76,9 @@ async function nodesGrid(req,res){
 
 async function flowsGrid(req,res){
     let scenarioId = req.params.scenarioId;
+    let nodes = await nodesService.getNodes(scenarioId)
     let units = await scenariosService.getScenarioUnits(scenarioId);
-    res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 
 async function solutionsView(req,res){

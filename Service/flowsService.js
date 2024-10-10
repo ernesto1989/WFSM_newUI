@@ -58,7 +58,7 @@ async function insertFlow(flow){
 
 async function updateFlow(flow){
     try{
-        let query = updateNodeQuery;
+        let query = updateFlowQuery;
         //Update a02_flows set current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ?
         let params = [flow.current_flow,flow.fmax,flow.fmin,flow.scenario_id,flow.origin,flow.destiny];
         

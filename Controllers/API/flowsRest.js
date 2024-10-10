@@ -60,7 +60,7 @@ async function saveFlow(req,res){
 async function deleteFlow(req,res){
     try{
         let flow = req.body;
-        let result = flowsService.deleteFlow(node);
+        let result = flowsService.deleteFlow(flow);
        
         res.status(200);
         res.json({

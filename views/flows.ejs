@@ -30,7 +30,10 @@
     </style>  
     <script type="module">
 
-        import { w2grid, w2utils } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        let types =[];
+        let isEdit = false;
+
 
         $("document").ready(function(){
             $.get("/WF/api/getFlows/<%=scenarioId%>", function(data, status){
@@ -38,20 +41,182 @@
                 grid.records = recs;
                 grid.refresh();
             });
-        })
+
+            <%for(let i =0; i<flow_types.length;i++){%>
+                types.push('<%=flow_types[i]%>')
+            <%}%>
+        });
+
+
+        function getNewEmptyRecord(){
+                        
+            let record = {
+                origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
+                destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
+                type: {id:'<%=flow_types[0]%>',text:'<%=flow_types[0]%>'},
+                min_flow:0.0,
+                current_flow:0.0,
+                max_flow:0.0
+            }
+
+            return record;
+        }
+
+        function getSelectedRecord(){
+            let selected = grid.getSelection();
+            let rec = grid.get(selected)[0];
+
+            let record = {
+                origin: {id:rec.origin,text:rec.origin_node},
+                destiny: {id:rec.destiny,text:rec.destiny_node},
+                type: {id:rec.type,text:rec.type},
+                min_flow:rec.fmin,
+                current_flow:rec.current_flow,
+                max_flow:rec.fmax
+            }
+
+            return record;
+        }
+
+
+        function setForm(record){
+            let rec = {
+                new_scenario_id : '<%=scenarioId%>',
+                new_origin :record.origin, //
+                new_destiny : record.destiny,//{'id':'<%=nodes[1].id%>','text:id':'<%=nodes[1].node_id%>'},
+                new_type: record.type,
+                new_min_flow:record.min_flow,
+                new_current_flow: record.current_flow,
+                new_max_flow:record.max_flow
+            };
+            w2ui.flowsForm.record = rec;
+            w2ui.flowsForm.refresh();
+
+            if(isEdit){
+                w2ui.flowsForm.disable('new_origin','new_destiny');
+            }else{
+                w2ui.flowsForm.enable('new_origin','new_destiny');
+            }
+        }
+
+
+        function openFormPopup(){
+            let flowsForm = new w2form({
+                name: 'flowsForm',
+                style: 'border: 0px; background-color: transparent;',
+                fields: [
+                    { field: 'new_scenario_id', type: 'text', required: true, 
+                        html: { label: 'Scenario Id', attr: 'readonly style="width: 100%";' }
+                    },
+                    { field: 'new_origin', type: 'list',
+                        html: { label: 'Origin',attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<nodes.length;i++){%>
+                            {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
+                            <%}%>
+                        ]},
+                    },
+                    { field: 'new_destiny', type: 'list',
+                        html: { label: 'Destiny',attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<nodes.length;i++){%>
+                            {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
+                            <%}%>
+                        ]},
+                    },
+                    { field: 'new_type', type: 'list',
+                        html: { label: 'Flow Type',attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<flow_types.length;i++){%>
+                            {id:'<%=flow_types[i]%>',text:'<%=flow_types[i]%>'}, 
+                            <%}%>
+                        ]},
+                    },
+                    { field: 'new_min_flow', type: 'float', required: true, editable:true, 
+                        html: { label: 'Min. Flow', attr: 'style="width: 100%";' }
+                    },
+                    { field: 'new_current_flow', type: 'float', required: true, editable:true, 
+                        html: { label: 'Current Flow.', attr: 'style="width: 100%";' }
+                    },
+                    { field: 'new_max_flow', type: 'float', required: true, editable:true, 
+                        html: { label: 'Max Flow.', attr: 'style="width: 100%";' }
+                    }
+                ],
+                actions: {
+                    Reset() { 
+                        if(isEdit) 
+                            setForm(getSelectedRecord());
+                        else
+                            setForm(getNewEmptyRecord());
+                    },
+                    Save() { 
+                        this.validate(); 
+
+                        let curr_min = flowsForm.record.new_min_flow;
+                        let curr_vol = flowsForm.record.new_current_flow;
+                        let curr_max = flowsForm.record.new_max_flow;
+
+                        if(curr_min > curr_vol){
+                            w2alert("Min Flow cant be bigger than current flow.");
+                            return;
+                        }
+
+                        if(curr_vol > curr_max){
+                            w2alert("Current Flow cant be bigger than Max Flow.");
+                            return;
+                        }
+
+                        let flow = {
+                            new_record:!isEdit,
+                            scenario_id:flowsForm.record.new_scenario_id,
+                            origin:flowsForm.record.new_origin.id,
+                            destiny:flowsForm.record.new_destiny.id,
+                            type:flowsForm.record.new_type.id,
+                            fmin: curr_min ,
+                            current_flow: curr_vol,
+                            fmax: curr_max
+                        }
+
+                        //post to web service and on return, reload page.
+                        $.post('/WF/api/saveFlow', flow, function(response){
+                            if(response)
+                                window.location.reload();
+                            else
+                                alert("Something went wrong")
+                        });
+                    }
+                }
+            });
+
+            w2popup.open({
+                title   : 'Flows Form',
+                body    : '<div id="flowsForm" style="width: 100%; height: 100%;"></div>',
+                style   : 'padding: 15px 0px 0px 0px',
+                width   : 400,
+                height  : 420,
+                showMax : false
+            })
+            .then((event) => {
+                w2ui.flowsForm.render('#flowsForm');
+                if(isEdit) 
+                    setForm(getSelectedRecord());
+                else
+                    setForm(getNewEmptyRecord());
+
+            });
+        };
 
         let grid = new w2grid({
             name: 'grid',
             box: '#content-grid',
-            header  : 'Flows - <%=scenarioId%> - Flow in: <%=capacity_units%>/<%=time_units%>',
+            header  : 'Flows - <%=scenarioId%> - Flows in: <%=capacity_units%>/<%=time_units%>',
             show: {
                 header:true,
                 toolbar: true,
                 toolbarAdd: true,
-                toolbarDelete: true,
-                toolbarSave: true,
-                toolbarEdit: true
-            },  
+                toolbarEdit: true,
+                toolbarDelete: true
+            },
             searches: [
                 { field: 'recid', label: 'ID ', type: 'int' },
                 { field: 'origin_node', label: 'Origin', type: 'text' },
@@ -64,22 +229,61 @@
                 { field: 'origin_node', text: 'Origin',sortable:true, size:'10%' },
                 { field: 'destiny', hidden:true },
                 { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
-                { field: 'type', text: 'Min V.', size:'10%' },
-                { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },
+                { field: 'type', text: 'Type', size:'10%' },
                 { field: 'fmin', text: 'Min F', size:'15%',sortable:true,render:'float:02' },
+                { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },
                 { field: 'fmax', text: 'Max F.', size:'15%',sortable:true,render:'float:02' }
             ],
             onAdd: function (event) {
-                w2alert('add');
+                event.preventDefault();
+                isEdit = false;
+                openFormPopup();
             },
             onEdit: function (event) {
-                w2alert('edit');
+                event.preventDefault();
+                isEdit = true;
+                openFormPopup();
             },
             onDelete: function (event) {
-                console.log('delete has default behavior');
-            },
-            onSave: function (event) {
-                w2alert('save');
+                event.preventDefault();
+                let selected = grid.getSelection();
+                let rec = grid.get(selected)[0];
+
+                let flow = {
+                  scenario_id : '<%=scenarioId%>',
+                  origin: rec.origin,
+                  destiny: rec.destiny  
+                };
+                
+
+                w2confirm({
+                    msg: 'Do you want to delete this flow?',
+                    title: "DELETE flow",
+                    width: 450,        // width of the dialog
+                    height: 220,       // height of the dialog
+                    btn_yes: {
+                        text: 'yes',   // text for yes button (or yes_text)
+                        class: 'btn-danger',     // class for yes button (or yes_class)
+                        style: 'background-color:red;',     // style for yes button (or yes_style)
+                        onClick: null  // callBack for yes button (or yes_callBack)
+                    },
+                    btn_no: {
+                        text: 'No',    // text for no button (or no_text)
+                        class: '',     // class for no button (or no_class)
+                        style: '',     // style for no button (or no_style)
+                        onClick: null  // callBack for no button (or no_callBack)
+                    },
+                    callBack: function(answer){
+                        if(answer === 'yes'){
+                            $.post('/WF/api/deleteFlow', flow, function(respuesta){
+                                if(respuesta)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            });
+                        } 
+                    }
+                });
             }
         });
     </script>
@@ -87,7 +291,6 @@
 <body>
     <div class="container-fluid" style="width:100%;height:100%;">
         <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
-            flows gird
         </div>
     </div>
 </body>
