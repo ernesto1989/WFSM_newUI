@@ -1,10 +1,10 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
-const getS02Query = 'select * from s02_optimal_flow_analysis s02 where s02.scenario_id = ?';
+const getS02Query = "SELECT ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS recid,ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id,s02.scenario_id, s02.origin,coalesce(a01o.node_id,'IN') as origin_node, s02.destiny, coalesce(a01d.node_id,'OUT') as destiny_node,s02.current_flow,s02.`type`,coalesce(fmax,0) as fmax,coalesce(fmin,0) as fmin,coalesce(pflow,0) as pflow FROM s02_proposed_flows s02 left join a01_nodes a01o on a01o.scenario_id = s02.scenario_id and a01o.id = s02.origin left join a01_nodes a01d on a01d.scenario_id = s02.scenario_id and a01d.id = s02.destiny WHERE s02.scenario_id = ?";
 const solutionDetailDelete = 'DELETE FROM s01_solution_detail where scenario_id = ?';
-const s02DetailDelete = 'DELETE FROM s02_optimal_flow_analysis where scenario_id = ?';
+const s02DetailDelete = 'DELETE FROM s02_proposed_flows where scenario_id = ?';
 const solutionDetailInsert = 'INSERT INTO s01_solution_detail(scenario_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?'
-const solutionSelectInsert = 'INSERT INTO s02_optimal_flow_analysis(scenario_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit, is_filling) select s01.scenario_id,s01.`No`,s01.NMax,s01.NMin,s01.NActual,s01.E,s01.S,s01.T,case when (s01.`R+` = 1 and s01.`R-` = 0) then 1 when (s01.`R-` = 1 and s01.`R+` = 0) then 0 else -1 end from s01_solution_detail s01 where s01.scenario_id = ?'
+const solutionPFInsert = 'INSERT INTO s02_proposed_flows(scenario_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow) VALUES ?'
 
 
 /**
@@ -70,14 +70,26 @@ async function saveSolutionDetail(scenarioId,sol){
     }
 }
 
-async function saveSolutionS02(scenarioId){
+async function saveSolutionS02(scenarioId,proposed_flows){
     try{
-        let query = solutionSelectInsert;
-        let params = [scenarioId];
-        qResult = await dataSource.updateData(query,params);
+        let query = solutionPFInsert;
+        //iterate over solution elements
+        let elements = [];
+        let element = [];
+
+        for(i=0;i<proposed_flows.length;i++){
+            let obj = JSON.parse(proposed_flows[i]);
+            
+            //INSERT INTO s02_proposed_flows(scenario_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow)
+            element = [scenarioId, obj.origin,obj.destiny, obj.currentf, obj.type, obj.fmax, obj.fmin, obj.proposed]
+            elements.push(element)
+        }
+
+        qResult = await dataSource.bulkInsertData(query,elements);
         return qResult;
+        return [];
     }catch(err){
-        return err;
+        return [];
     }
 }
 

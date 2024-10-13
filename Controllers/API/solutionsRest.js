@@ -48,8 +48,8 @@ async function solve(req,res){
         let prev_result = await service.deletePreviousSolution(scenarioId);
         let prev_result2 = await service.deleteS02(scenarioId);
         if(prev_result.status && prev_result2.status){
-            let result = await service.saveSolutionDetail(scenarioId,solution.data);
-            let result2 = await service.saveSolutionS02(scenarioId);
+            let result = await service.saveSolutionDetail(scenarioId,solution.data.raw_solution);
+            let result2 = await service.saveSolutionS02(scenarioId,solution.data.proposed_flows);
             if(result.status && result2.status){
                 res.status(200);
                 res.json({

@@ -82,14 +82,17 @@
             url: '/WF/api/getSolution/<%=scenarioId%>',
             //method: 'GET', // need this to avoid 412 error on Safari
             columns: [
-                { field: 'node_id', text: 'Node', size: '5%' },
-                { field: 'current_vol', text: 'Current', size: '15%' },
-                { field: 'min_vol', text: 'Min.', size: '15%' },
-                { field: 'max_vol', text: 'Max.', size: '15%' },
-                { field: 'incoming_flow', text: 'In', size: '15%' },
-                { field: 'outcoming_flow', text: 'Out', size: '15%' },
-                { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
-            ]
+                { field: 'recid', text: 'Id',sortable:true,size:'5%' },
+                { field: 'origin', hidden:true },
+                { field: 'origin_node', text: 'Origin',sortable:true, size:'10%' },
+                { field: 'destiny', hidden:true },
+                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
+                { field: 'type', text: 'Type', size:'10%' },
+                { field: 'fmin', text: 'Min F', size:'15%',sortable:true,render:'float:02' },
+                { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },
+                { field: 'fmax', text: 'Max F.', size:'15%',sortable:true,render:'float:02' },
+                { field: 'pflow', text: 'Proposed Flow', size:'15%',sortable:true,render:'float:02' },
+            ],
         });
 
     </script>

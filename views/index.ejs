@@ -80,7 +80,7 @@
                                     resizable=yes,
                                     width=950
                                     height=550');">${s.nodes}</a>`},
-                        {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','nodes','toolbar=no,
+                        {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','flows','toolbar=no,
                                     location=no,
                                     status=no,
                                     menubar=no,
@@ -88,7 +88,7 @@
                                     resizable=yes,
                                     width=1050
                                     height=650');">${s.flows}</a>`},
-                        {element:"Status",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','nodes','toolbar=no,
+                        {element:"Status",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,
                                     location=no,
                                     status=no,
                                     menubar=no,
@@ -433,7 +433,7 @@
                 { field: 'max_vol', text: 'Max.', size: '10%',render:'float:02' },
                 { field: 'incoming_flow', text: 'In', size: '10%',render:'float:02' },
                 { field: 'outcoming_flow', text: 'Out', size: '10%',render:'float:02' },
-                { field: 'time_to_reach_limit', text: 'TRL', size: '10%',render:'float:02' }
+                { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
             ]
         })
         
