@@ -78,6 +78,10 @@ async function flowsGrid(req,res){
     let scenarioId = req.params.scenarioId;
     let nodes = await nodesService.getNodes(scenarioId)
     let units = await scenariosService.getScenarioUnits(scenarioId);
+
+    if(!nodes)
+        nodes = [];
+
     res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 

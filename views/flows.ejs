@@ -49,15 +49,20 @@
 
 
         function getNewEmptyRecord(){
-                        
-            let record = {
-                origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
-                destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
-                type: {id:'<%=flow_types[0]%>',text:'<%=flow_types[0]%>'},
-                min_flow:0.0,
-                current_flow:0.0,
-                max_flow:0.0
-            }
+            <%if(nodes.length > 0) { %>            
+                let record = {
+                    origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
+                    destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
+                    type: {id:'<%=flow_types[0]%>',text:'<%=flow_types[0]%>'},
+                    min_flow:0.0,
+                    current_flow:0.0,
+                    max_flow:0.0
+                }
+            <%} else {%>
+                let record = {
+                    
+                }
+            <%}%>
 
             return record;
         }
@@ -82,8 +87,8 @@
         function setForm(record){
             let rec = {
                 new_scenario_id : '<%=scenarioId%>',
-                new_origin :record.origin, //
-                new_destiny : record.destiny,//{'id':'<%=nodes[1].id%>','text:id':'<%=nodes[1].node_id%>'},
+                new_origin :record.origin, 
+                new_destiny : record.destiny,
                 new_type: record.type,
                 new_min_flow:record.min_flow,
                 new_current_flow: record.current_flow,
@@ -111,6 +116,7 @@
                     { field: 'new_origin', type: 'list',
                         html: { label: 'Origin',attr: 'style="width: 100%"' },
                         options: { items: [
+                            {id:'0',text:'Input to the System'}, 
                             <% for(let i =0;i<nodes.length;i++){%>
                             {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
@@ -119,6 +125,7 @@
                     { field: 'new_destiny', type: 'list',
                         html: { label: 'Destiny',attr: 'style="width: 100%"' },
                         options: { items: [
+                            {id:'0',text:'Output of the System'},
                             <% for(let i =0;i<nodes.length;i++){%>
                             {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
@@ -156,12 +163,12 @@
                         let curr_vol = flowsForm.record.new_current_flow;
                         let curr_max = flowsForm.record.new_max_flow;
 
-                        if(curr_min > curr_vol){
+                        if( flowsForm.record.new_type.id > 0 && curr_min > curr_vol){
                             w2alert("Min Flow cant be bigger than current flow.");
                             return;
                         }
 
-                        if(curr_vol > curr_max){
+                        if(flowsForm.record.new_type.id > 0 && curr_vol > curr_max){
                             w2alert("Current Flow cant be bigger than Max Flow.");
                             return;
                         }
@@ -235,9 +242,13 @@
                 { field: 'fmax', text: 'Max F.', size:'15%',sortable:true,render:'float:02' }
             ],
             onAdd: function (event) {
-                event.preventDefault();
-                isEdit = false;
-                openFormPopup();
+                <%if(nodes.length === 0) { %>   
+                    w2alert("There are no nodes!. \nPlease add nodes first to the Topology");
+                <%} else {%>
+                    event.preventDefault();
+                    isEdit = false;
+                    openFormPopup();
+                <%}%>
             },
             onEdit: function (event) {
                 event.preventDefault();

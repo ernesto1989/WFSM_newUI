@@ -412,12 +412,10 @@
                         callBack: function(answer){
                             if(answer === 'yes'){
                                 $.post('/WF/api/recalcTRL', scenario, function(respuesta){
-                                    if(respuesta){
+                                    if(respuesta.status === 'success'){
                                         alert("Computing finished")
                                         window.location.reload();
-                                    }
-                                        
-                                    else{
+                                    } else{
                                         alert("Something went wrong");
                                         window.location.reload();
                                     }

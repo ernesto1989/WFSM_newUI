@@ -47,13 +47,16 @@
         });
 
         function getNewEmptyRecord(){
-            let lastElement = grid.records[grid.records.length - 1];
-            let genId = lastElement.recid + 1;
+            let genId = 1;
+            if(grid.records.length > 0){
+                let lastElement = grid.records[grid.records.length - 1];
+                genId = lastElement.recid + 1;
+            }
             
             let record = {
                 id: genId,
                 node_id: 'N'+genId,
-                description: 'About this node',
+                description: '',
                 min_capacity:0.0,
                 current_vol:0.0,
                 max_capacity:0.0

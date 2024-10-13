@@ -115,8 +115,11 @@ async function recalcTRL(req,res){
 
     }catch(error){
         console.log(error);
-        res.status(500);
-        res.send(error);
+        res.status(200);
+        res.json({
+            "status"  : "failed",
+            "error"   : "Service not available"
+        });
     }
 }
 
