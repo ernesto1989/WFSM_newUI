@@ -116,8 +116,12 @@
 
         function deleteScenario(){
             let scenario = {'scenario_id':form.record.scenario_id}
+            if(scenario.scenario_id === 'ESC-BASE'){
+                w2alert("Can't delete Base Scenario");
+                return;
+            }
             w2confirm({
-                msg: 'Do you want to delete the following scenario: ' + scenario,
+                msg: 'Do you want to delete the following scenario: ' + scenario.scenario_id,
                 title: "DELETE SCENARIO",
                 width: 450,        // width of the dialog
                 height: 220,       // height of the dialog
