@@ -13,7 +13,7 @@
 const constants = require("../../constants")
 const scenariosService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
-
+const catalogsService = require("../../Service/catalogsService")
 
 const scenario_type = [
     //{id:"0",desc:"Real Time"},
@@ -30,9 +30,15 @@ const time_units = [
     "MINS", "HRS","DAYS"
 ]
 
-let types = ['fijo','variable'];
+let types = [];
 
 
+async function loadLists(){
+    types = await catalogsService.getTypes();
+    return;
+}
+
+loadLists();
 
 /**
  * Index handler. It redirects to the main route of the project.
@@ -71,7 +77,7 @@ async function homePage(req,res){
 async function nodesGrid(req,res){
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId);
-    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, node_types:types});
+    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 async function flowsGrid(req,res){

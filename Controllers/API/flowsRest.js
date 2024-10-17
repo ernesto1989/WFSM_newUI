@@ -32,7 +32,7 @@ async function saveFlow(req,res){
         let result;
         if(flow.new_record === 'false'){
             //update
-            result = flowsService.updateFlow(flow);  
+            result = await flowsService.updateFlow(flow);  
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -41,7 +41,7 @@ async function saveFlow(req,res){
             });          
         }else{
             //insert
-            result = flowsService.insertFlow(flow);
+            result = await flowsService.insertFlow(flow);
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -60,7 +60,7 @@ async function saveFlow(req,res){
 async function deleteFlow(req,res){
     try{
         let flow = req.body;
-        let result = flowsService.deleteFlow(flow);
+        let result = await flowsService.deleteFlow(flow);
        
         res.status(200);
         res.json({

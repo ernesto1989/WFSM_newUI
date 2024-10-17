@@ -1,9 +1,9 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
 //added id 2 toimes in order to use it on W2UI and Python Web Service
-const getFlowsQuery = "SELECT ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS recid,ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id,a02.scenario_id, a02.origin,coalesce(a01o.node_id,'IN') as origin_node, a02.destiny, coalesce(a01d.node_id,'OUT') as destiny_node,a02.current_flow,a02.`type`,coalesce(fmax,0) as fmax,coalesce(fmin,0) as fmin FROM a02_flows a02 left join a01_nodes a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin left join a01_nodes a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny WHERE a02.scenario_id = ?";
-const selectInsertA02 = 'INSERT INTO a02_flows(scenario_id, origin, destiny, current_flow, `type`, fmax, fmin) SELECT ?,origin, destiny, COALESCE(current_flow,0), `type`, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flows a02 WHERE a02.scenario_id = ?';
-const insertFlowQuery = 'Insert into a02_flows(scenario_id,origin, destiny, current_flow,type,fmax,fmin) Values (?,?,?,?,?,?,?)'
+const getFlowsQuery = "SELECT ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS recid,ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id,a02.scenario_id, a02.origin,coalesce(a01o.node_id,'IN') as origin_node, a02.destiny, coalesce(a01d.node_id,'OUT') as destiny_node,a02.current_flow,x01.id as type_id, x01.name as type,x01.model_name as model_type,coalesce(fmax,0) as fmax,coalesce(fmin,0) as fmin FROM a02_flows a02 left join a01_nodes a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin left join a01_nodes a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny left join x01_flow_types x01 on x01.id = a02.type_id WHERE a02.scenario_id = ?";
+const selectInsertA02 = 'INSERT INTO a02_flows(scenario_id, origin, destiny, current_flow, type_id, fmax, fmin) SELECT ?,origin, destiny, COALESCE(current_flow,0), type_id, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flows a02 WHERE a02.scenario_id = ?';
+const insertFlowQuery = 'Insert into a02_flows(scenario_id,origin, destiny, current_flow,type_id,fmax,fmin) Values (?,?,?,?,?,?,?)'
 const updateFlowQuery = 'Update a02_flows set current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ?';
 const deleteFlowQuery = 'Delete from a02_flows where scenario_id = ? and origin = ? and destiny = ?'
 

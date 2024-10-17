@@ -41,10 +41,6 @@
                 grid.records = recs;
                 grid.refresh();
             });
-
-            <%for(let i =0; i<flow_types.length;i++){%>
-                types.push('<%=flow_types[i]%>')
-            <%}%>
         });
 
 
@@ -53,7 +49,7 @@
                 let record = {
                     origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
                     destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
-                    type: {id:'<%=flow_types[0]%>',text:'<%=flow_types[0]%>'},
+                    type: {id:'<%=flow_types[0].type_id%>',text:'<%=flow_types[0].type%>'},
                     min_flow:0.0,
                     current_flow:0.0,
                     max_flow:0.0
@@ -74,7 +70,7 @@
             let record = {
                 origin: {id:rec.origin,text:rec.origin_node},
                 destiny: {id:rec.destiny,text:rec.destiny_node},
-                type: {id:rec.type,text:rec.type},
+                type: {id:rec.type_id,text:rec.type},
                 min_flow:rec.fmin,
                 current_flow:rec.current_flow,
                 max_flow:rec.fmax
@@ -135,7 +131,7 @@
                         html: { label: 'Flow Type',attr: 'style="width: 100%"' },
                         options: { items: [
                             <% for(let i =0;i<flow_types.length;i++){%>
-                            {id:'<%=flow_types[i]%>',text:'<%=flow_types[i]%>'}, 
+                            {id:'<%=flow_types[i].type_id%>',text:'<%=flow_types[i].type%>'}, 
                             <%}%>
                         ]},
                     },
@@ -163,12 +159,12 @@
                         let curr_vol = flowsForm.record.new_current_flow;
                         let curr_max = flowsForm.record.new_max_flow;
 
-                        if( flowsForm.record.new_type.id > 0 && curr_min > curr_vol){
+                        if( flowsForm.record.new_type.id > 1 && curr_min > curr_vol){
                             w2alert("Min Flow cant be bigger than current flow.");
                             return;
                         }
 
-                        if(flowsForm.record.new_type.id > 0 && curr_vol > curr_max){
+                        if(flowsForm.record.new_type.id > 1 && curr_vol > curr_max){
                             w2alert("Current Flow cant be bigger than Max Flow.");
                             return;
                         }
@@ -236,6 +232,7 @@
                 { field: 'origin_node', text: 'Origin',sortable:true, size:'10%' },
                 { field: 'destiny', hidden:true },
                 { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
+                { field: 'type_id', hidden:true },
                 { field: 'type', text: 'Type', size:'10%' },
                 { field: 'fmin', text: 'Min F', size:'15%',sortable:true,render:'float:02' },
                 { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },

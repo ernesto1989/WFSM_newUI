@@ -38,7 +38,6 @@
         $("document").ready(function(){
             let scenario;
             <%for(let i = 0; i<scenarios_list.length;i++){%>
-                //scenarios.scenarios_list[i].scenario_id = scenarios_list[i];
                 scenario = {
                     scenario_id:'<%=scenarios_list[i].scenario_id%>',
                     description: '<%=scenarios_list[i].description%>',
@@ -51,18 +50,9 @@
             <%}%>
         });
 
-        function openWindow(url,width,height, tgt){
-            window.open(url,'targetWindow' + tgt,
-                                   `toolbar=no,
-                                    location=no,
-                                    status=no,
-                                    menubar=no,
-                                    scrollbars=yes,
-                                    resizable=yes,
-                                    width=${width}
-                                    height=${height}`);
-        }
-
+        /*
+            Method that gets a scenario from backend by its ID.
+        */
         function showScenario(scenarioID){
             let scenario = {scenario_id:scenarioID}
             $.post('/WF/api/getScenario', scenario, function(respuesta){
@@ -105,15 +95,16 @@
                     grid.header = "Scenario Details - Capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
                     grid.records = trl;
                     grid.refresh();
-
-                    let selectedS = scenarios.get(s);
-                }
-                    
-                else
+                    //let selectedS = scenarios.get(s);
+                } else {
                     alert("Something went wrong")
+                }
             });
         }
 
+        /**
+         * Method that deletes the selected scenario.
+         */
         function deleteScenario(){
             let scenario = {'scenario_id':form.record.scenario_id}
             if(scenario.scenario_id === 'ESC-BASE'){
