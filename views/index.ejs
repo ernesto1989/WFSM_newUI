@@ -48,6 +48,10 @@
                 };
                 scenarios.set('<%=scenarios_list[i].scenario_id%>',scenario)
             <%}%>
+            
+            sidebar.select("ESC-BASE"); // SELECT ESC-BASE at the beginning.
+            toolbar.enable('delete');
+            showScenario("ESC-BASE")
         });
 
         /*
@@ -308,19 +312,14 @@
         });
 
 
-        new w2sidebar({
+        let sidebar = new w2sidebar({
             box: '#sidebar',
             name: 'sidebar',
             style:'height:100%;',
             nodes: [
                 <% for(let i =0; i<scenarios_list.length;i++){ %>
-                { id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
-                    //nodes: [
-                    //     { id: '<%=scenarios_list[i].scenario_id%>_D', text: 'Scenario Details', icon: 'fa fa-circle-info' },
-                    //     { id: '<%=scenarios_list[i].scenario_id%>_N', text: 'Nodes', icon: 'fa fa-house', count: <%=scenarios_list[i].nodes%> },
-                    //     { id: '<%=scenarios_list[i].scenario_id%>_F', text: 'Flows', icon: 'fa fa-faucet',count: <%=scenarios_list[i].flows%> },
-                    //     { id: '<%=scenarios_list[i].scenario_id%>_S', text: 'Solution', icon: 'fa fa-circle-info',count: '<%=scenarios_list[i].Status%>' },
-                    // ]
+                { 
+                    id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
                 },
                 <%}%>
             ],
