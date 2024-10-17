@@ -49,9 +49,10 @@
                 scenarios.set('<%=scenarios_list[i].scenario_id%>',scenario)
             <%}%>
             
+            //AS part of a general (and implementable) solution.... ESC-BASE will always reflects the current situation.
             sidebar.select("ESC-BASE"); // SELECT ESC-BASE at the beginning.
             toolbar.enable('delete');
-            showScenario("ESC-BASE")
+            showScenario("ESC-BASE");
         });
 
         /*

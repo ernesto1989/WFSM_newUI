@@ -22,19 +22,22 @@ const scenario_type = [
 ]
 
 //Must create catalogs for these three guys
-const capacity_units = [
-    "M3", "LTS"
-]
-
-const time_units = [
-    "MINS", "HRS","DAYS"
-]
-
+let capacity_units = []
+let time_units = []
 let types = [];
 
 
 async function loadLists(){
     types = await catalogsService.getTypes();
+    cu = await catalogsService.getCapacityUnits();
+    tu = await catalogsService.getTimeUnits();
+
+    for(i=0;i<cu.length;i++)
+        capacity_units.push(cu[i].unit_name)
+
+    for(i=0;i<tu.length;i++)
+        time_units.push(tu[i].unit_name)
+
     return;
 }
 
