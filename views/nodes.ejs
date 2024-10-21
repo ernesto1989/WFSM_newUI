@@ -155,12 +155,20 @@
                             max_capacity: curr_max
                         }
 
-                        //post to web service and on return, reload page.
-                        $.post('/WF/api/saveNode', node, function(response){
-                            if(response)
-                                window.location.reload();
-                            else
-                                alert("Something went wrong")
+                        //https://stackoverflow.com/questions/2845459/jquery-how-to-make-post-use-contenttype-application-json
+                        //proper way to ajax
+                        $.ajax({
+                            url:'/WF/api/saveNode', 
+                            type:'POST',
+                            data: JSON.stringify(node), 
+                            dataType:"json",
+                            contentType:"application/json; charset=utf-8",
+                            success:function(response){
+                                if(response)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            }
                         });
                     }
                 }

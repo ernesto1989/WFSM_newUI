@@ -41,9 +41,9 @@ async function saveNode(req,res){
     try{
         let node = req.body;
         let result;
-        if(node.new_record === 'false'){
+        if(!node.new_record){
             //update
-            result = nodesService.updateNode(node);  
+            result = await nodesService.updateNode(node);  
             res.status(200);
             res.json({
                 "status"  : "success",
