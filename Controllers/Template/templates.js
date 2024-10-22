@@ -18,7 +18,7 @@ const catalogsService = require("../../Service/catalogsService")
 const scenario_type = [
     //{id:"0",desc:"Real Time"},
     {id:"1",desc:"Proposed"},
-    {id:"2",desc:"Empty"}
+    //{id:"2",desc:"Empty"}
 ]
 
 //Must create catalogs for these three guys
