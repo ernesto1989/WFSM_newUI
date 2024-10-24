@@ -28,6 +28,8 @@ function initWebProject(){
     app.use(bodyParser.json());
     app.use(express.static('public'));
     app.use(bodyParser.urlencoded({ extended: true }));
+    
+    app.use(express.static('public'));
 
     // app.use (session({
     //     secret: 'hahi9elakeddao1chhh1shh48',
