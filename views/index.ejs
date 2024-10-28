@@ -33,7 +33,7 @@
     </style>
     <script type="module">
         
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'http://localhost:3000/w2ui.js'
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
         let scenarios = new Map;
         $("document").ready(function(){
@@ -402,6 +402,7 @@
                             onClick: null  // callBack for no button (or no_callBack)
                         },
                         callBack: function(answer){
+                            alert(answer)
                             if(answer === 'yes'){
                                 $.post('/WF/api/recalcTRL', scenario, function(respuesta){
                                     if(respuesta.status === 'success'){
@@ -422,11 +423,11 @@
             ],
             columns: [
                 { field: 'node_id', text: 'Node', size: '25%' },
-                { field: 'current_vol', text: 'Current', size: '10%',render:'float:02' },
-                { field: 'min_vol', text: 'Min.', size: '10%',render:'float:02' },
-                { field: 'max_vol', text: 'Max.', size: '10%',render:'float:02' },
-                { field: 'incoming_flow', text: 'In', size: '10%',render:'float:02' },
-                { field: 'outcoming_flow', text: 'Out', size: '10%',render:'float:02' },
+                { field: 'current_vol', text: 'Current', size: '10%'},//,render:'float:02' },
+                { field: 'min_vol', text: 'Min.', size: '10%'},//,render:'float:02' },
+                { field: 'max_vol', text: 'Max.', size: '10%'},//,render:'float:02' },
+                { field: 'incoming_flow', text: 'In', size: '10%'},//,render:'float:02' },
+                { field: 'outcoming_flow', text: 'Out', size: '10%'},//,render:'float:02' },
                 { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
             ]
         })

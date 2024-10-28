@@ -30,7 +30,7 @@
     </style>  
     <script type="module">
 
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'http://localhost:3000/w2ui.js'
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         
         let grid = new w2grid({
             name: 'details',
@@ -88,10 +88,10 @@
                 { field: 'destiny', hidden:true },
                 { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
                 { field: 'type', text: 'Type', size:'10%' },
-                { field: 'fmin', text: 'Min F', size:'15%',sortable:true,render:'float:02' },
-                { field: 'current_flow', text: 'Current',sortable:true, size:'15%',render:'float:02' },
-                { field: 'fmax', text: 'Max F.', size:'15%',sortable:true,render:'float:02' },
-                { field: 'pflow', text: 'Proposed Flow', size:'15%',sortable:true,render:'float:02' },
+                { field: 'fmin', text: 'Min F', size:'15%',sortable:true},//,render:'float:02' },
+                { field: 'current_flow', text: 'Current',sortable:true, size:'15%'},//,render:'float:02' },
+                { field: 'fmax', text: 'Max F.', size:'15%',sortable:true},//,render:'float:02' },
+                { field: 'pflow', text: 'Proposed Flow', size:'15%',sortable:true}//,render:'float:02' },
             ],
         });
 
@@ -100,7 +100,8 @@
 <body>
     <div class="container-fluid" style="width:100%;height:100%;">
         <div class="row" style="height: 40%;">
-            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            <!-- must be changed for scenario comming from MVC-->
+            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds18.scenario_id%22%3A%22ESC-BASE%22%2C%22ds11.scenario_id%22%3A%22ESC-BASE%22%2C%22ds15.scenario_id%22%3A%22ESC-BASE%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
         </div>
         <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 60%;">
         </div>
