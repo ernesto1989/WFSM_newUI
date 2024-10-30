@@ -402,7 +402,6 @@
                             onClick: null  // callBack for no button (or no_callBack)
                         },
                         callBack: function(answer){
-                            alert(answer)
                             if(answer === 'yes'){
                                 $.post('/WF/api/recalcTRL', scenario, function(respuesta){
                                     if(respuesta.status === 'success'){

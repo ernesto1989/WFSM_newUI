@@ -1,6 +1,6 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
-const getTypesQuery = 'SELECT id as type_id,name as type FROM x01_flow_types'
+const getTypesQuery = "SELECT id as type_id,name as type FROM x01_flow_types"
 const getCapacityUnitsQuery = "SELECT unit_name FROM x02_capacity_units WHERE unit_type = 'capacity'";
 const getTimeUnitsQuery = "SELECT unit_name FROM x02_capacity_units WHERE unit_type = 'time'";
 

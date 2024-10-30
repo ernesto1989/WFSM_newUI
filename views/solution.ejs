@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nodes - <%=scenarioId%> </title>
+    <title>Solution - <%=scenarioId%> </title>
     <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -94,14 +94,13 @@
                 { field: 'pflow', text: 'Proposed Flow', size:'15%',sortable:true}//,render:'float:02' },
             ],
         });
-
     </script>
 </head>
 <body>
     <div class="container-fluid" style="width:100%;height:100%;">
         <div class="row" style="height: 40%;">
             <!-- must be changed for scenario comming from MVC-->
-            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds18.scenario_id%22%3A%22ESC-BASE%22%2C%22ds11.scenario_id%22%3A%22ESC-BASE%22%2C%22ds15.scenario_id%22%3A%22ESC-BASE%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds18.scenario_id%22%3A%22<%=scenarioId%>%22%2C%22ds11.scenario_id%22%3A%22<%=scenarioId%>%22%2C%22ds15.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
         </div>
         <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 60%;">
         </div>

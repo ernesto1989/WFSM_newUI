@@ -1,6 +1,8 @@
 const mysql = require('mysql2')
-const constants = require("../constants");
+//const constants = require("../constants");
+require('dotenv').config()
 
+const {HOST, PORT, USER, PASS,DB} = process.env
 
 
 /**
@@ -31,11 +33,11 @@ class QueryResult{
 async function open(){
     
     const connection = mysql.createConnection({
-      host: constants.dbHost,
-      user: constants.dbUser,
-      port: constants.dbPort,
-      password: constants.dbPass,
-      database: constants.dbName,
+      host: HOST,//constants.dbHost,
+      user: USER,//constants.dbUser,
+      port: PORT,//constants.dbPort,
+      password: PASS,//constants.dbPass,
+      database: DB,//constants.dbName,
       decimalNumbers:true
     });
   

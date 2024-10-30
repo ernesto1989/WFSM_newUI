@@ -1,10 +1,10 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
 const getS02Query = "SELECT ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS recid,ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id,s02.scenario_id, s02.origin,coalesce(a01o.node_id,'IN') as origin_node, s02.destiny, coalesce(a01d.node_id,'OUT') as destiny_node,s02.current_flow,s02.`type`,coalesce(fmax,0) as fmax,coalesce(fmin,0) as fmin,coalesce(pflow,0) as pflow FROM s02_proposed_flows s02 left join a01_nodes a01o on a01o.scenario_id = s02.scenario_id and a01o.id = s02.origin left join a01_nodes a01d on a01d.scenario_id = s02.scenario_id and a01d.id = s02.destiny WHERE s02.scenario_id = ?";
-const solutionDetailDelete = 'DELETE FROM s01_solution_detail where scenario_id = ?';
-const s02DetailDelete = 'DELETE FROM s02_proposed_flows where scenario_id = ?';
-const solutionDetailInsert = 'INSERT INTO s01_solution_detail(scenario_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?'
-const solutionPFInsert = 'INSERT INTO s02_proposed_flows(scenario_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow) VALUES ?'
+const solutionDetailDelete = "DELETE FROM s01_solution_detail where scenario_id = ?";
+const s02DetailDelete = "DELETE FROM s02_proposed_flows where scenario_id = ?";
+const solutionDetailInsert = "INSERT INTO s01_solution_detail(scenario_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?";
+const solutionPFInsert = "INSERT INTO s02_proposed_flows(scenario_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow) VALUES ?";
 
 
 /**
