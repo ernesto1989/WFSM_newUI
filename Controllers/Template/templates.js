@@ -94,10 +94,15 @@ async function flowsGrid(req,res){
     res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 
+async function simulationView(req,res){
+    let scenarioId = req.params.scenarioId;
+    res.render("simulator",{scenarioId:scenarioId})
+}
+
 async function solutionsView(req,res){
     let scenarioId = req.params.scenarioId;
     res.render("solution",{scenarioId:scenarioId})
 }
 
 
-module.exports = {index,homePage,nodesGrid,flowsGrid,solutionsView}
+module.exports = {index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}

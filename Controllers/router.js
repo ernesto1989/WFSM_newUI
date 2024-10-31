@@ -25,15 +25,17 @@ router.get(constants.indexURL, templates.index);
 router.get(constants.contextURL, templates.homePage);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
+router.get(constants.contextURL+'/simulator/:scenarioId', templates.simulationView);
 router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
 
 
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
+router.post(constants.contextURL + constants.apiURL + '/getScenarioTRL', scenariosApi.getScenarioTRL);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);
 router.post(constants.contextURL + constants.apiURL + '/recalcTRL', scenariosApi.recalcTRL);
 router.post(constants.contextURL + constants.apiURL + '/deleteScenario', scenariosApi.deleteScenario);
-router.get(constants.contextURL + constants.apiURL + "/getSolution/:scenarioId",solutionsApi.getScenarioSolution);
+router.post(constants.contextURL + constants.apiURL + "/getSolution",solutionsApi.getScenarioSolution);
 router.post(constants.contextURL + constants.apiURL + '/solve', solutionsApi.solve);
 
 //Grid management

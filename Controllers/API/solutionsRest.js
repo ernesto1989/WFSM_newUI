@@ -1,4 +1,5 @@
 const service = require("../../Service/solutionsService")
+const scenarioService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
 const axios = require('axios')
@@ -11,15 +12,19 @@ const axios = require('axios')
  */
 async function getScenarioSolution(req,res){
     try{
-        const scenarioId = req.params.scenarioId;
-
+        //const scenarioId = req.params.scenarioId;
+        const scenarioId = req.body.scenario_id;
+        const scenario = await scenarioService.getScenarioById(scenarioId)
         const result = await service.getS02(scenarioId); 
 
         res.status(200);
         res.json({
             "status"  : "success",
             "total"   : result.length,
-            "records" : result
+            "records" : {
+                'scenario':scenario,
+                'solution':result
+            }
         });
     }catch(error){
         console.log(error);
