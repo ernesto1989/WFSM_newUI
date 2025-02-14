@@ -30,7 +30,7 @@
     </style>  
     <script type="module">
 
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2tabs, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         
         $("document").ready(function(){
             let scenario = {scenario_id:'<%=scenarioId%>'}
@@ -52,6 +52,25 @@
                     alert("Something went wrong")
                 }
             });
+        });
+
+
+
+        new w2tabs({
+            box: '#tabs',
+            name: 'tabs',
+            active: 'tab1',
+            tabs: [
+                { id: 'general', text: 'State' },
+                { id: 'details', text: 'Nodes' }
+            ],
+            onClick(event) {
+                if(event.target === 'general'){
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/2becc779-cf30-4a7d-9b37-9363fc1acdb1/page/p_qeuhdpzhmd?config=%7B%22ds1.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                } else if(event.target === 'details'){
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/6aae72ab-ea22-43bb-ab49-3727d1b74786/page/dg8qE?params=%7B%22ds0.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                }
+            }
         });
 
 
@@ -121,7 +140,8 @@
     <div class="container-fluid" style="width:100%;height:100%;">
         <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
             <div class="row" style="height: 48%;">
-                <iframe  height="100%" src="https://lookerstudio.google.com/embed/reporting/2becc779-cf30-4a7d-9b37-9363fc1acdb1/page/4wIIEparams=%7B%22ds0.scenario_id%22%3A%22<%=scenarioId%>%22%2C%22ds1.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                <div id="tabs" style="margin-top: 5px; width: 100%;"></div>
+                <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/2becc779-cf30-4a7d-9b37-9363fc1acdb1/page/p_qeuhdpzhmd?config=%7B%22ds1.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
             </div>
             <div class="row" style="height: 52%;">
                 <div id="trl_grid" style="margin-top: 5px; width: 100%; height: 100%;">
