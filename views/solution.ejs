@@ -30,7 +30,7 @@
     </style>  
     <script type="module">
 
-        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2tabs, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         
         $("document").ready(function(){
             let scenario = {scenario_id:'<%=scenarioId%>'}
@@ -55,6 +55,25 @@
                 }
             });
         });
+
+
+        new w2tabs({
+            box: '#tabs',
+            name: 'tabs',
+            active: 'tab1',
+            tabs: [
+                { id: 'general', text: 'State' },
+                { id: 'details', text: 'Detail' }
+            ],
+            onClick(event) {
+                if(event.target === 'general'){
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                } else if(event.target === 'details'){
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/d8f06984-d999-4153-81b8-2947c2bdcb08/page/RkKvE?params=%7B%22ds0.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                }
+            }
+        });
+
 
         
         let grid = new w2grid({
@@ -123,11 +142,14 @@
 <body>
     <div class="container-fluid" style="width:100%;height:100%;">
         <div class="row" style="height: 40%;">
-            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-            <!-- must be changed for scenario comming from MVC
-            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds18.scenario_id%22%3A%22<%=scenarioId%>%22%2C%22ds11.scenario_id%22%3A%22<%=scenarioId%>%22%2C%22ds15.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-            -->
+            <div id="tabs" style="margin-top: 5px; width: 100%;"></div>
+            <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
         </div>
+        <!--div class="row" style="height: 40%;">
+            
+            <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+            <iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+        </div-->
         <div id="sol_grid" style="margin-top: 5px; width: 100%; height: 60%;">
         </div>
     </div>
