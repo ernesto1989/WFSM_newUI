@@ -14,6 +14,7 @@ const constants = require("../../constants")
 const scenariosService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
 const catalogsService = require("../../Service/catalogsService")
+const userServices = require("../../Service/usersService")
 
 const scenario_type = [
     //{id:"0",desc:"Real Time"},
@@ -43,10 +44,6 @@ async function loadLists(){
 
 loadLists();
 
-async function isValidUser(username, password) {
-    //esto requiere una base de datos para leer a todo el usuario
-    return username === 'ecantuv' && password === '1234';
-}
 
 /**
  * Index handler. It redirects to the main route of the project.
@@ -65,15 +62,17 @@ async function getLogin(req,res){
 async function postLogin(req,res){
     const { username, password } = req.body;
 
+    user = await userServices.isValidUser(username, password);
+
     // Authenticate user
-    if (isValidUser(username, password)) {
+    if (user) {
         req.session.isLoggedIn = true;
-        let user = {
-            username: username,
-            name: "Ernesto Cantú",
-            city: 0, //demo city,
-            roll: 'admin'
+
+        user.role = userServices.roles[user.role_id];
+        if(user.role_id == 1){
+            user.city = userServices.cities[user.city_id];
         }
+
         req.session.user = user;
 
         res.redirect('/WF');
@@ -108,11 +107,14 @@ async function homePage(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            city: sessionData.user.city, 
-            roll: sessionData.user.roll
+            //city: sessionData.user.city.name, 
+            role: sessionData.user.role.name
         }
     ]
-    
+
+    if(sessionData.user.role_id == 1){
+        session[0].city = sessionData.user.city.name;
+    }
 
     let scenarios = await scenariosService.getScenarios();
     res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
