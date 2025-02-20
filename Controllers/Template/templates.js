@@ -124,12 +124,42 @@ async function homePage(req,res){
  * @param {Object} res Response Object
  */
 async function nodesGrid(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            city: sessionData.user.city, 
+            roll: sessionData.user.roll
+        }
+    ]
+
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId);
     res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 async function flowsGrid(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            city: sessionData.user.city, 
+            roll: sessionData.user.roll
+        }
+    ]
+
     let scenarioId = req.params.scenarioId;
     let nodes = await nodesService.getNodes(scenarioId)
     let units = await scenariosService.getScenarioUnits(scenarioId);
@@ -141,14 +171,44 @@ async function flowsGrid(req,res){
 }
 
 async function simulationView(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            city: sessionData.user.city, 
+            roll: sessionData.user.roll
+        }
+    ]
+
     let scenarioId = req.params.scenarioId;
     res.render("simulator",{scenarioId:scenarioId})
 }
 
 async function solutionsView(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            city: sessionData.user.city, 
+            roll: sessionData.user.roll
+        }
+    ]
+
     let scenarioId = req.params.scenarioId;
     res.render("solution",{scenarioId:scenarioId})
 }
 
 
-module.exports = {getLogin,postLogin, logout,index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin,logout,index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}
