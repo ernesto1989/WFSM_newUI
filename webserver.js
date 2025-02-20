@@ -15,7 +15,7 @@ const constants = require("./constants")
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-//const session = require('express-session');
+const session = require('express-session');
 const router = require("./Controllers/router");
 
 
@@ -31,11 +31,11 @@ function initWebProject(){
     
     app.use(express.static('public'));
 
-    // app.use (session({
-    //     secret: 'hahi9elakeddao1chhh1shh48',
-    //     resave: false,
-    //     saveUninitialized: false,
-    // }));
+    app.use (session({
+        secret: 'hahi9elakeddao1chhh1shh48',
+        resave: false,
+        saveUninitialized: false,
+    }));
      
     app.use(router);
 

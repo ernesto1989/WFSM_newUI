@@ -22,6 +22,8 @@ const constants = require("../constants")
 
 /*TEMPLATES routes */
 router.get(constants.indexURL, templates.index);
+router.get(constants.contextURL+'/login', templates.getLogin);
+router.get(constants.contextURL+'/logout', templates.logout);
 router.get(constants.contextURL, templates.homePage);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
@@ -29,7 +31,7 @@ router.get(constants.contextURL+'/simulator/:scenarioId', templates.simulationVi
 router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
 
-
+router.post(constants.contextURL+'/login', templates.postLogin);
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/getScenarioTRL', scenariosApi.getScenarioTRL);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);

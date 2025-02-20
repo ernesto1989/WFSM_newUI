@@ -43,6 +43,11 @@ async function loadLists(){
 
 loadLists();
 
+async function isValidUser(username, password) {
+    //esto requiere una base de datos para leer a todo el usuario
+    return username === 'ecantuv' && password === '1234';
+}
+
 /**
  * Index handler. It redirects to the main route of the project.
  * 
@@ -53,6 +58,39 @@ async function index(req,res){
     res.redirect(constants.contextURL);
 }
 
+async function getLogin(req,res){
+    res.render('login');
+}
+
+async function postLogin(req,res){
+    const { username, password } = req.body;
+
+    // Authenticate user
+    if (isValidUser(username, password)) {
+        req.session.isLoggedIn = true;
+        let user = {
+            username: username,
+            name: "Ernesto Cantú",
+            city: 0, //demo city,
+            roll: 'admin'
+        }
+        req.session.user = user;
+
+        res.redirect('/WF');
+    } else {
+        res.redirect('/WF/login');
+    }
+}
+
+async function logout(req,res){
+    req.session.destroy((err) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.redirect('/WF/login');
+        }
+    });
+}
 
 /**
  * Redirects to the home page of the project.
@@ -60,15 +98,23 @@ async function index(req,res){
  * @param {Object} res Server Response
  */
 async function homePage(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
     let session = [
         {
-            username: "ecantuv",
-            name: "Ernesto Cantú"
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            city: sessionData.user.city, 
+            roll: sessionData.user.roll
         }
     ]
     
-    let scenarios = await scenariosService.getScenarios();
 
+    let scenarios = await scenariosService.getScenarios();
     res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
@@ -105,4 +151,4 @@ async function solutionsView(req,res){
 }
 
 
-module.exports = {index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin, logout,index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}
