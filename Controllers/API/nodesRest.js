@@ -10,6 +10,17 @@ const nodesService = require("../../Service/nodesService")
  */
 async function getScenarioNodes(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const scenarioId = req.params.scenarioId;
 
         const result = await nodesService.getNodes(scenarioId); 
@@ -39,6 +50,17 @@ async function getScenarioNodes(req,res){
  */
 async function saveNode(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         let node = req.body;
         let result;
         if(!node.new_record){
@@ -70,6 +92,17 @@ async function saveNode(req,res){
 
 async function deleteNode(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+        
         let node = req.body;
         let result = nodesService.deleteNode(node);
        

@@ -12,7 +12,17 @@ const axios = require('axios')
  */
 async function getScenarioSolution(req,res){
     try{
-        //const scenarioId = req.params.scenarioId;
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const scenarioId = req.body.scenario_id;
         const scenario = await scenarioService.getScenarioById(scenarioId)
         const result = await service.getS02(scenarioId); 
@@ -35,6 +45,17 @@ async function getScenarioSolution(req,res){
 
 async function solve(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+        
         const scenarioId = req.body.scenario_id;
 
         let nodes = await nodesService.getNodes(scenarioId);

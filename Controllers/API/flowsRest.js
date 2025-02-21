@@ -8,6 +8,17 @@ const flowsService = require("../../Service/flowsService")
  */
 async function getScenarioFlows(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const scenarioId = req.params.scenarioId;
 
         const result = await flowsService.getFlows(scenarioId); 
@@ -28,6 +39,17 @@ async function getScenarioFlows(req,res){
 
 async function saveFlow(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         let flow = req.body;
         let result;
         if(flow.new_record === 'false'){
@@ -59,6 +81,17 @@ async function saveFlow(req,res){
 
 async function deleteFlow(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+        
         let flow = req.body;
         let result = await flowsService.deleteFlow(flow);
        

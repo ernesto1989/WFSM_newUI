@@ -11,6 +11,18 @@ const axios = require('axios')
  */
 async function getScenario(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
+
         const id_scenario = params = [req.body.scenario_id];
         const resultScenario = await scenarioService.getScenarioById(id_scenario);
         //const resultTRL = await scenarioService.getScenarioTRLById(id_scenario);
@@ -33,6 +45,17 @@ async function getScenario(req,res){
 
 async function getScenarioTRL(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const id_scenario = params = [req.body.scenario_id];
         const resultScenario = await scenarioService.getScenarioById(id_scenario);
         const resultTRL = await scenarioService.getScenarioTRLById(id_scenario);
@@ -62,6 +85,17 @@ async function getScenarioTRL(req,res){
  */
 async function saveScenario(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const scenario = req.body;
         let total = 0;
         let result = await scenarioService.createEmptyScenario(scenario);
@@ -109,6 +143,17 @@ async function saveScenario(req,res){
 
 async function recalcTRL(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
         const scenario = req.body;
 
         let nodes = await nodesService.getNodes(scenario.scenario_id);
@@ -152,6 +197,17 @@ async function recalcTRL(req,res){
  */
 async function deleteScenario(req,res){
     try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+        
         const scenario_id = params = [req.body.scenario_id];
 
         let result = await scenarioService.deleteScenario(scenario_id);
