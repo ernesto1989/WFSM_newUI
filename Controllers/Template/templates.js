@@ -16,6 +16,7 @@ const nodesService = require("../../Service/nodesService")
 const catalogsService = require("../../Service/catalogsService")
 const userServices = require("../../Service/usersService")
 
+//Scenario Types. Must be checked.
 const scenario_type = [
     //{id:"0",desc:"Real Time"},
     {id:"1",desc:"Proposed"},
@@ -27,19 +28,19 @@ let capacity_units = []
 let time_units = []
 let types = [];
 
-
+/**
+ * Method that initializes the capacity_units, time_units and types lists.
+ */
 async function loadLists(){
     types = await catalogsService.getTypes();
     cu = await catalogsService.getCapacityUnits();
     tu = await catalogsService.getTimeUnits();
 
     for(i=0;i<cu.length;i++)
-        capacity_units.push(cu[i].unit_name)
+        capacity_units.push(cu[i].unit_name);
 
     for(i=0;i<tu.length;i++)
-        time_units.push(tu[i].unit_name)
-
-    return;
+        time_units.push(tu[i].unit_name);
 }
 
 loadLists();
@@ -55,10 +56,21 @@ async function index(req,res){
     res.redirect(constants.contextURL);
 }
 
+/**
+ * Metod that shows the login view.
+* @param {Object} req Client Request
+ * @param {Object} res Server Response
+ */
 async function getLogin(req,res){
     res.render('login');
 }
 
+/**
+ * Method thad handles login post requests.
+ * 
+ * @param {Object} req Client Request
+ * @param {Object} res Server Response
+ */
 async function postLogin(req,res){
     const { username, password } = req.body;
 
@@ -81,6 +93,12 @@ async function postLogin(req,res){
     }
 }
 
+/**
+ * Method that handles the logout request.
+ * 
+ * @param {Object} req Client Request
+ * @param {Object} res Server Response
+ */
 async function logout(req,res){
     req.session.destroy((err) => {
         if (err) {
@@ -93,6 +111,7 @@ async function logout(req,res){
 
 /**
  * Redirects to the home page of the project.
+ * 
  * @param {Object} req Client Request
  * @param {Object} res Server Response
  */
@@ -122,6 +141,7 @@ async function homePage(req,res){
 
 /**
  * Method that shows the nodes view.
+ * 
  * @param {Object} req Request Object
  * @param {Object} res Response Object
  */
@@ -146,6 +166,12 @@ async function nodesGrid(req,res){
     res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
+/**
+ * Method that shows the flows view.
+ * 
+ * @param {Object} req Request Object
+ * @param {Object} res Response Object
+ */
 async function flowsGrid(req,res){
     const sessionData = req.session;
 
@@ -172,6 +198,12 @@ async function flowsGrid(req,res){
     res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 
+/**
+ * Method that shows the simulator's view.
+ * 
+ * @param {Object} req Request Object
+ * @param {Object} res Response Object
+ */
 async function simulationView(req,res){
     const sessionData = req.session;
 
@@ -192,6 +224,12 @@ async function simulationView(req,res){
     res.render("simulator",{scenarioId:scenarioId})
 }
 
+/**
+ * Method that shows the solution's view.
+ * 
+ * @param {Object} req Request Object
+ * @param {Object} res Response Object
+ */
 async function solutionsView(req,res){
     const sessionData = req.session;
 
