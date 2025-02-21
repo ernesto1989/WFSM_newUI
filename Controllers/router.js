@@ -30,7 +30,7 @@ router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
 router.get(constants.contextURL+'/simulator/:scenarioId', templates.simulationView);
 router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
-
+/*API routes */
 router.post(constants.contextURL+'/login', templates.postLogin);
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/getScenarioTRL', scenariosApi.getScenarioTRL);

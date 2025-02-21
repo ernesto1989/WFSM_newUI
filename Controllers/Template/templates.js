@@ -131,10 +131,13 @@ async function homePage(req,res){
         }
     ]
 
-    if(sessionData.user.role_id == 1){
-        session[0].city = sessionData.user.city.name;
+    if(sessionData.user.role_id == 0){
+        // user is admin and should not have a city assigned
+        res.render('admin', {user_info:session[0]});
+        return;
     }
 
+    session[0].city = sessionData.user.city.name;
     let scenarios = await scenariosService.getScenarios();
     res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
@@ -156,10 +159,13 @@ async function nodesGrid(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            city: sessionData.user.city, 
             roll: sessionData.user.roll
         }
-    ]
+    ];
+
+    if(sessionData.user.role_id == 0){
+        session[0].city = sessionData.user.city.name;
+    }
 
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId);
@@ -183,10 +189,13 @@ async function flowsGrid(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            city: sessionData.user.city, 
             roll: sessionData.user.roll
         }
-    ]
+    ];
+
+    if(sessionData.user.role_id == 0){
+        session[0].city = sessionData.user.city.name;
+    }
 
     let scenarioId = req.params.scenarioId;
     let nodes = await nodesService.getNodes(scenarioId)
@@ -215,10 +224,13 @@ async function simulationView(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            city: sessionData.user.city, 
             roll: sessionData.user.roll
         }
-    ]
+    ];
+
+    if(sessionData.user.role_id == 0){
+        session[0].city = sessionData.user.city.name;
+    }
 
     let scenarioId = req.params.scenarioId;
     res.render("simulator",{scenarioId:scenarioId})
@@ -241,10 +253,13 @@ async function solutionsView(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            city: sessionData.user.city, 
             roll: sessionData.user.roll
         }
-    ]
+    ];
+
+    if(sessionData.user.role_id == 0){
+        session[0].city = sessionData.user.city.name;
+    }
 
     let scenarioId = req.params.scenarioId;
     res.render("solution",{scenarioId:scenarioId})

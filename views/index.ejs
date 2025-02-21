@@ -55,16 +55,15 @@
             toolbar.enable('delete');
             showScenario("ESC-BASE");
 
-            //here validate role
-            if('<%=user_info.role%>' === 'admin'){
-                //toolbar.enable('new');
-                alert("Admin and can edit");
-            }
-            if('<%=user_info.role%>' === 'user'){
-                //toolbar.disable('new');
-                alert("User and can't edit");
-                alert('Users city is: <%=user_info.city%>');
-            }
+            // if('<%=user_info.role%>' === 'admin'){
+            //     //toolbar.enable('new');
+            //     alert("Admin and can edit");
+            // }
+            // if('<%=user_info.role%>' === 'user'){
+            //     //toolbar.disable('new');
+            //     alert("User and can't edit");
+            //     alert('Users city is: <%=user_info.city%>');
+            // }
         });
 
         /*
