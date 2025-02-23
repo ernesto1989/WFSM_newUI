@@ -33,6 +33,10 @@
         import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         let types =[];
         let isEdit = false;
+        let role = '<%=user_info.role.name%>';
+        let city = '<%=user_info.city.city_id%>';
+        let city_name = '<%=user_info.city.name%>';
+        let scenarioId = '<%=scenarioId%>';
 
 
         $("document").ready(function(){
@@ -263,7 +267,6 @@
                   destiny: rec.destiny  
                 };
                 
-
                 w2confirm({
                     msg: 'Do you want to delete this flow?',
                     title: "DELETE flow",

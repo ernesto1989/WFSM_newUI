@@ -137,7 +137,7 @@ async function homePage(req,res){
         return;
     }
 
-    session[0].city = sessionData.user.city.name;
+    session[0].city = sessionData.user.city;
     let scenarios = await scenariosService.getScenarios();
     res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
@@ -159,17 +159,17 @@ async function nodesGrid(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            roll: sessionData.user.roll
+            role: sessionData.user.role
         }
     ];
 
-    if(sessionData.user.role_id == 0){
-        session[0].city = sessionData.user.city.name;
+    if(sessionData.user.role_id == 1){
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId);
-    res.render("nodes",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    res.render("nodes",{user_info:session[0],scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 /**
@@ -189,12 +189,12 @@ async function flowsGrid(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            roll: sessionData.user.roll
+            role: sessionData.user.role
         }
     ];
 
-    if(sessionData.user.role_id == 0){
-        session[0].city = sessionData.user.city.name;
+    if(sessionData.user.role_id == 1){
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;
@@ -204,7 +204,7 @@ async function flowsGrid(req,res){
     if(!nodes)
         nodes = [];
 
-    res.render("flows",{scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
+    res.render("flows",{user_info:session[0],scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 
 /**
@@ -224,12 +224,12 @@ async function simulationView(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            roll: sessionData.user.roll
+            role: sessionData.user.role
         }
     ];
 
-    if(sessionData.user.role_id == 0){
-        session[0].city = sessionData.user.city.name;
+    if(sessionData.user.role_id == 1){
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;
@@ -253,12 +253,12 @@ async function solutionsView(req,res){
         {
             username: sessionData.user.username,
             name: sessionData.user.name,
-            roll: sessionData.user.roll
+            role: sessionData.user.role
         }
     ];
 
-    if(sessionData.user.role_id == 0){
-        session[0].city = sessionData.user.city.name;
+    if(sessionData.user.role_id == 1){
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;

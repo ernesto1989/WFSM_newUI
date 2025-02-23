@@ -55,15 +55,6 @@
             toolbar.enable('delete');
             showScenario("ESC-BASE");
 
-            // if('<%=user_info.role%>' === 'admin'){
-            //     //toolbar.enable('new');
-            //     alert("Admin and can edit");
-            // }
-            // if('<%=user_info.role%>' === 'user'){
-            //     //toolbar.disable('new');
-            //     alert("User and can't edit");
-            //     alert('Users city is: <%=user_info.city%>');
-            // }
         });
 
         /*
@@ -310,7 +301,8 @@
                 { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', disabled: true },
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
-                    { type: 'button', id: 'pref', text: 'Preferences', icon: 'fa fa-circle-info' },
+                    { type: 'button', id: 'city', text: '<%=user_info.city.name%>', icon: 'fa fa-circle-info' },
+                    { type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
                     { type: 'button', id: 'sout', text: 'Sign Out', icon: 'fa fa-user-slash' }
                 ] 
             }],
@@ -330,6 +322,11 @@
                 }
                 if(selectedOp === 'user:pref'){
                     //preferences
+                    alert("Preferences");
+                }
+                if(selectedOp === 'user:city'){
+                    //preferences
+                    alert("My city is: <%=user_info.city.name%>");
                 }
                 if(selectedOp === 'user:sout'){
                     window.location.href = '/WF/logout';
