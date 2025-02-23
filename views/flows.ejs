@@ -38,7 +38,6 @@
         let city_name = '<%=user_info.city.name%>';
         let scenarioId = '<%=scenarioId%>';
 
-
         $("document").ready(function(){
             $.get("/WF/api/getFlows/<%=scenarioId%>", function(data, status){
                 let recs = data.records;
@@ -116,7 +115,7 @@
                     { field: 'new_origin', type: 'list',
                         html: { label: 'Origin',attr: 'style="width: 100%"' },
                         options: { items: [
-                            {id:'0',text:'Input to the System'}, 
+                            {id:'0',text:'IN'}, 
                             <% for(let i =0;i<nodes.length;i++){%>
                             {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
@@ -125,7 +124,7 @@
                     { field: 'new_destiny', type: 'list',
                         html: { label: 'Destiny',attr: 'style="width: 100%"' },
                         options: { items: [
-                            {id:'0',text:'Output of the System'},
+                            {id:'0',text:'OUT'},
                             <% for(let i =0;i<nodes.length;i++){%>
                             {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
@@ -260,6 +259,15 @@
                 event.preventDefault();
                 let selected = grid.getSelection();
                 let rec = grid.get(selected)[0];
+
+                /*
+                    According to the model, the IN node is 0 and the OUT node is 0
+                    so we need to change the values to match the model.
+                */
+                if(rec.origin_node === 'IN')
+                    rec.origin = 0;
+                if(rec.destiny_node === 'OUT')
+                    rec.destiny = 0;
 
                 let flow = {
                   scenario_id : '<%=scenarioId%>',
