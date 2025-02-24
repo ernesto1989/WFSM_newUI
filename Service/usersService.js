@@ -23,6 +23,7 @@ const initRoles = async () => {
 const initUsers = async () => {
     users["admin"] = { id: 0, username: 'admin', name:'Administrador', password: 'admin', role_id: 0 };
     users["demouser"] ={ id: 1, username: 'demouser', name:'Demo User', password: 'user', city_id: 0, role_id: 1 };
+    users["az_user"] ={ id: 1, username: 'az_user', name:'Arizona User', password: 'user', city_id: 1, role_id: 1 };
 }
 
 initcities();

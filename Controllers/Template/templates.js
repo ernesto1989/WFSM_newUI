@@ -138,8 +138,8 @@ async function homePage(req,res){
     }
 
     session[0].city = sessionData.user.city;
-    let scenarios = await scenariosService.getScenarios();
-    res.render('index', {user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
+    let scenarios = await scenariosService.getScenarios(sessionData.user.city.id);
+    res.render('index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
 /**
@@ -168,7 +168,7 @@ async function nodesGrid(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    let units = await scenariosService.getScenarioUnits(scenarioId);
+    let units = await scenariosService.getScenarioUnits(scenarioId,sessionData.user.city.id);
     res.render("nodes",{user_info:session[0],scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
@@ -198,8 +198,8 @@ async function flowsGrid(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    let nodes = await nodesService.getNodes(scenarioId)
-    let units = await scenariosService.getScenarioUnits(scenarioId);
+    let nodes = await nodesService.getNodes(scenarioId,sessionData.user.city.id)
+    let units = await scenariosService.getScenarioUnits(scenarioId,sessionData.user.city.id);
 
     if(!nodes)
         nodes = [];

@@ -24,8 +24,9 @@ async function getScenarioSolution(req,res){
         }
 
         const scenarioId = req.body.scenario_id;
-        const scenario = await scenarioService.getScenarioById(scenarioId)
-        const result = await service.getS02(scenarioId); 
+        const city_id = sessionData.user.city.id;
+        const scenario = await scenarioService.getScenarioById(scenarioId,city_id)
+        const result = await service.getS02(scenarioId,city_id); 
 
         res.status(200);
         res.json({
@@ -57,9 +58,9 @@ async function solve(req,res){
         }
         
         const scenarioId = req.body.scenario_id;
-
-        let nodes = await nodesService.getNodes(scenarioId);
-        let flows = await flowsService.getFlows(scenarioId);
+        const city_id = sessionData.user.city.id;
+        let nodes = await nodesService.getNodes(scenarioId,city_id);
+        let flows = await flowsService.getFlows(scenarioId,city_id,true);
 
         const solution = await axios({
             method: 'get',
@@ -71,11 +72,11 @@ async function solve(req,res){
             headers:{'Content-Type':'application/json'}
         });
 
-        let prev_result = await service.deletePreviousSolution(scenarioId);
-        let prev_result2 = await service.deleteS02(scenarioId);
+        let prev_result = await service.deletePreviousSolution(scenarioId,city_id);
+        let prev_result2 = await service.deleteS02(scenarioId,city_id);
         if(prev_result.status && prev_result2.status){
-            let result = await service.saveSolutionDetail(scenarioId,solution.data.raw_solution);
-            let result2 = await service.saveSolutionS02(scenarioId,solution.data.proposed_flows);
+            let result = await service.saveSolutionDetail(scenarioId,solution.data.raw_solution,city_id);
+            let result2 = await service.saveSolutionS02(scenarioId,solution.data.proposed_flows,city_id);
             if(result.status && result2.status){
                 res.status(200);
                 res.json({

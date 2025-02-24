@@ -22,8 +22,8 @@ async function getScenarioNodes(req,res){
         }
 
         const scenarioId = req.params.scenarioId;
-
-        const result = await nodesService.getNodes(scenarioId); 
+        const city_id = sessionData.user.city.id;
+        const result = await nodesService.getNodes(scenarioId,city_id); 
 
         res.status(200);
         res.json({
@@ -62,10 +62,11 @@ async function saveNode(req,res){
         }
 
         let node = req.body;
+        const city_id = sessionData.user.city.id;
         let result;
         if(!node.new_record){
             //update
-            result = await nodesService.updateNode(node);  
+            result = await nodesService.updateNode(node,city_id);  
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -74,7 +75,7 @@ async function saveNode(req,res){
             });          
         }else{
             //insert
-            result = nodesService.insertNode(node);
+            result = nodesService.insertNode(node,city_id);
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -104,7 +105,8 @@ async function deleteNode(req,res){
         }
         
         let node = req.body;
-        let result = nodesService.deleteNode(node);
+        const city_id = sessionData.user.city.id;
+        let result = nodesService.deleteNode(node,city_id);
        
         res.status(200);
         res.json({

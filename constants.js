@@ -14,8 +14,8 @@ const indexURL = '/';
 const contextURL = '/WF';
 const apiURL = '/api';
 
-//QUERYS
 
+const BASE_SCENARIO_ID = 'BASE_CONDITION';
 
 module.exports= {
     port,
@@ -26,5 +26,6 @@ module.exports= {
     dbName,
     indexURL,
     contextURL,
-    apiURL
+    apiURL,
+    BASE_SCENARIO_ID
 }

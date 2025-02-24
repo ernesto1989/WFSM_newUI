@@ -20,8 +20,8 @@ async function getScenarioFlows(req,res){
         }
 
         const scenarioId = req.params.scenarioId;
-
-        const result = await flowsService.getFlows(scenarioId); 
+        const city_id = sessionData.user.city.id;
+        const result = await flowsService.getFlows(scenarioId,city_id); 
 
         res.status(200);
         res.json({
@@ -51,10 +51,11 @@ async function saveFlow(req,res){
         }
 
         let flow = req.body;
+        const city_id = sessionData.user.city.id;
         let result;
         if(flow.new_record === 'false'){
             //update
-            result = await flowsService.updateFlow(flow);  
+            result = await flowsService.updateFlow(flow,city_id);  
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -63,7 +64,7 @@ async function saveFlow(req,res){
             });          
         }else{
             //insert
-            result = await flowsService.insertFlow(flow);
+            result = await flowsService.insertFlow(flow,city_id);
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -91,9 +92,9 @@ async function deleteFlow(req,res){
             });
             return;
         }
-        
+        const city_id = sessionData.user.city.id;
         let flow = req.body;
-        let result = await flowsService.deleteFlow(flow);
+        let result = await flowsService.deleteFlow(flow,city_id);
        
         res.status(200);
         res.json({
