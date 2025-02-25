@@ -163,7 +163,7 @@ async function nodesGrid(req,res){
         }
     ];
 
-    if(sessionData.user.role_id == 1){
+    if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }
 
@@ -193,7 +193,7 @@ async function flowsGrid(req,res){
         }
     ];
 
-    if(sessionData.user.role_id == 1){
+    if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }
 
@@ -228,7 +228,7 @@ async function simulationView(req,res){
         }
     ];
 
-    if(sessionData.user.role_id == 1){
+    if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }
 
@@ -257,7 +257,7 @@ async function solutionsView(req,res){
         }
     ];
 
-    if(sessionData.user.role_id == 1){
+    if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }
 

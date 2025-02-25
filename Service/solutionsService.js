@@ -14,16 +14,16 @@ const getS02Query =
         coalesce(fmax,0) as fmax,
         coalesce(fmin,0) as fmin,
         coalesce(pflow,0) as pflow 
-    FROM s02_proposed_flowsC s02 
-    left join a01_nodesC a01o on a01o.scenario_id = s02.scenario_id and a01o.id = s02.origin and a01o.city_id = s02.city_id 
-    left join a01_nodesC a01d on a01d.scenario_id = s02.scenario_id and a01d.id = s02.destiny and a01d.city_id = s02.city_id 
+    FROM s02_proposed_flows s02 
+    left join a01_nodes a01o on a01o.scenario_id = s02.scenario_id and a01o.id = s02.origin and a01o.city_id = s02.city_id 
+    left join a01_nodes a01d on a01d.scenario_id = s02.scenario_id and a01d.id = s02.destiny and a01d.city_id = s02.city_id 
     WHERE s02.scenario_id = ? and s02.city_id = ?
 `;
 
-const solutionDetailDelete = "DELETE FROM s01_solution_detailC where scenario_id = ? and city_id = ?";
-const s02DetailDelete = "DELETE FROM s02_proposed_flowsC where scenario_id = ? and city_id = ?";
-const solutionDetailInsert = "INSERT INTO s01_solution_detailC(scenario_id, city_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?";
-const solutionPFInsert = "INSERT INTO s02_proposed_flowsC(scenario_id, city_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow) VALUES ?";
+const solutionDetailDelete = "DELETE FROM s01_solution_detail where scenario_id = ? and city_id = ?";
+const s02DetailDelete = "DELETE FROM s02_proposed_flows where scenario_id = ? and city_id = ?";
+const solutionDetailInsert = "INSERT INTO s01_solution_detail(scenario_id, city_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?";
+const solutionPFInsert = "INSERT INTO s02_proposed_flows(scenario_id, city_id, origin, destiny, current_flow, `type`, fmax, fmin, pflow) VALUES ?";
 
 
 /**
@@ -76,7 +76,7 @@ async function saveSolutionDetail(scenarioId,sol,city_id){
 
         for(i=0;i<sol.length;i++){
             let obj = JSON.parse(sol[i]);
-            //INSERT INTO s01_solution_detailC(scenario_id, city_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?
+            //INSERT INTO s01_solution_detail(scenario_id, city_id, `No`, E, S, a, b, `R+`, `R-`, NMin, NMax, NActual, T) VALUES ?
             element = [scenarioId, city_id, obj.no,obj.e, obj.s, obj.a, obj.b, obj.r, obj._r, obj.nmin, obj.nmax, obj.nactual, obj.t ]
             elements.push(element)
         }

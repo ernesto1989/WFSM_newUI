@@ -10,14 +10,14 @@ const getScenariosQuery =
         z01.capacity_units,
         z01.time_units,
         z01a.origin_id as parent_id,
-        (select count(*) from a01_nodesC a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as nodes,
-        (select count(*) from a02_flowsC a02 where a02.scenario_id = z01.scenario_id and a02.city_id = z01.city_id) as flows,
+        (select count(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as nodes,
+        (select count(*) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.city_id = z01.city_id) as flows,
         COALESCE(
             (SELECT CASE WHEN sol >= 1 then 'Solved' WHEN sol = 0 then 'Unsolved' END AS Solved FROM 
-                (SELECT count(*) as sol FROM s02_proposed_flowsC sd WHERE sd.scenario_id = z01.scenario_id and sd.city_id = z01.city_id GROUP BY sd.scenario_id) AS sdetail
+                (SELECT count(*) as sol FROM s02_proposed_flows sd WHERE sd.scenario_id = z01.scenario_id and sd.city_id = z01.city_id GROUP BY sd.scenario_id) AS sdetail
             ),'Unsolved') AS Status 
-    FROM z01_scenariosC z01 
-    left join z01_scenariosC z01a on z01a.scenario_id = z01.origin_id and z01a.city_id  = z01.city_id
+    FROM z01_scenarios z01 
+    left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.city_id  = z01.city_id
     where z01.city_id = ?
 `;
 
@@ -30,20 +30,20 @@ const getScenarioByIdQuery =
         z01.capacity_units,
         z01.time_units,
         z01a.scenario_id as origin_id,
-        (select count(*) from a01_nodesC a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as nodes,
-        (select count(*) from a02_flowsC a02 where a02.scenario_id = z01.scenario_id and a02.city_id = z01.city_id) as flows, 
+        (select count(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as nodes,
+        (select count(*) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.city_id = z01.city_id) as flows, 
         z01.recalc_trl, 
         z01.recalc_solution, 
         COALESCE(
             (SELECT CASE WHEN sim >= 1 then 'Simulated' WHEN sim = 0 then 'Uncomputed' END AS simulated 
-            FROM (SELECT count(*) as sim FROM a03_time_to_reach_limitC a03 WHERE a03.scenario_id = z01.scenario_id and a03.city_id = z01.city_id GROUP BY a03.scenario_id) AS psol),
+            FROM (SELECT count(*) as sim FROM a03_time_to_reach_limit a03 WHERE a03.scenario_id = z01.scenario_id and a03.city_id = z01.city_id GROUP BY a03.scenario_id) AS psol),
             'Uncomputed') AS Proposed_Solution,
         COALESCE(
             (SELECT CASE WHEN sol >= 1 then 'Solved' WHEN sol = 0 then 'Unsolved' END AS Solved 
-            FROM (SELECT count(*) as sol FROM s02_proposed_flowsC sd WHERE sd.scenario_id = z01.scenario_id and sd.city_id = z01.city_id GROUP BY sd.scenario_id) AS sdetail),
+            FROM (SELECT count(*) as sol FROM s02_proposed_flows sd WHERE sd.scenario_id = z01.scenario_id and sd.city_id = z01.city_id GROUP BY sd.scenario_id) AS sdetail),
             'Unsolved') AS Optimal_Solution 
-    FROM z01_scenariosC z01 
-    left join z01_scenariosC z01a on z01a.scenario_id = z01.origin_id and z01a.city_id = z01.city_id
+    FROM z01_scenarios z01 
+    left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.city_id = z01.city_id
     where z01.scenario_id = ? and z01.city_id = ?
 `;
 
@@ -59,16 +59,16 @@ const getScenarioTRLQuery =
             WHEN a03.time_to_reach_limit = -1 THEN 'Stable' 
             ELSE a03.time_to_reach_limit 
         END as time_to_reach_limit 
-    FROM a03_time_to_reach_limitC a03 
-    LEFT JOIN a01_nodesC a01 ON a01.scenario_id = a03.scenario_id AND a01.id = a03.node_id AND a01.city_id = a03.city_id 
+    FROM a03_time_to_reach_limit a03 
+    LEFT JOIN a01_nodes a01 ON a01.scenario_id = a03.scenario_id AND a01.id = a03.node_id AND a01.city_id = a03.city_id 
     WHERE a03.scenario_id = ? AND a03.city_id = ?
 `;
 
-const insertNewScenario = "INSERT into z01_scenariosC(scenario_id, city_id, description, `type`, capacity_units, time_units, origin_id) VALUES (?,?,?,?,?,?,?)";
-const insertCalcA03 = "INSERT INTO a03_time_to_reach_limitC(scenario_id,city_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit) VALUES ?";
+const insertNewScenario = "INSERT into z01_scenarios(scenario_id, city_id, description, `type`, capacity_units, time_units, origin_id) VALUES (?,?,?,?,?,?,?)";
+const insertCalcA03 = "INSERT INTO a03_time_to_reach_limit(scenario_id,city_id, node_id, max_vol, min_vol, current_vol, incoming_flow, outcoming_flow, time_to_reach_limit) VALUES ?";
 const deleteScenarioQuery = "call delete_scenario(?,?)"; 
-const deleteA03Query = "delete from a03_time_to_reach_limitC where scenario_id = ? and city_id = ?";
-const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenariosC z01 where scenario_id = ? and city_id = ?";
+const deleteA03Query = "delete from a03_time_to_reach_limit where scenario_id = ? and city_id = ?";
+const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenarios z01 where scenario_id = ? and city_id = ?";
 
 
 /**

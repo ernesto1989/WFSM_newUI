@@ -42,4 +42,4 @@ async function isValidUser(username, password) {
 }
 
 
-module.exports = {cities, roles, users,isValidUser};
+module.exports = {isValidUser};

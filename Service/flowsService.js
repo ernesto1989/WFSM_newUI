@@ -11,12 +11,12 @@ const getFlowsQuery =
         ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id, 
         a02.scenario_id, 
         case 
-            when a02.origin = 0 then (select count(*) + 1 from a01_nodesC a01 where a01.scenario_id = a02.scenario_id and a01.city_id = a02.city_id) 
+            when a02.origin = 0 then (select count(*) + 1 from a01_nodes a01 where a01.scenario_id = a02.scenario_id and a01.city_id = a02.city_id) 
             else a02.origin 
         end  as origin, 
         coalesce(a01o.node_id,'IN') as origin_node, 
         case 
-            when a02.destiny = 0 then (select count(*) + 1 from a01_nodesC a01 where a01.scenario_id = a02.scenario_id and a01.city_id = a02.city_id) 
+            when a02.destiny = 0 then (select count(*) + 1 from a01_nodes a01 where a01.scenario_id = a02.scenario_id and a01.city_id = a02.city_id) 
             else a02.destiny 
         end as destiny, 
         coalesce(a01d.node_id,'OUT') as destiny_node, 
@@ -26,9 +26,9 @@ const getFlowsQuery =
         x01.model_name as model_type,
         coalesce(fmax,0) as fmax,
         coalesce(fmin,0) as fmin 
-    FROM a02_flowsC a02 
-    left join a01_nodesC a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin and a01o.id = a02.origin and a01o.city_id = a02.city_id
-    left join a01_nodesC a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny and a01d.id = a02.destiny and a01d.city_id = a02.city_id 
+    FROM a02_flows a02 
+    left join a01_nodes a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin and a01o.id = a02.origin and a01o.city_id = a02.city_id
+    left join a01_nodes a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny and a01d.id = a02.destiny and a01d.city_id = a02.city_id 
     left join x01_flow_types x01 on x01.id = a02.type_id 
     WHERE a02.scenario_id = ? and a02.city_id = ?
 `;
@@ -48,16 +48,16 @@ const getFlowsQuery2 =
         x01.model_name as model_type,
         coalesce(fmax,0) as fmax,
         coalesce(fmin,0) as fmin 
-    FROM a02_flowsC a02 
-    left join a01_nodesC a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin and a01o.id = a02.origin and a01o.city_id = a02.city_id
-    left join a01_nodesC a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny and a01d.id = a02.destiny and a01d.city_id = a02.city_id 
+    FROM a02_flows a02 
+    left join a01_nodes a01o on a01o.scenario_id = a02.scenario_id and a01o.id = a02.origin and a01o.id = a02.origin and a01o.city_id = a02.city_id
+    left join a01_nodes a01d on a01d.scenario_id = a02.scenario_id and a01d.id = a02.destiny and a01d.id = a02.destiny and a01d.city_id = a02.city_id 
     left join x01_flow_types x01 on x01.id = a02.type_id 
     WHERE a02.scenario_id = ? and a02.city_id = ?
 `;
 
-const selectInsertA02 = "INSERT INTO a02_flowsC(scenario_id,city_id, origin, destiny, current_flow, type_id, fmax, fmin) SELECT ?, city_id, origin, destiny, COALESCE(current_flow,0), type_id, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flowsC a02 WHERE a02.scenario_id = ? and a02.city_id = ?";
-const insertFlowQuery = "Insert into a02_flowsC(scenario_id, city_id,origin, destiny, current_flow,type_id,fmax,fmin) Values (?,?,?,?,?,?,?,?)";
-const updateFlowQuery = "Update a02_flowsC set current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ? and city_id = ?";
+const selectInsertA02 = "INSERT INTO a02_flows(scenario_id,city_id, origin, destiny, current_flow, type_id, fmax, fmin) SELECT ?, city_id, origin, destiny, COALESCE(current_flow,0), type_id, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flows a02 WHERE a02.scenario_id = ? and a02.city_id = ?";
+const insertFlowQuery = "Insert into a02_flows(scenario_id, city_id,origin, destiny, current_flow,type_id,fmax,fmin) Values (?,?,?,?,?,?,?,?)";
+const updateFlowQuery = "Update a02_flows set current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ? and city_id = ?";
 const deleteFlowQuery = "Delete from a02_flows where scenario_id = ? and origin = ? and destiny = ? and city_id = ?";
 
 
