@@ -1,41 +1,44 @@
 /**
  * This file contains the service for the users.
  * 
- * currently, as it has no database, it only validates the user
- * and password against a hardcoded value.
+ * PENDING: Password Encription!
+ * Already consuming from database.
  * 
- * also manages roles and cities.
+ * Requrie more testing
+ * 
+ * 02/24/2025
  */
+const dataSource = require('../Datasource/MySQLMngr');
 
-const cities = [];
-const roles = [];
-const users = [];
-
-async function initcities() {
-    cities[0] = { id: 0, name: 'demo city' };
-    cities[1] = { id: 1, name: 'Az' };
-}
-
-const initRoles = async () => {
-    roles[0] = { id: 0, name: 'admin' };
-    roles[1] = { id: 1, name: 'user' };
-}
-const initUsers = async () => {
-    users["admin"] = { id: 0, username: 'admin', name:'Administrador', password: 'admin', role_id: 0 };
-    users["demouser"] ={ id: 1, username: 'demouser', name:'Demo User', password: 'user', city_id: 0, role_id: 1 };
-    users["az_user"] ={ id: 1, username: 'az_user', name:'Arizona User', password: 'user', city_id: 1, role_id: 1 };
-}
-
-initcities();
-initRoles();
-initUsers();
+const user_query = 
+`   SELECT 
+        u03.username,
+        u03.name,
+        u03.password ,
+        u03.role_id, 
+        u02.name as role_name,
+        u03.city_id,
+        u01.name as city_name
+    from u03_users u03 
+    join u02_roles u02 on u02.id = u03.role_id
+    left join u01_cities u01 on u01.id = u03.city_id 
+    where u03.username = ? and password = ?
+`;
 
 async function isValidUser(username, password) {
-    let user = users[username];
-    if (user && user.password === password) {
-        return user;
+    try{
+        let query = user_query
+        let params = [username,password];
+        qResult = await dataSource.getDataWithParams(query,params);
+        return qResult.rows[0];
+        // if (user && user.password === password) {
+        //     return user;
+        // }
+    }catch(err){
+        return null;
     }
-    return null;
+    
+    
 }
 
 

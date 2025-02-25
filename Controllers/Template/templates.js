@@ -80,9 +80,9 @@ async function postLogin(req,res){
     if (user) {
         req.session.isLoggedIn = true;
 
-        user.role = userServices.roles[user.role_id];
-        if(user.role_id == 1){
-            user.city = userServices.cities[user.city_id];
+        user.role = { id: user.role_id, name: user.role_name };
+        if(user.role_id == 2){
+            user.city = { id: user.city_id, name: user.city_name };
         }
 
         req.session.user = user;
