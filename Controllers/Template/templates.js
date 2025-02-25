@@ -15,6 +15,7 @@ const scenariosService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
 const catalogsService = require("../../Service/catalogsService")
 const userServices = require("../../Service/usersService")
+const citiesServices = require("../../Service/citiesService")
 
 //Scenario Types. Must be checked.
 const scenario_type = [
@@ -131,9 +132,10 @@ async function homePage(req,res){
         }
     ]
 
-    if(sessionData.user.role_id == 0){
+    if(sessionData.user.role_id == 1){
         // user is admin and should not have a city assigned
-        res.render('admin', {user_info:session[0]});
+        let cities = await citiesServices.getCities();
+        res.render('admin', {user_info:session[0], cities_list:cities,base_scenario:constants.BASE_SCENARIO_ID});
         return;
     }
 
@@ -165,11 +167,18 @@ async function nodesGrid(req,res){
 
     if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
+    }else{
+        let cityId = req.params.cityId;
+        let city = await citiesServices.getCityById(cityId);
+        sessionData.user.city = city[0];
+        sessionData.user.city_id = city[0].id;
+        sessionData.user.city_name = city[0].name;
+        session[0].city = city[0];
     }
 
     let scenarioId = req.params.scenarioId;
-    let units = await scenariosService.getScenarioUnits(scenarioId,sessionData.user.city.id);
-    res.render("nodes",{user_info:session[0],scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    let units = await scenariosService.getScenarioUnits(scenarioId,session[0].city.id);
+    res.render("nodes",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
 }
 
 /**
@@ -195,16 +204,23 @@ async function flowsGrid(req,res){
 
     if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
+    }else{
+        let cityId = req.params.cityId;
+        let city = await citiesServices.getCityById(cityId);
+        sessionData.user.city = city[0];
+        sessionData.user.city_id = city[0].id;
+        sessionData.user.city_name = city[0].name;
+        session[0].city = city[0];
     }
 
     let scenarioId = req.params.scenarioId;
-    let nodes = await nodesService.getNodes(scenarioId,sessionData.user.city.id)
-    let units = await scenariosService.getScenarioUnits(scenarioId,sessionData.user.city.id);
+    let nodes = await nodesService.getNodes(scenarioId,session[0].city.id)
+    let units = await scenariosService.getScenarioUnits(scenarioId,session[0].city.id);
 
     if(!nodes)
         nodes = [];
 
-    res.render("flows",{user_info:session[0],scenarioId:scenarioId, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
+    res.render("flows",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
 }
 
 /**

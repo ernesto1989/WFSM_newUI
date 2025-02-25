@@ -2,20 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin</title>
+    <title>ADMIN - WF Scenario Manager</title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="/w2ui.js" type="module"></script>
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #contenido {
+            margin:auto;
+            width: 98%;
+            height: 98%;
+            padding: 2px;
+        }
+
+        
+    </style>
+    <script type="module">
+        
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+
+        let scenarios = new Map;
+        $("document").ready(function(){
+            let scenario;
+            
+        });
+
+        let toolbar = new w2toolbar({
+            box: '#toolbar',
+            name: 'toolbar',
+            items: [
+                { type: 'button', id: 'home', text: 'Water Flow Scenario Management', icon: 'fa fa-house' },
+                { type: 'break' },
+                { type: 'button', id: 'new', text: 'Create', icon: 'fa fa-pencil' },
+                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', disabled: true },
+                { type: 'spacer' },
+                //{ type: 'menu', id: 'user', text: '< %= user_info.username %>', icon: 'fa fa-user', items:[
+                { type: 'menu', id: 'user', text: 'Admin', icon: 'fa fa-user', items:[
+                    { type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
+                    { type: 'button', id: 'sout', text: 'Sign Out', icon: 'fa fa-user-slash' }
+                ] 
+            }],
+            onClick(event) {
+                
+                let selectedOp = event.target;
+                
+                if(selectedOp === 'home'){
+                    window.location.reload();
+                }
+                if(selectedOp === 'new'){
+                    openNewScenarioPopup();
+                }
+                if(selectedOp === 'delete'){
+                    //deleting selected scenario.
+                    deleteScenario();
+                }
+                if(selectedOp === 'user:pref'){
+                    //preferences
+                    alert("Preferences");
+                }
+                if(selectedOp === 'user:sout'){
+                    window.location.href = '/WF/logout';
+                }
+            }
+        });
+        
+        let sidebar = new w2sidebar({
+            box: '#sidebar',
+            name: 'sidebar',
+            style:'height:100%;',
+            nodes: [
+                <%for(i = 0; i<cities_list.length;i++){%>
+                { 
+                    id: '<%=cities_list[i].id%>', text: '<%=cities_list[i].name%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
+                },
+                <%}%>
+                
+            ],
+            onClick:function(evt){
+                let id = evt.target;
+                
+                toolbar.enable('delete')
+            }
+        });
+
+
+        let form = new w2form({
+            box: '#scenario_details',
+            name: 'scenario_details',
+            header:"Scenario Details",
+            fields: [
+                { field: 'scenario_id', type: 'text', required: true, editable:false, 
+                    html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'origin_id', type: 'text', required: true, 
+                    html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'cdate', type: 'text', required: true, 
+                    html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+                { field: 'type', type: 'text', required: true, 
+                    html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+
+                { field: 'description', type: 'textarea', 
+                    html: { label: 'About this', attr: 'style="width: 100%; height: 60px" readonly' }
+                }
+            ]
+        });
+
+    </script>
 </head>
 <body>
-    Admin Dashboard
-
-    Todo list:
-    <ol>
-        <li>Cities</li>
-        <li>Nodes per city</li>
-        <li>Flows per city</li>
-        <li>Users</li>
-        <li><a href="/WF/logout">Logout</a></li>
-    </ol>
-
+    <div class="container-fluid">
+        <div class="row" style="height:7%;">
+            <div id="toolbar">
+            </div>
+        </div>
+        <div class="row" id="contenido">
+            <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
+            </div>
+            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
+                <div class="row" style="height: 47.5%;">
+                    <div class="col-sm-12 col-md-12" id="scenario_details" style="width:100%;height: 100%;">
+                    </div>
+                </div>
+                <div class="row" style="height: 47.5%;">
+                    <div id="scenario_map" style="width:100%;height: 100%;">
+                        <h1>Scenario Map</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

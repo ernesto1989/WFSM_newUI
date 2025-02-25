@@ -1,6 +1,6 @@
 const dataSource = require('../Datasource/MySQLMngr');
 
-//added id 2 toimes in order to use it on W2UI and Python Web Service
+//added id 2 times in order to use it on W2UI and Python Web Service
 const getNodesQuery = "select id as recid,id,scenario_id,node_id,description,max_capacity,min_capacity,current_vol from a01_nodes where scenario_id = ? and city_id = ?";
 const selectInsertA01 = "INSERT INTO a01_nodes(scenario_id,id, city_id ,node_id, description, max_capacity, min_capacity, current_vol) SELECT ?, a01.id as id, a01.city_id as city,a01.node_id as node_id,a01.description,a01.max_capacity,a01.min_capacity,a01.current_vol FROM a01_nodes a01 WHERE a01.scenario_id = ? and city_id = ?";
 const insertNodeQuery = "Insert into a01_nodes(scenario_id,id, city_id, node_id, description, max_capacity, min_capacity, current_vol) Values (?,?,?,?,?,?,?,?)";

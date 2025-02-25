@@ -200,13 +200,15 @@
         let grid = new w2grid({
             name: 'grid',
             box: '#content-grid',
-            header  : 'Nodes - <%=scenarioId%> - Volume in: <%=capacity_units%>',
+            header  : '<%=user_info.city.name%> Nodes - <%=scenarioId%> - Volume in: <%=capacity_units%>',
             show: {
                 header:true,
                 toolbar: true,
+                <% if((user_info.role.name === 'admin' && scenarioId === base_scenario) || (user_info.role.name === 'user' && scenarioId !== base_scenario)){ %>
                 toolbarAdd: true,
                 toolbarEdit: true,
                 toolbarDelete: true
+                <%}%>
             },
             multiSearch: true,
             searches: [

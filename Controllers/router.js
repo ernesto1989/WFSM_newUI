@@ -26,7 +26,9 @@ router.get(constants.contextURL+'/login', templates.getLogin);
 router.get(constants.contextURL+'/logout', templates.logout);
 router.get(constants.contextURL, templates.homePage);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
+router.get(constants.contextURL+'/nodes/:scenarioId/:cityId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
+router.get(constants.contextURL+'/flows/:scenarioId/:cityId', templates.flowsGrid);
 router.get(constants.contextURL+'/simulator/:scenarioId', templates.simulationView);
 router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
