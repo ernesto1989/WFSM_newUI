@@ -1,4 +1,5 @@
 #SYS SIMULATION
+
 SELECT 
 	Q01.SCENARIO,
 	Q01.DTE,
@@ -22,25 +23,26 @@ SELECT
 	END AS SYS_STATE
 FROM (
 	SELECT 
-		z01.scenario_id as SCENARIO,
+		CONCAT(z01.scenario_id,(SELECT CONCAT('_',u01.name) from u01_cities u01 where u01.id = z01.city_id) ) as SCENARIO,
 		z01.cdate as DTE,
 		z01.capacity_units as CU,
 		z01.time_units as TU,
-		( select COUNT(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id) as NODES,
-		( select sum(a01.min_capacity) from a01_nodes a01 where a01.scenario_id = z01.scenario_id) as TOTAL_MIN_VOL,
-		( select sum(a01.current_vol) from a01_nodes a01 where a01.scenario_id = z01.scenario_id) as TOTAL_CURRENT_VOL,
-		( select sum(a01.max_capacity) from a01_nodes a01 where a01.scenario_id = z01.scenario_id) as TOTAL_MAX_VOL,
-		( select count(*) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id ) as SIMULATED, 
-		( SELECT sum(a02.current_flow) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.origin = 0) as INCOMING_FLOW,
-		( SELECT sum(a02.current_flow) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.destiny = 0) as OUTCOMING_FLOW,
-		( select min(a03.time_to_reach_limit) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id and a03.time_to_reach_limit>=0) as TRL,
-		( select min(a03.time_to_reach_limit) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id) as STABLE_TRL
+		( select COUNT(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as NODES,
+		( select sum(a01.min_capacity) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as TOTAL_MIN_VOL,
+		( select sum(a01.current_vol) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as TOTAL_CURRENT_VOL,
+		( select sum(a01.max_capacity) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.city_id = z01.city_id) as TOTAL_MAX_VOL,
+		( select count(*) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id and a03.city_id = z01.city_id) as SIMULATED, 
+		( SELECT sum(a02.current_flow) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.origin = 0 and a02.city_id = z01.city_id) as INCOMING_FLOW,
+		( SELECT sum(a02.current_flow) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.destiny = 0 and a02.city_id = z01.city_id) as OUTCOMING_FLOW,
+		( select min(a03.time_to_reach_limit) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id and a03.time_to_reach_limit>=0 and a03.city_id = z01.city_id) as TRL,
+		( select min(a03.time_to_reach_limit) from a03_time_to_reach_limit a03 where a03.scenario_id = z01.scenario_id and a03.city_id = z01.city_id) as STABLE_TRL
 	FROM z01_scenarios z01 
 )Q01;
 
 
 
 #DETAILS PER NODE
+
 SELECT 
 	Q01.SCENARIO,
 	Q01.NODE,
@@ -61,7 +63,7 @@ SELECT
 	END AS NODE_TRL
 FROM (
 	SELECT 
-		a03.scenario_id as SCENARIO,
+		CONCAT(z01.scenario_id,(SELECT CONCAT('_',u01.name) from u01_cities u01 where u01.id = z01.city_id)) as SCENARIO,
 		z01.capacity_units as CU,
 		z01.time_units as TU,
 		a01.node_id as NODE,
@@ -72,8 +74,8 @@ FROM (
 		a03.outcoming_flow as NODE_OUTPUT,
 		a03.time_to_reach_limit as NODE_TRL
 	FROM a03_time_to_reach_limit a03 
-	JOIN a01_nodes a01 on a01.scenario_id = a03.scenario_id and a01.id = a03.node_id 
-	JOIN z01_scenarios z01 on z01.scenario_id = a03.scenario_id
+	JOIN a01_nodes a01 on a01.scenario_id = a03.scenario_id and a01.id = a03.node_id and a01.city_id = a03.city_id
+	JOIN z01_scenarios z01 on z01.scenario_id = a03.scenario_id and z01.city_id = a03.city_id
 ) Q01;
 
 
