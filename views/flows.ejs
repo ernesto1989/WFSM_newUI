@@ -38,6 +38,8 @@
         let city_name = '<%=user_info.city.name%>';
         let scenarioId = '<%=scenarioId%>';
 
+        let maxNodeId = <%=nodes[nodes.length - 1].id%>; // getting the max node id currently
+
         $("document").ready(function(){
             $.get("/WF/api/getFlows/<%=scenarioId%>", function(data, status){
                 let recs = data.records;
@@ -69,6 +71,12 @@
         function getSelectedRecord(){
             let selected = grid.getSelection();
             let rec = grid.get(selected)[0];
+
+            if(rec.origin === 0)
+                rec.origin = maxNodeId + 1; // in order to show it on the screen
+
+            if(rec.destiny === 0)
+                rec.destiny = maxNodeId + 1; // in order to show it on the screen
 
             let record = {
                 origin: {id:rec.origin,text:rec.origin_node},
@@ -123,18 +131,18 @@
                     { field: 'new_origin', type: 'list',
                         html: { label: 'Origin',attr: 'style="width: 100%"' },
                         options: { items: [
-                            {id:'0',text:'IN'}, 
+                            {id:(maxNodeId + 1),text:'IN'}, 
                             <% for(let i =0;i<nodes.length;i++){%>
-                            {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
+                            {id:<%=nodes[i].id%>,text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
                         ]},
                     },
                     { field: 'new_destiny', type: 'list',
                         html: { label: 'Destiny',attr: 'style="width: 100%"' },
                         options: { items: [
-                            {id:'0',text:'OUT'},
+                            {id:(maxNodeId + 1),text:'OUT'},
                             <% for(let i =0;i<nodes.length;i++){%>
-                            {id:'<%=nodes[i].id%>',text:'<%=nodes[i].node_id%>'}, 
+                            {id:<%=nodes[i].id%>,text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
                         ]},
                     },
@@ -150,12 +158,12 @@
                 ],
                 onChange:function(event){
                     let modifiedField = event.target;
+                    let selectedType = flowsForm.record.new_type;
 
                     if(modifiedField === 'new_type'){
-                        let selectedType = flowsForm.record.new_type;
                         
                         if(selectedType.id === 1){
-                            w2ui.flowsForm.record.new_origin = {id:<%=nodes.length + 1%>,text:"IN"};
+                            w2ui.flowsForm.record.new_origin = {id:(maxNodeId + 1),text:"IN"};
                             w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
                             w2ui.flowsForm.refresh();
                         }
@@ -164,6 +172,21 @@
                             w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
                             w2ui.flowsForm.record.new_destiny = {id:<%=nodes[1].id%>,text:"<%=nodes[1].node_id%>"};
                             w2ui.flowsForm.refresh();
+                        }
+                    }
+
+                    /*
+                        On this part of the code, I'm trying to prevent de user to select and Input and Output out of the system
+                    */
+                    if(modifiedField === 'new_origin'){
+                        if(selectedType.id === 1 && w2ui.flowsForm.record.new_origin.text === 'IN' ){
+                            w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].text%>"};
+                        }
+                    }
+
+                    if(modifiedField === 'new_destiny'){
+                        if(selectedType.id === 1 && w2ui.flowsForm.record.new_destiny.text === 'OUT' ){
+                            w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].text%>"};
                         }
                     }
                 },
@@ -188,6 +211,17 @@
 
                         if(flowsForm.record.new_type.id > 1 && curr_vol > curr_max){
                             w2alert("Current Flow cant be bigger than Max Flow.");
+                            return;
+                        }
+
+                        if(flowsForm.record.new_origin.text === 'IN')
+                            flowsForm.record.new_origin.id = 0;
+
+                        if(flowsForm.record.new_destiny.text === 'OUT')
+                            flowsForm.record.new_destiny.id = 0;
+
+                        if(flowsForm.record.new_type.id === 1 && flowsForm.record.new_origin.id === 0 && flowsForm.record.new_destiny.id === 0){
+                            w2alert("Invalid Origin and Destiny");
                             return;
                         }
 

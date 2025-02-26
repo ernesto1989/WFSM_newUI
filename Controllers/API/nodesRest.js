@@ -1,5 +1,5 @@
 const nodesService = require("../../Service/nodesService")
-
+const flowsService = require("../../Service/flowsService")
 
 
 /**
@@ -75,7 +75,7 @@ async function saveNode(req,res){
             });          
         }else{
             //insert
-            result = nodesService.insertNode(node,city_id);
+            result = await nodesService.insertNode(node,city_id);
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -106,7 +106,9 @@ async function deleteNode(req,res){
         
         let node = req.body;
         const city_id = sessionData.user.city.id;
-        let result = nodesService.deleteNode(node,city_id);
+        let result = await nodesService.deleteNode(node,city_id);
+        await flowsService.deleteFlowsByNodeIn(node,city_id);
+        await flowsService.deleteFlowsByNodeOut(node,city_id);
        
         res.status(200);
         res.json({

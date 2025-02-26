@@ -110,7 +110,7 @@ async function saveScenario(req,res){
             let result3 = await flowsService.copyA02(scenario,city_id);
 
             let nodes = await nodesService.getNodes(scenario.scenario_id,city_id);
-            let flows = await flowsService.getFlows(scenario.scenario_id,city_id,true);
+            let flows = await flowsService.getFlows(scenario.scenario_id,city_id);
 
             const timeToLimit = await axios({
                 method: 'get',
@@ -159,7 +159,7 @@ async function recalcTRL(req,res){
         const scenario = req.body;
         const city_id = sessionData.user.city.id;
         let nodes = await nodesService.getNodes(scenario.scenario_id,city_id);
-        let flows = await flowsService.getFlows(scenario.scenario_id,city_id,true);
+        let flows = await flowsService.getFlows(scenario.scenario_id,city_id);
 
         const timeToLimit = await axios({
             method: 'get',

@@ -168,12 +168,14 @@ async function nodesGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }else{
-        let cityId = req.params.cityId;
-        let city = await citiesServices.getCityById(cityId);
-        sessionData.user.city = city[0];
-        sessionData.user.city_id = city[0].id;
-        sessionData.user.city_name = city[0].name;
-        session[0].city = city[0];
+        if(!sessionData.user.city){
+            let cityId = req.params.cityId;
+            let city = await citiesServices.getCityById(cityId);
+            sessionData.user.city = city[0];
+            sessionData.user.city_id = city[0].id;
+            sessionData.user.city_name = city[0].name;
+        }
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;
@@ -205,12 +207,14 @@ async function flowsGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].city = sessionData.user.city;
     }else{
-        let cityId = req.params.cityId;
-        let city = await citiesServices.getCityById(cityId);
-        sessionData.user.city = city[0];
-        sessionData.user.city_id = city[0].id;
-        sessionData.user.city_name = city[0].name;
-        session[0].city = city[0];
+        if(!sessionData.user.city){
+            let cityId = req.params.cityId;
+            let city = await citiesServices.getCityById(cityId);
+            sessionData.user.city = city[0];
+            sessionData.user.city_id = city[0].id;
+            sessionData.user.city_name = city[0].name;
+        }
+        session[0].city = sessionData.user.city;
     }
 
     let scenarioId = req.params.scenarioId;
