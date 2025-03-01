@@ -34,8 +34,8 @@
         let types =[];
         let isEdit = false;
         let role = '<%=user_info.role.name%>';
-        let city = '<%=user_info.city.city_id%>';
-        let city_name = '<%=user_info.city.name%>';
+        let region = '<%=user_info.region.region_id%>';
+        let region_name = '<%=user_info.region.name%>';
         let scenarioId = '<%=scenarioId%>';
 
         let maxNodeId = <%=nodes[nodes.length - 1].id%>; // getting the max node id currently
@@ -268,7 +268,7 @@
         let grid = new w2grid({
             name: 'grid',
             box: '#content-grid',
-            header  : '<%=user_info.city.name%> Flows - <%=scenarioId%> - Flows in: <%=capacity_units%>/<%=time_units%>',
+            header  : '<%=user_info.region.name%> Flows - <%=scenarioId%> - Flows in: <%=capacity_units%>/<%=time_units%>',
             show: {
                 header:true,
                 toolbar: true,

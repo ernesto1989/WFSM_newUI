@@ -33,8 +33,8 @@
         import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         let isEdit = false;
         let role = '<%=user_info.role.name%>';
-        let city = '<%=user_info.city.city_id%>';
-        let city_name = '<%=user_info.city.name%>';
+        let region = '<%=user_info.region.region_id%>';
+        let region_name = '<%=user_info.region.name%>';
         let scenarioId = '<%=scenarioId%>';
 
         $("document").ready(function(){
@@ -115,13 +115,13 @@
                         html: { label: 'Description', attr: 'style="width: 100%;"placeholder="About this Node" ' }
                     },
                     { field: 'new_min_capacity', type: 'float', required: true, editable:true, 
-                        html: { label: 'Min Capacity', attr: 'style="width: 100%";' }
+                        html: { label: 'Min capacity', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_current_vol', type: 'float', required: true, editable:true, 
                         html: { label: 'Current Vol.', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_max_capacity', type: 'float', required: true, editable:true, 
-                        html: { label: 'Max Capacity.', attr: 'style="width: 100%";' }
+                        html: { label: 'Max capacity.', attr: 'style="width: 100%";' }
                     }
                 ],
                 actions: {
@@ -139,12 +139,12 @@
                         let curr_max = nodesForm.record.new_max_capacity;
 
                         if(curr_min > curr_vol){
-                            w2alert("Min Capacity cant be bigger than current vol.");
+                            w2alert("Min capacity cant be bigger than current vol.");
                             return;
                         }
 
                         if(curr_vol > curr_max){
-                            w2alert("Current Vol cant be bigger than Max Capacity.");
+                            w2alert("Current Vol cant be bigger than Max capacity.");
                             return;
                         }
 
@@ -200,7 +200,7 @@
         let grid = new w2grid({
             name: 'grid',
             box: '#content-grid',
-            header  : '<%=user_info.city.name%> Nodes - <%=scenarioId%> - Volume in: <%=capacity_units%>',
+            header  : '<%=user_info.region.name%> Nodes - <%=scenarioId%> - Volume in: <%=capacity_units%>',
             show: {
                 header:true,
                 toolbar: true,

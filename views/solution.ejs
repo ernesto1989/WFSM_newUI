@@ -39,7 +39,7 @@
                     //
                     let s = respuesta.records.scenario[0];
                     grid.records = respuesta.records.solution;
-                    grid.header = "Optimal Flow Between Nodes - Capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
+                    grid.header = "Optimal Flow Between Nodes - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
                     
                     grid.refresh();
                     
@@ -67,9 +67,9 @@
             ],
             onClick(event) {
                 if(event.target === 'general'){
-                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>_<%=city_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>_<%=region_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
                 } else if(event.target === 'details'){
-                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/d8f06984-d999-4153-81b8-2947c2bdcb08/page/RkKvE?params=%7B%22ds0.scenario_id%22%3A%22<%=scenarioId%>_<%=city_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+                    query('#selected-tab').html('<iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/d8f06984-d999-4153-81b8-2947c2bdcb08/page/RkKvE?params=%7B%22ds0.scenario_id%22%3A%22<%=scenarioId%>_<%=region_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
                 }
             }
         });
@@ -143,7 +143,7 @@
     <div class="container-fluid" style="width:100%;height:100%;">
         <div class="row" style="height: 40%;">
             <div id="tabs" style="margin-top: 5px; width: 100%;"></div>
-            <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>_<%=city_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
+            <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><iframe width="100%" height="99%" src="https://lookerstudio.google.com/embed/reporting/85378755-9267-4023-b863-4635569e0d96/page/MsTGE?params=%7B%22ds13.scenario_id%22%3A%22<%=scenarioId%>_<%=region_name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe></div>
         </div>
         <!--div class="row" style="height: 40%;">
             

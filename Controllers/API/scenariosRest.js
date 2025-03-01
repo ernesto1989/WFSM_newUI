@@ -22,9 +22,9 @@ async function getScenario(req,res){
             return;
         }
 
-        const city_id = sessionData.user.city.id;
+        const region_id = sessionData.user.region.id;
         const id_scenario = params = [req.body.scenario_id];
-        const resultScenario = await scenarioService.getScenarioById(id_scenario,city_id);
+        const resultScenario = await scenarioService.getScenarioById(id_scenario,region_id);
         //const resultTRL = await scenarioService.getScenarioTRLById(id_scenario);
 
         res.status(200);
@@ -56,10 +56,10 @@ async function getScenarioTRL(req,res){
             return;
         }
 
-        const city_id = sessionData.user.city.id;
+        const region_id = sessionData.user.region.id;
         const id_scenario = params = [req.body.scenario_id];
-        const resultScenario = await scenarioService.getScenarioById(id_scenario,city_id);
-        const resultTRL = await scenarioService.getScenarioTRLById(id_scenario,city_id);
+        const resultScenario = await scenarioService.getScenarioById(id_scenario,region_id);
+        const resultTRL = await scenarioService.getScenarioTRLById(id_scenario,region_id);
 
         res.status(200);
         res.json({
@@ -97,20 +97,20 @@ async function saveScenario(req,res){
             return;
         }
 
-        const city_id = sessionData.user.city.id;
+        const region_id = sessionData.user.region.id;
         const scenario = req.body;
         let total = 0;
-        let result = await scenarioService.createEmptyScenario(scenario,city_id);
+        let result = await scenarioService.createEmptyScenario(scenario,region_id);
 
         total = result.changes
 
         if(scenario.type == 1){
             //Proposed
-            let result2 = await nodesService.copyA01(scenario,city_id);
-            let result3 = await flowsService.copyA02(scenario,city_id);
+            let result2 = await nodesService.copyA01(scenario,region_id);
+            let result3 = await flowsService.copyA02(scenario,region_id);
 
-            let nodes = await nodesService.getNodes(scenario.scenario_id,city_id);
-            let flows = await flowsService.getFlows(scenario.scenario_id,city_id);
+            let nodes = await nodesService.getNodes(scenario.scenario_id,region_id);
+            let flows = await flowsService.getFlows(scenario.scenario_id,region_id);
 
             const timeToLimit = await axios({
                 method: 'get',
@@ -122,7 +122,7 @@ async function saveScenario(req,res){
                 headers:{'Content-Type':'application/json'}
             });
             
-            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,city_id)
+            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
 
             total += result.changes + result2.changes + result3.changes + result4.changes;
         }
@@ -157,9 +157,9 @@ async function recalcTRL(req,res){
         }
 
         const scenario = req.body;
-        const city_id = sessionData.user.city.id;
-        let nodes = await nodesService.getNodes(scenario.scenario_id,city_id);
-        let flows = await flowsService.getFlows(scenario.scenario_id,city_id);
+        const region_id = sessionData.user.region.id;
+        let nodes = await nodesService.getNodes(scenario.scenario_id,region_id);
+        let flows = await flowsService.getFlows(scenario.scenario_id,region_id);
 
         const timeToLimit = await axios({
             method: 'get',
@@ -171,8 +171,8 @@ async function recalcTRL(req,res){
             headers:{'Content-Type':'application/json'}
         });
         
-        let r1 = await scenarioService.deleteA03(scenario.scenario_id,city_id);
-        let r = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,city_id)
+        let r1 = await scenarioService.deleteA03(scenario.scenario_id,region_id);
+        let r = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
 
         res.status(200);
         res.json({
@@ -211,8 +211,8 @@ async function deleteScenario(req,res){
         }
         
         const scenario_id = params = [req.body.scenario_id];
-        const city_id = sessionData.user.city.id;
-        let result = await scenarioService.deleteScenario(scenario_id,city_id);
+        const region_id = sessionData.user.region.id;
+        let result = await scenarioService.deleteScenario(scenario_id,region_id);
 
         res.status(200);
         res.json({

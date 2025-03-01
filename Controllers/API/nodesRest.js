@@ -22,8 +22,8 @@ async function getScenarioNodes(req,res){
         }
 
         const scenarioId = req.params.scenarioId;
-        const city_id = sessionData.user.city.id;
-        const result = await nodesService.getNodes(scenarioId,city_id); 
+        const region_id = sessionData.user.region.id;
+        const result = await nodesService.getNodes(scenarioId,region_id); 
 
         res.status(200);
         res.json({
@@ -62,11 +62,11 @@ async function saveNode(req,res){
         }
 
         let node = req.body;
-        const city_id = sessionData.user.city.id;
+        const region_id = sessionData.user.region.id;
         let result;
         if(!node.new_record){
             //update
-            result = await nodesService.updateNode(node,city_id);  
+            result = await nodesService.updateNode(node,region_id);  
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -75,7 +75,7 @@ async function saveNode(req,res){
             });          
         }else{
             //insert
-            result = await nodesService.insertNode(node,city_id);
+            result = await nodesService.insertNode(node,region_id);
             res.status(200);
             res.json({
                 "status"  : "success",
@@ -105,10 +105,10 @@ async function deleteNode(req,res){
         }
         
         let node = req.body;
-        const city_id = sessionData.user.city.id;
-        let result = await nodesService.deleteNode(node,city_id);
-        await flowsService.deleteFlowsByNodeIn(node,city_id);
-        await flowsService.deleteFlowsByNodeOut(node,city_id);
+        const region_id = sessionData.user.region.id;
+        let result = await nodesService.deleteNode(node,region_id);
+        await flowsService.deleteFlowsByNodeIn(node,region_id);
+        await flowsService.deleteFlowsByNodeOut(node,region_id);
        
         res.status(200);
         res.json({

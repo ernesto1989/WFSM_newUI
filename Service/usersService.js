@@ -17,11 +17,11 @@ const user_query =
         u03.password ,
         u03.role_id, 
         u02.name as role_name,
-        u03.city_id,
-        u01.name as city_name
+        u03.region_id,
+        u01.name as region_name
     from u03_users u03 
     join u02_roles u02 on u02.id = u03.role_id
-    left join u01_cities u01 on u01.id = u03.city_id 
+    left join u01_regions u01 on u01.id = u03.region_id 
     where u03.username = ? and password = ?
 `;
 

@@ -107,7 +107,7 @@
                     details_grid.refresh();
 
                     // let trl = respuesta.records.scenario_trl;
-                    // grid.header = "Scenario Details - Capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
+                    // grid.header = "Scenario Details - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
                     // grid.records = trl;
                     // grid.refresh();
                     //let selectedS = scenarios.get(s);
@@ -194,7 +194,7 @@
                         
                     },
                     { field: 'new_capacity_units', type: 'list',
-                        html: { label: 'Capacity Units',attr: 'style="width: 100%"' },
+                        html: { label: 'capacity Units',attr: 'style="width: 100%"' },
                         options: { items: [
                             <% for(let i =0;i<capacity_units.length;i++){%>
                             {id:'<%=capacity_units[i]%>',text:'<%=capacity_units[i]%>'}, //{id:'LTS',text:'LTS'}]
@@ -301,7 +301,7 @@
                 { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', disabled: true },
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
-                    { type: 'button', id: 'city', text: '<%=user_info.city.name%>', icon: 'fa fa-circle-info' },
+                    { type: 'button', id: 'region', text: '<%=user_info.region.name%>', icon: 'fa fa-circle-info' },
                     { type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
                     { type: 'button', id: 'sout', text: 'Sign Out', icon: 'fa fa-user-slash' }
                 ] 
@@ -324,9 +324,9 @@
                     //preferences
                     alert("Preferences");
                 }
-                if(selectedOp === 'user:city'){
+                if(selectedOp === 'user:region'){
                     //preferences
-                    alert("My city is: <%=user_info.city.name%>");
+                    alert("My region is: <%=user_info.region.name%>");
                 }
                 if(selectedOp === 'user:sout'){
                     window.location.href = '/WF/logout';
@@ -411,7 +411,7 @@
                 </div>
                 <div class="row" style="height: 59.5%;">
                     <div id="scenario_map" style="width:100%;height: 100%;padding-left: 0%;padding-right: 0%;">
-                        <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/dc1d3f78-81e2-49a4-9a94-36b95a1a2187/page/wy0zE?config=%7B%22ds0.city_id%22%3A%22<%=user_info.city.name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                        <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/dc1d3f78-81e2-49a4-9a94-36b95a1a2187/page/wy0zE?config=%7B%22ds0.region_id%22%3A%22<%=user_info.region.name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                     </div>
                 </div>
             </div>
