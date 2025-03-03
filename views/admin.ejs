@@ -87,7 +87,7 @@
                     alert("Add new Hydrological Region")
                 }
                 if(selectedOp === 'user-add'){
-                    alert("Add new User")
+                    window.open('/WF/users','nodes','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=950,height=550');
                 }
                 if(selectedOp === 'region_nodes'){
                     window.open('/WF/nodes/<%=base_scenario%>/'+selectedRegion,'nodes','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=950,height=550');

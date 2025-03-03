@@ -15,6 +15,7 @@ const router = express.Router();
 const templates = require('./Template/templates')
 const regionsApi = require("./API/regionsRest")
 const scenariosApi = require("./API/scenariosRest")
+const usersApi = require("./API/usersRest")
 const nodesApi = require("./API/nodesRest")
 const flowsApi = require("./API/flowsRest")
 const solutionsApi = require("./API/solutionsRest")
@@ -26,6 +27,7 @@ router.get(constants.indexURL, templates.index);
 router.get(constants.contextURL+'/login', templates.getLogin);
 router.get(constants.contextURL+'/logout', templates.logout);
 router.get(constants.contextURL, templates.homePage);
+router.get(constants.contextURL+'/users', templates.usersGrid);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
 router.get(constants.contextURL+'/nodes/:scenarioId/:regionId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
@@ -45,6 +47,10 @@ router.post(constants.contextURL + constants.apiURL + "/getSolution",solutionsAp
 router.post(constants.contextURL + constants.apiURL + '/solve', solutionsApi.solve);
 
 //Grid management
+router.get(constants.contextURL + constants.apiURL + "/getUsers",usersApi.getUsers);
+//router.post(constants.contextURL + constants.apiURL + "/saveUser",usersApi.saveNode);
+//router.post(constants.contextURL + constants.apiURL + "/deleteUser",usersApi.deleteNode);
+
 router.get(constants.contextURL + constants.apiURL + "/getNodes/:scenarioId",nodesApi.getScenarioNodes);
 router.post(constants.contextURL + constants.apiURL + "/saveNode",nodesApi.saveNode);
 router.post(constants.contextURL + constants.apiURL + "/deleteNode",nodesApi.deleteNode);

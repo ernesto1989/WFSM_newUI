@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USERS</title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #content-grid {
+            margin:auto;
+            width: 98%;
+            height: 95%;
+            padding: 2px;
+        }
+    </style>  
+    <script type="module">
+
+        import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        let isEdit = false;
+
+        $("document").ready(function(){
+            $.get("/WF/api/getUsers", function(data, status){
+                let recs = data.records;
+                grid.records = recs;
+                grid.refresh();
+            });
+        });
+
+        function getNewEmptyRecord(){
+            let genId = 1;
+            if(grid.records.length > 0){
+                let lastElement = grid.records[grid.records.length - 1];
+                genId = lastElement.recid + 1;
+            }
+            
+            let record = {
+                id: genId,
+                node_id: 'N'+genId,
+                description: '',
+                min_capacity:0.0,
+                current_vol:0.0,
+                max_capacity:0.0
+            }
+
+            return record;
+        }
+
+        function getSelectedRecord(){
+            let selected = grid.getSelection();
+            let rec = grid.get(selected)[0];
+
+            let record = {
+                id: rec.recid,
+                node_id: rec.node_id,
+                description: rec.description,
+                min_capacity:rec.min_capacity,
+                current_vol:rec.current_vol,
+                max_capacity:rec.max_capacity
+            }
+
+            return record;
+        }
+
+
+        function setForm(record){
+            let rec = {
+                new_scenario_id : 'Change',
+                new_id : record.id,
+                new_node_id : record.node_id,
+                new_description: record.description,
+                new_min_capacity:record.min_capacity,
+                new_current_vol: record.current_vol,
+                new_max_capacity:record.max_capacity
+            };
+            w2ui.nodesForm.record = rec;
+            w2ui.nodesForm.refresh();
+        }
+
+
+        function openFormPopup(){
+            
+            let nodesForm = new w2form({
+                name: 'nodesForm',
+                style: 'border: 0px; background-color: transparent;',
+                fields: [
+                    { field: 'new_scenario_id', type: 'text', required: true, 
+                        html: { label: 'Scenario Id', attr: 'readonly style="width: 100%";' }
+                    },
+                    { field: 'new_id', type: 'int', required: true, editable:false, 
+                        html: { label: 'Id', attr: 'readonly style="width: 100%";' }
+                    },
+                    { field: 'new_node_id', type: 'text', required: true, editable:true, 
+                        html: { label: 'Node Id', attr: 'style="width: 100%;"placeholder="Nodes Id" ' }
+                    },
+                    { field: 'new_description', type: 'text', required: false, editable:true, 
+                        html: { label: 'Description', attr: 'style="width: 100%;"placeholder="About this Node" ' }
+                    },
+                    { field: 'new_min_capacity', type: 'float', required: true, editable:true, 
+                        html: { label: 'Min capacity', attr: 'style="width: 100%";' }
+                    },
+                    { field: 'new_current_vol', type: 'float', required: true, editable:true, 
+                        html: { label: 'Current Vol.', attr: 'style="width: 100%";' }
+                    },
+                    { field: 'new_max_capacity', type: 'float', required: true, editable:true, 
+                        html: { label: 'Max capacity.', attr: 'style="width: 100%";' }
+                    }
+                ],
+                actions: {
+                    Reset() { 
+                        if(isEdit) 
+                            setForm(getSelectedRecord());
+                        else
+                            setForm(getNewEmptyRecord());
+                    },
+                    Save() { 
+                        this.validate(); 
+
+                        let curr_min = nodesForm.record.new_min_capacity;
+                        let curr_vol = nodesForm.record.new_current_vol;
+                        let curr_max = nodesForm.record.new_max_capacity;
+
+                        if(curr_min > curr_vol){
+                            w2alert("Min capacity cant be bigger than current vol.");
+                            return;
+                        }
+
+                        if(curr_vol > curr_max){
+                            w2alert("Current Vol cant be bigger than Max capacity.");
+                            return;
+                        }
+
+                        let node = {
+                            new_record:!isEdit,
+                            scenario_id:nodesForm.record.new_scenario_id,
+                            id:nodesForm.record.new_id,
+                            node_id:nodesForm.record.new_node_id,
+                            description:nodesForm.record.new_description,
+                            min_capacity: curr_min ,
+                            current_vol: curr_vol,
+                            max_capacity: curr_max
+                        }
+
+                        //https://stackoverflow.com/questions/2845459/jquery-how-to-make-post-use-contenttype-application-json
+                        //proper way to ajax
+                        $.ajax({
+                            url:'/WF/api/saveNode', 
+                            type:'POST',
+                            data: JSON.stringify(node), 
+                            dataType:"json",
+                            contentType:"application/json; charset=utf-8",
+                            success:function(response){
+                                if(response)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            }
+                        });
+                    }
+                }
+            });
+
+            w2popup.open({
+                title   : 'Nodes Form',
+                body    : '<div id="nodesForm" style="width: 100%; height: 100%;"></div>',
+                style   : 'padding: 15px 0px 0px 0px',
+                width   : 400,
+                height  : 420,
+                showMax : false
+            })
+            .then((event) => {
+                w2ui.nodesForm.render('#nodesForm');
+                if(isEdit) 
+                    setForm(getSelectedRecord());
+                else
+                    setForm(getNewEmptyRecord());
+
+            });
+        }
+
+
+        let grid = new w2grid({
+            name: 'grid',
+            box: '#content-grid',
+            header  : 'Users',
+            show: {
+                header:true,
+                toolbar: true,
+                //toolbarAdd: true,
+                //toolbarEdit: true,
+                //toolbarDelete: true
+            },
+            multiSearch: true,
+            searches: [
+                { field: 'recid', label: 'ID ', type: 'int' },
+                { field: 'node_id', label: 'Node', type: 'text' },
+                { field: 'current_vol', label: 'Current', type: 'int' },
+                { field: 'min_capacity', label: 'Min', type: 'int' },
+                { field: 'max_capacity', label: 'Max', type: 'int' },
+            ],
+            columns: [
+                { field: 'recid', text: 'Id', size:'10%', sortable:true, attr: 'align=center' },
+                { field: 'username', text: 'User',sortable:true,size:'30%' },
+                { field: 'role_name', text: 'Role', size:'30%' },
+                { field: 'region_name', text: 'Region V.',sortable:true,size:'30%'},//,render:'float:02' },
+            ],
+            onAdd: function (event) {
+                event.preventDefault();
+                isEdit = false;
+                openFormPopup();
+            },
+            onEdit: function(){
+                event.preventDefault();
+                isEdit = true;
+                openFormPopup();
+            },
+            onDelete: function (event) {
+                event.preventDefault();
+                let selected = grid.getSelection();
+                let node = {
+                  scenario_id : 'Change',
+                  id: selected  
+                };
+                
+
+                w2confirm({
+                    msg: 'Do you want to delete this node?',
+                    title: "DELETE NODE",
+                    width: 450,        // width of the dialog
+                    height: 220,       // height of the dialog
+                    btn_yes: {
+                        text: 'yes',   // text for yes button (or yes_text)
+                        class: 'btn-danger',     // class for yes button (or yes_class)
+                        style: 'background-color:red;',     // style for yes button (or yes_style)
+                        onClick: null  // callBack for yes button (or yes_callBack)
+                    },
+                    btn_no: {
+                        text: 'No',    // text for no button (or no_text)
+                        class: '',     // class for no button (or no_class)
+                        style: '',     // style for no button (or no_style)
+                        onClick: null  // callBack for no button (or no_callBack)
+                    },
+                    callBack: function(answer){
+                        if(answer === 'yes'){
+                            $.post('/WF/api/deleteNode', node, function(respuesta){
+                                if(respuesta)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            });
+                        } 
+                    }
+                });   
+            }
+            
+        });
+    </script>
+</head>
+<body>
+    <div class="container-fluid" style="width:100%;height:100%;">
+        <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
+        </div>
+    </div>
+</body>
+</html>

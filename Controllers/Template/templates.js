@@ -144,6 +144,29 @@ async function homePage(req,res){
     res.render('index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
+
+async function usersGrid(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            role: sessionData.user.role
+        }
+    ];
+
+    if(sessionData.user.role_id == 2){
+        res.redirect("/WF")
+    }
+
+    res.render("users");
+}
+
 /**
  * Method that shows the nodes view.
  * 
@@ -286,4 +309,4 @@ async function solutionsView(req,res){
 }
 
 
-module.exports = {getLogin,postLogin,logout,index,homePage,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin,logout,index,homePage,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
