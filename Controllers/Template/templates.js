@@ -209,7 +209,7 @@ async function flowsGrid(req,res){
     }else{
         if(!sessionData.user.region){
             let regionId = req.params.regionId;
-            let region = await regionsService.getregionById(regionId);
+            let region = await regionsService.getRegionById(regionId);
             sessionData.user.region = region[0];
             sessionData.user.region_id = region[0].id;
             sessionData.user.region_name = region[0].name;

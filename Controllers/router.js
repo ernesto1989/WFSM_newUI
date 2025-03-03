@@ -13,6 +13,7 @@
 const express = require('express');
 const router = express.Router();
 const templates = require('./Template/templates')
+const regionsApi = require("./API/regionsRest")
 const scenariosApi = require("./API/scenariosRest")
 const nodesApi = require("./API/nodesRest")
 const flowsApi = require("./API/flowsRest")
@@ -26,14 +27,15 @@ router.get(constants.contextURL+'/login', templates.getLogin);
 router.get(constants.contextURL+'/logout', templates.logout);
 router.get(constants.contextURL, templates.homePage);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);
-router.get(constants.contextURL+'/nodes/:scenarioId/:cityId', templates.nodesGrid);
+router.get(constants.contextURL+'/nodes/:scenarioId/:regionId', templates.nodesGrid);
 router.get(constants.contextURL+'/flows/:scenarioId', templates.flowsGrid);
-router.get(constants.contextURL+'/flows/:scenarioId/:cityId', templates.flowsGrid);
+router.get(constants.contextURL+'/flows/:scenarioId/:regionId', templates.flowsGrid);
 router.get(constants.contextURL+'/simulator/:scenarioId', templates.simulationView);
 router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView);
 
 /*API routes */
 router.post(constants.contextURL+'/login', templates.postLogin);
+router.post(constants.contextURL + constants.apiURL+'/getRegion', regionsApi.getRegion);
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/getScenarioTRL', scenariosApi.getScenarioTRL);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);

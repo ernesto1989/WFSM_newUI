@@ -35,11 +35,30 @@
         
         import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
+        let selectedRegion = 0;
         let scenarios = new Map;
+
         $("document").ready(function(){
             let scenario;
-            
+            sidebar.select(selectedRegion);
+            showRegion();
         });
+
+
+        function showRegion(){
+            let region = {region_id:selectedRegion}
+            toolbar.enable("region_nodes","region_flows")
+            $.post('/WF/api/getRegion', region, function(respuesta){
+                if(respuesta){
+                    let s = respuesta.records.region[0];
+                    form.record = s;
+                    
+                    form.refresh();
+                } else {
+                    alert("Something went wrong")
+                }
+            });
+        }
 
         let toolbar = new w2toolbar({
             box: '#toolbar',
@@ -48,7 +67,9 @@
                 { type: 'button', id: 'home', text: 'Water Flow Scenario Management', icon: 'fa fa-house' },
                 { type: 'break' },
                 { type: 'button', id: 'new', text: 'Add Region', icon: 'fa fa-location' },
-                { type: 'button', id: 'user-add', text: 'Users', icon: 'fa fa-user', disabled: true },
+                { type: 'button', id: 'region_nodes', text: 'Region Nodes', icon: 'fa fa-location' },
+                { type: 'button', id: 'region_flows', text: 'Region Flows', icon: 'fa fa-location' },
+                { type: 'button', id: 'user-add', text: 'Users', icon: 'fa fa-user'},
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: 'Admin', icon: 'fa fa-user', items:[
                     { type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
@@ -66,8 +87,13 @@
                     alert("Add new Hydrological Region")
                 }
                 if(selectedOp === 'user-add'){
-                    //deleting selected scenario.
                     alert("Add new User")
+                }
+                if(selectedOp === 'region_nodes'){
+                    window.open('/WF/nodes/<%=base_scenario%>/'+selectedRegion,'nodes','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=950,height=550');
+                }
+                if(selectedOp === 'region_flows'){
+                    window.open('/WF/flows/<%=base_scenario%>/'+selectedRegion,'flows','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050,height=650');
                 }
                 if(selectedOp === 'user:pref'){
                     //preferences
@@ -86,39 +112,48 @@
             nodes: [
                 <%for(i = 0; i<regions_list.length;i++){%>
                 { 
-                    id: '<%=regions_list[i].id%>', text: '<%=regions_list[i].name%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
+                    id: <%=regions_list[i].id%>, text: '<%=regions_list[i].name%>', icon:"fa fa-house",
                 },
                 <%}%>
                 
             ],
             onClick:function(evt){
                 let id = evt.target;
-                
-                toolbar.enable('delete')
+                selectedRegion = id;
+                let n = sidebar.get(id);
+                showRegion();
             }
         });
 
 
         let form = new w2form({
-            box: '#scenario_details',
-            name: 'scenario_details',
-            header:"Scenario Details",
+            box: '#region_details',
+            name: 'region_details',
+            header:"Region",
             fields: [
-                { field: 'scenario_id', type: 'text', required: true, editable:false, 
-                    html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
+                { field: 'region_id', type: 'text', editable:false, hidden:true,
+                    html: { label: 'Region Id', attr: 'style="width: 100%" readonly' }
                 },
-                { field: 'origin_id', type: 'text', required: true, 
-                    html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
+                { field: 'region_name', type: 'text', editable:false, 
+                    html: { label: 'Region', attr: 'style="width: 100%" readonly' }
                 },
-                { field: 'cdate', type: 'text', required: true, 
-                    html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                },
-                { field: 'type', type: 'text', required: true, 
-                    html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                },
-
                 { field: 'description', type: 'textarea', 
-                    html: { label: 'About this', attr: 'style="width: 100%; height: 60px" readonly' }
+                    html: { label: 'About this Region', attr: 'style="width: 100%; height: 30px" readonly' }
+                },
+                { field: 'creation_date', type: 'text', 
+                    html: {label: 'Created', attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'update_date', type: 'text', 
+                    html: {label: 'Created', attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'nodes', type: 'text', 
+                    html: { label: 'Total Nodes', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+                { field: 'flows', type: 'text', 
+                    html: { label: 'Total Flows', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+                { field: 'users', type: 'text', 
+                    html: { label: 'Asigned Users', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
                 }
             ]
         });
@@ -135,9 +170,12 @@
             <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
             </div>
             <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
-                <div class="row" style="height: 100%">
-                    <div class="col-sm-12 col-md-12" id="scenario_details" style="width:100%;height: 100%;">
+                <div class="row" style="height: 50%">
+                    <div class="col-sm-12 col-md-12" id="region_details" style="width:100%;height: 100%;">
                     </div>
+                </div>
+                <div id="map" style="width:100%;height: 50%;padding-left: 0%;padding-right: 0%;">
+                    <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/2bd515c4-c74c-4315-b5cc-6114d883466f/page/p_aumd6s39pd" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                 </div>
             </div>
         </div>
