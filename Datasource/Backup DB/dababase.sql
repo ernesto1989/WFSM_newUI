@@ -2,146 +2,145 @@ SET SQL_REQUIRE_PRIMARY_KEY = 0;
 
 -- wfms.a01_nodes definition
 
-CREATE TABLE "a01_nodes" (
-  "scenario_id" varchar(20) NOT NULL,
-  "region_id" int NOT NULL,
-  "id" int DEFAULT NULL,
-  "node_id" varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  "description" varchar(100) DEFAULT NULL,
-  "max_capacity" decimal(18,2) DEFAULT NULL,
-  "min_capacity" decimal(18,2) DEFAULT NULL,
-  "current_vol" decimal(18,2) DEFAULT NULL,
-  "Lat" varchar(100) DEFAULT NULL,
-  "Long" varchar(100) DEFAULT NULL
+CREATE TABLE a01_nodes (
+  scenario_id varchar(20) NOT NULL,
+  region_id int,
+  id int DEFAULT NULL,
+  node_id varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  description varchar(100) DEFAULT NULL,
+  max_capacity decimal(18,2) DEFAULT NULL,
+  min_capacity decimal(18,2) DEFAULT NULL,
+  current_vol decimal(18,2) DEFAULT NULL,
+  Lat varchar(100) DEFAULT NULL,
+  `Long` varchar(100) DEFAULT NULL
 );
 
 -- wfms.a02_flows definition
 
-CREATE TABLE "a02_flows" (
-  "scenario_id" varchar(20) NOT NULL,
-  "region_id" int NOT NULL,
-  "origin" int DEFAULT NULL,
-  "destiny" int DEFAULT NULL,
-  "current_flow" decimal(18,2) DEFAULT NULL,
-  "type_id" int DEFAULT NULL,
-  "type" varchar(10) DEFAULT NULL,
-  "fmax" decimal(18,2) DEFAULT NULL,
-  "fmin" decimal(18,2) DEFAULT NULL
+CREATE TABLE `a02_flows` (
+  `scenario_id` varchar(20) NOT NULL,
+  `region_id` int NOT NULL,
+  `origin` int DEFAULT NULL,
+  `destiny` int DEFAULT NULL,
+  `current_flow` decimal(18,2) DEFAULT NULL,
+  `type_id` int DEFAULT NULL,
+  `fmax` decimal(18,2) DEFAULT NULL,
+  `fmin` decimal(18,2) DEFAULT NULL
 );
 
 
--- wfms.a02_flows definition
+-- wfms.a03_time_to_reach_limit definition
 
-CREATE TABLE "a02_flows" (
-  "scenario_id" varchar(20) NOT NULL,
-  "region_id" int NOT NULL,
-  "origin" int DEFAULT NULL,
-  "destiny" int DEFAULT NULL,
-  "current_flow" decimal(18,2) DEFAULT NULL,
-  "type_id" int DEFAULT NULL,
-  "type" varchar(10) DEFAULT NULL,
-  "fmax" decimal(18,2) DEFAULT NULL,
-  "fmin" decimal(18,2) DEFAULT NULL
+CREATE TABLE `a03_time_to_reach_limit` (
+  `scenario_id` varchar(20) NOT NULL,
+  `region_id` int NOT NULL,
+  `node_id` int DEFAULT NULL,
+  `max_vol` decimal(18,2) DEFAULT NULL,
+  `min_vol` decimal(18,2) DEFAULT NULL,
+  `current_vol` decimal(18,2) DEFAULT NULL,
+  `incoming_flow` decimal(18,2) DEFAULT NULL,
+  `outcoming_flow` decimal(18,2) DEFAULT NULL,
+  `time_to_reach_limit` decimal(18,2) DEFAULT NULL
 );
-
 
 -- wfms.s01_solution_detail definition
 
-CREATE TABLE "s01_solution_detail" (
-  "scenario_id" varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  "region_id" int NOT NULL,
-  "No" int DEFAULT NULL,
-  "E" decimal(18,2) DEFAULT NULL,
-  "S" decimal(18,2) DEFAULT NULL,
-  "a" decimal(18,2) DEFAULT NULL,
-  "b" decimal(18,2) DEFAULT NULL,
-  "R+" decimal(18,2) DEFAULT NULL,
-  "R-" decimal(18,2) DEFAULT NULL,
-  "NMin" decimal(18,2) DEFAULT NULL,
-  "NMax" decimal(18,2) DEFAULT NULL,
-  "NActual" decimal(18,2) DEFAULT NULL,
-  "T" varchar(100) DEFAULT NULL
+CREATE TABLE `s01_solution_detail` (
+  `scenario_id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `region_id` int NOT NULL,
+  `No` int DEFAULT NULL,
+  `E` decimal(18,2) DEFAULT NULL,
+  `S` decimal(18,2) DEFAULT NULL,
+  `a` decimal(18,2) DEFAULT NULL,
+  `b` decimal(18,2) DEFAULT NULL,
+  `R+` decimal(18,2) DEFAULT NULL,
+  `R-` decimal(18,2) DEFAULT NULL,
+  `NMin` decimal(18,2) DEFAULT NULL,
+  `NMax` decimal(18,2) DEFAULT NULL,
+  `NActual` decimal(18,2) DEFAULT NULL,
+  `T` varchar(100) DEFAULT NULL
 );
 
 
 -- wfms.s02_proposed_flows definition
 
-CREATE TABLE "s02_proposed_flows" (
-  "scenario_id" varchar(20) NOT NULL,
-  "region_id" int NOT NULL,
-  "origin" int DEFAULT NULL,
-  "destiny" int DEFAULT NULL,
-  "current_flow" decimal(18,2) DEFAULT NULL,
-  "type" varchar(10) DEFAULT NULL,
-  "fmax" decimal(18,2) DEFAULT NULL,
-  "fmin" decimal(18,2) DEFAULT NULL,
-  "pflow" decimal(18,2) DEFAULT NULL
+CREATE TABLE `s02_proposed_flows` (
+  `scenario_id` varchar(20) NOT NULL,
+  `region_id` int NOT NULL,
+  `origin` int DEFAULT NULL,
+  `destiny` int DEFAULT NULL,
+  `current_flow` decimal(18,2) DEFAULT NULL,
+  `type` varchar(10) DEFAULT NULL,
+  `fmax` decimal(18,2) DEFAULT NULL,
+  `fmin` decimal(18,2) DEFAULT NULL,
+  `pflow` decimal(18,2) DEFAULT NULL
 );
 
 -- wfms.u01_regions definition
 
-CREATE TABLE "u01_regions" (
-  "id" int NOT NULL AUTO_INCREMENT,
-  "name" varchar(30) DEFAULT NULL,
-  "description" varchar(100) DEFAULT NULL,
-  PRIMARY KEY ("id")
+CREATE TABLE `u01_regions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
 
 
 -- wfms.u02_roles definition
 
-CREATE TABLE "u02_roles" (
-  "id" int NOT NULL AUTO_INCREMENT,
-  "name" varchar(30) DEFAULT NULL,
-  PRIMARY KEY ("id")
+CREATE TABLE `u02_roles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
 
 -- wfms.u03_users definition
 
-CREATE TABLE "u03_users" (
-  "id" int NOT NULL AUTO_INCREMENT,
-  "username" varchar(30) DEFAULT NULL,
-  "name" varchar(30) DEFAULT NULL,
-  "password" varchar(100) DEFAULT NULL,
-  "unsafe_password" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  "role_id" int DEFAULT NULL,
-  "region_id" int DEFAULT NULL,
-  PRIMARY KEY ("id")
+CREATE TABLE `u03_users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(30) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `unsafe_password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `role_id` int DEFAULT NULL,
+  `region_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
 
 -- wfms.x01_flow_types definition
 
-CREATE TABLE "x01_flow_types" (
-  "id" int NOT NULL,
-  "name" varchar(10) DEFAULT NULL,
-  "model_name" varchar(10) DEFAULT NULL
+CREATE TABLE `x01_flow_types` (
+  `id` int NOT NULL,
+  `name` varchar(10) DEFAULT NULL,
+  `model_name` varchar(10) DEFAULT NULL
 );
 
 
 -- wfms.x02_capacity_units definition
 
-CREATE TABLE "x02_capacity_units" (
-  "id" int NOT NULL,
-  "unit_name" varchar(100) DEFAULT NULL,
-  "unit_type" enum('capacity','time') DEFAULT NULL
+CREATE TABLE `x02_capacity_units` (
+  `id` int NOT NULL,
+  `unit_name` varchar(100) DEFAULT NULL,
+  `unit_type` enum('capacity','time') DEFAULT NULL
 );
 
 
 -- wfms.z01_scenarios definition
 
-CREATE TABLE "z01_scenarios" (
-  "scenario_id" varchar(20) NOT NULL,
-  "region_id" int NOT NULL,
-  "cdate" datetime DEFAULT CURRENT_TIMESTAMP,
-  "description" varchar(100) DEFAULT NULL,
-  "type" tinyint DEFAULT NULL,
-  "capacity_units" varchar(5) DEFAULT 'M3',
-  "time_units" varchar(5) DEFAULT 'Hrs',
-  "origin_id" varchar(20) DEFAULT NULL,
-  "recalc_trl" tinyint DEFAULT '1',
-  "recalc_solution" tinyint DEFAULT '1',
-  UNIQUE KEY "Scenario_un" ("scenario_id","region_id")
+CREATE TABLE `z01_scenarios` (
+  `scenario_id` varchar(20) NOT NULL,
+  `region_id` int NOT NULL,
+  `cdate` datetime DEFAULT CURRENT_TIMESTAMP,
+  `description` varchar(100) DEFAULT NULL,
+  `type` tinyint DEFAULT NULL,
+  `capacity_units` varchar(5) DEFAULT 'M3',
+  `time_units` varchar(5) DEFAULT 'Hrs',
+  `origin_id` varchar(20) DEFAULT NULL,
+  `recalc_trl` tinyint DEFAULT '1',
+  `recalc_solution` tinyint DEFAULT '1',
+  UNIQUE KEY `Scenario_un` (`scenario_id`,`region_id`)
 );
+
 
 
 
@@ -211,89 +210,91 @@ INSERT INTO wfms.a01_nodes (scenario_id,region_id,id,node_id,description,max_cap
 	 ('Scenario_05',0,5,'N05','Node #05 - For testing',100.00,80.00,100.00,NULL,NULL),
 	 ('Scenario_05',0,6,'N06','Node #06 - For testing',120.00,100.00,110.00,NULL,NULL);
 
+	
+	
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('BASE_CONDITION',0,0,1,12.00,1,0.00,0.00),
+	 ('BASE_CONDITION',0,0,2,15.00,1,0.00,0.00),
+	 ('BASE_CONDITION',0,1,3,12.00,2,15.00,10.00),
+	 ('BASE_CONDITION',0,2,3,15.00,2,18.00,12.00),
+	 ('BASE_CONDITION',0,3,4,10.00,2,20.00,10.00),
+	 ('BASE_CONDITION',0,3,5,19.00,2,20.00,10.00),
+	 ('BASE_CONDITION',0,4,3,1.00,2,3.00,1.00),
+	 ('BASE_CONDITION',0,4,6,9.00,2,20.00,8.00),
+	 ('BASE_CONDITION',0,5,6,19.00,2,20.00,4.00),
+	 ('BASE_CONDITION',0,6,3,1.00,2,3.00,1.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('BASE_CONDITION',0,6,0,27.00,1,0.00,0.00),
+	 ('Scenario_01',0,0,1,17.00,1,0.00,0.00),
+	 ('Scenario_01',0,0,2,16.00,1,0.00,0.00),
+	 ('Scenario_01',0,1,3,12.00,2,15.00,10.00),
+	 ('Scenario_01',0,2,3,15.00,2,18.00,12.00),
+	 ('Scenario_01',0,3,4,10.00,2,20.00,10.00),
+	 ('Scenario_01',0,3,5,19.00,2,20.00,10.00),
+	 ('Scenario_01',0,4,3,1.00,2,3.00,1.00),
+	 ('Scenario_01',0,4,6,9.00,2,20.00,8.00),
+	 ('Scenario_01',0,5,6,19.00,2,20.00,4.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('Scenario_01',0,6,3,1.00,2,3.00,1.00),
+	 ('Scenario_01',0,6,0,27.00,1,0.00,0.00),
+	 ('Scenario_02',0,0,1,11.00,1,0.00,0.00),
+	 ('Scenario_02',0,0,2,13.00,1,0.00,0.00),
+	 ('Scenario_02',0,1,3,12.00,2,15.00,10.00),
+	 ('Scenario_02',0,2,3,15.00,2,18.00,12.00),
+	 ('Scenario_02',0,3,4,10.00,2,20.00,10.00),
+	 ('Scenario_02',0,3,5,19.00,2,20.00,10.00),
+	 ('Scenario_02',0,4,3,1.00,2,3.00,1.00),
+	 ('Scenario_02',0,4,6,9.00,2,20.00,8.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('Scenario_02',0,5,6,19.00,2,20.00,4.00),
+	 ('Scenario_02',0,6,3,1.00,2,3.00,1.00),
+	 ('Scenario_02',0,6,0,32.00,1,0.00,0.00),
+	 ('Scenario_03',0,0,1,12.00,1,0.00,0.00),
+	 ('Scenario_03',0,0,2,15.00,1,0.00,0.00),
+	 ('Scenario_03',0,1,3,15.00,2,15.00,10.00),
+	 ('Scenario_03',0,2,3,15.00,2,18.00,12.00),
+	 ('Scenario_03',0,3,4,10.00,2,20.00,10.00),
+	 ('Scenario_03',0,3,5,19.00,2,20.00,10.00),
+	 ('Scenario_03',0,4,3,1.00,2,3.00,1.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('Scenario_03',0,4,6,9.00,2,20.00,8.00),
+	 ('Scenario_03',0,5,6,19.00,2,20.00,4.00),
+	 ('Scenario_03',0,6,3,1.00,2,3.00,1.00),
+	 ('Scenario_03',0,6,0,27.00,1,0.00,0.00),
+	 ('Scenario_04',0,0,1,12.00,1,0.00,0.00),
+	 ('Scenario_04',0,0,2,15.00,1,0.00,0.00),
+	 ('Scenario_04',0,1,3,15.00,2,15.00,10.00),
+	 ('Scenario_04',0,2,3,17.00,2,18.00,12.00),
+	 ('Scenario_04',0,3,4,10.00,2,20.00,10.00),
+	 ('Scenario_04',0,3,5,19.00,2,20.00,10.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('Scenario_04',0,4,3,1.00,2,3.00,1.00),
+	 ('Scenario_04',0,4,6,9.00,2,20.00,8.00),
+	 ('Scenario_04',0,5,6,19.00,2,20.00,4.00),
+	 ('Scenario_04',0,6,3,1.00,2,3.00,1.00),
+	 ('Scenario_04',0,6,0,27.00,1,0.00,0.00),
+	 ('BASE_CONDITION',1,0,4,3500.00,1,0.00,0.00),
+	 ('BASE_CONDITION',1,4,6,7500.00,2,10000.00,5000.00),
+	 ('BASE_CONDITION',1,1,6,15000.00,2,20000.00,10000.00),
+	 ('BASE_CONDITION',1,2,3,30000.00,2,40000.00,25000.00),
+	 ('BASE_CONDITION',1,3,5,10500.00,2,12000.00,8000.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('BASE_CONDITION',1,6,0,6000.00,1,0.00,0.00),
+	 ('BASE_CONDITION',1,5,0,5000.00,1,0.00,0.00),
+	 ('BASE_CONDITION',1,5,0,2000.00,1,0.00,0.00),
+	 ('Scenario_05',0,0,1,12.00,1,0.00,0.00),
+	 ('Scenario_05',0,0,2,15.00,1,0.00,0.00),
+	 ('Scenario_05',0,1,3,12.00,2,15.00,10.00),
+	 ('Scenario_05',0,2,3,15.00,2,18.00,12.00),
+	 ('Scenario_05',0,3,4,10.00,2,20.00,10.00),
+	 ('Scenario_05',0,3,5,19.00,2,20.00,10.00),
+	 ('Scenario_05',0,4,3,1.00,2,3.00,1.00);
+INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,fmax,fmin) VALUES
+	 ('Scenario_05',0,4,6,9.00,2,20.00,8.00),
+	 ('Scenario_05',0,5,6,19.00,2,20.00,4.00),
+	 ('Scenario_05',0,6,3,1.00,2,3.00,1.00),
+	 ('Scenario_05',0,6,0,27.00,1,0.00,0.00);
 
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('BASE_CONDITION',0,0,1,12.00,1,'fijo',0.00,0.00),
-	 ('BASE_CONDITION',0,0,2,15.00,1,'fijo',0.00,0.00),
-	 ('BASE_CONDITION',0,1,3,12.00,2,'variable',15.00,10.00),
-	 ('BASE_CONDITION',0,2,3,15.00,2,'variable',18.00,12.00),
-	 ('BASE_CONDITION',0,3,4,10.00,2,'variable',20.00,10.00),
-	 ('BASE_CONDITION',0,3,5,19.00,2,'variable',20.00,10.00),
-	 ('BASE_CONDITION',0,4,3,1.00,2,'variable',3.00,1.00),
-	 ('BASE_CONDITION',0,4,6,9.00,2,'variable',20.00,8.00),
-	 ('BASE_CONDITION',0,5,6,19.00,2,'variable',20.00,4.00),
-	 ('BASE_CONDITION',0,6,3,1.00,2,'variable',3.00,1.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('BASE_CONDITION',0,6,0,27.00,1,'fijo',0.00,0.00),
-	 ('Scenario_01',0,0,1,17.00,1,NULL,0.00,0.00),
-	 ('Scenario_01',0,0,2,16.00,1,NULL,0.00,0.00),
-	 ('Scenario_01',0,1,3,12.00,2,NULL,15.00,10.00),
-	 ('Scenario_01',0,2,3,15.00,2,NULL,18.00,12.00),
-	 ('Scenario_01',0,3,4,10.00,2,NULL,20.00,10.00),
-	 ('Scenario_01',0,3,5,19.00,2,NULL,20.00,10.00),
-	 ('Scenario_01',0,4,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_01',0,4,6,9.00,2,NULL,20.00,8.00),
-	 ('Scenario_01',0,5,6,19.00,2,NULL,20.00,4.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('Scenario_01',0,6,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_01',0,6,0,27.00,1,NULL,0.00,0.00),
-	 ('Scenario_02',0,0,1,11.00,1,NULL,0.00,0.00),
-	 ('Scenario_02',0,0,2,13.00,1,NULL,0.00,0.00),
-	 ('Scenario_02',0,1,3,12.00,2,NULL,15.00,10.00),
-	 ('Scenario_02',0,2,3,15.00,2,NULL,18.00,12.00),
-	 ('Scenario_02',0,3,4,10.00,2,NULL,20.00,10.00),
-	 ('Scenario_02',0,3,5,19.00,2,NULL,20.00,10.00),
-	 ('Scenario_02',0,4,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_02',0,4,6,9.00,2,NULL,20.00,8.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('Scenario_02',0,5,6,19.00,2,NULL,20.00,4.00),
-	 ('Scenario_02',0,6,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_02',0,6,0,32.00,1,NULL,0.00,0.00),
-	 ('Scenario_03',0,0,1,12.00,1,NULL,0.00,0.00),
-	 ('Scenario_03',0,0,2,15.00,1,NULL,0.00,0.00),
-	 ('Scenario_03',0,1,3,15.00,2,NULL,15.00,10.00),
-	 ('Scenario_03',0,2,3,15.00,2,NULL,18.00,12.00),
-	 ('Scenario_03',0,3,4,10.00,2,NULL,20.00,10.00),
-	 ('Scenario_03',0,3,5,19.00,2,NULL,20.00,10.00),
-	 ('Scenario_03',0,4,3,1.00,2,NULL,3.00,1.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('Scenario_03',0,4,6,9.00,2,NULL,20.00,8.00),
-	 ('Scenario_03',0,5,6,19.00,2,NULL,20.00,4.00),
-	 ('Scenario_03',0,6,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_03',0,6,0,27.00,1,NULL,0.00,0.00),
-	 ('Scenario_04',0,0,1,12.00,1,NULL,0.00,0.00),
-	 ('Scenario_04',0,0,2,15.00,1,NULL,0.00,0.00),
-	 ('Scenario_04',0,1,3,15.00,2,NULL,15.00,10.00),
-	 ('Scenario_04',0,2,3,17.00,2,NULL,18.00,12.00),
-	 ('Scenario_04',0,3,4,10.00,2,NULL,20.00,10.00),
-	 ('Scenario_04',0,3,5,19.00,2,NULL,20.00,10.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('Scenario_04',0,4,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_04',0,4,6,9.00,2,NULL,20.00,8.00),
-	 ('Scenario_04',0,5,6,19.00,2,NULL,20.00,4.00),
-	 ('Scenario_04',0,6,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_04',0,6,0,27.00,1,NULL,0.00,0.00),
-	 ('BASE_CONDITION',1,0,4,3500.00,1,NULL,0.00,0.00),
-	 ('BASE_CONDITION',1,4,6,7500.00,2,NULL,10000.00,5000.00),
-	 ('BASE_CONDITION',1,1,6,15000.00,2,NULL,20000.00,10000.00),
-	 ('BASE_CONDITION',1,2,3,30000.00,2,NULL,40000.00,25000.00),
-	 ('BASE_CONDITION',1,3,5,10500.00,2,NULL,12000.00,8000.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('BASE_CONDITION',1,6,0,6000.00,1,NULL,0.00,0.00),
-	 ('BASE_CONDITION',1,5,0,5000.00,1,NULL,0.00,0.00),
-	 ('BASE_CONDITION',1,5,0,2000.00,1,NULL,0.00,0.00),
-	 ('Scenario_05',0,0,1,12.00,1,NULL,0.00,0.00),
-	 ('Scenario_05',0,0,2,15.00,1,NULL,0.00,0.00),
-	 ('Scenario_05',0,1,3,12.00,2,NULL,15.00,10.00),
-	 ('Scenario_05',0,2,3,15.00,2,NULL,18.00,12.00),
-	 ('Scenario_05',0,3,4,10.00,2,NULL,20.00,10.00),
-	 ('Scenario_05',0,3,5,19.00,2,NULL,20.00,10.00),
-	 ('Scenario_05',0,4,3,1.00,2,NULL,3.00,1.00);
-INSERT INTO wfms.a02_flows (scenario_id,region_id,origin,destiny,current_flow,type_id,`type`,fmax,fmin) VALUES
-	 ('Scenario_05',0,4,6,9.00,2,NULL,20.00,8.00),
-	 ('Scenario_05',0,5,6,19.00,2,NULL,20.00,4.00),
-	 ('Scenario_05',0,6,3,1.00,2,NULL,3.00,1.00),
-	 ('Scenario_05',0,6,0,27.00,1,NULL,0.00,0.00);
 
 
 
@@ -457,3 +458,14 @@ INSERT INTO wfms.z01_scenarios (scenario_id,region_id,cdate,description,`type`,c
 	 ('Scenario_03',0,'2024-10-31 01:28:57','Scenario with variable inputs greater than variable outputs',1,'M3','DAYS','BASE_CONDITION',1,1),
 	 ('Scenario_04',0,'2024-10-31 01:59:34','Internal flows affected',1,'M3','DAYS','BASE_CONDITION',1,1),
 	 ('Scenario_05',0,'2025-03-03 22:35:21','testing',1,'M3','DAYS','BASE_CONDITION',1,1);
+
+
+CREATE PROCEDURE delete_scenario(in scenarioId varchar(30), in regionId int)
+begin
+	delete from a01_nodes where scenario_id = scenarioId and region_id = regionId;
+	delete from a02_flows where scenario_id = scenarioId and region_id = regionId;
+	delete from a03_time_to_reach_limit  where scenario_id = scenarioId and region_id = regionId;
+	delete from s01_solution_detail where scenario_id = scenarioId and region_id = regionId;
+	delete from s02_proposed_flows where scenario_id = scenarioId and region_id = regionId;
+	delete from z01_scenarios where scenario_id = scenarioId and region_id = regionId;
+END
