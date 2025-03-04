@@ -16,6 +16,7 @@ const nodesService = require("../../Service/nodesService")
 const catalogsService = require("../../Service/catalogsService")
 const userServices = require("../../Service/usersService")
 const regionsService = require("../../Service/regionsService")
+const rolesService = require("../../Service/rolesService")
 
 //Scenario Types. Must be checked.
 const scenario_type = [
@@ -160,11 +161,14 @@ async function usersGrid(req,res){
         }
     ];
 
+    
     if(sessionData.user.role_id == 2){
         res.redirect("/WF")
     }
 
-    res.render("users");
+    let regions = await regionsService.getRegions();
+    let roles = await rolesService.getRoles();
+    res.render("users",{regions:regions,roles:roles});
 }
 
 /**

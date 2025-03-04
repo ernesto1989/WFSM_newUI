@@ -1,10 +1,8 @@
 /**
  * This file contains the service for the users.
  * 
- * PENDING: Password Encription!
- * Already consuming from database.
- * 
- * Requrie more testing
+ * About bycrypt: https://www.freecodecamp.org/news/how-to-hash-passwords-with-bcrypt-in-nodejs/
+ * https://www.youtube.com/watch?v=2qZfnjOIMmA
  * 
  * 02/24/2025
  */
@@ -40,6 +38,30 @@ const getUsersQuery =
     left join u01_regions u01 on u01.id = u03.region_id 
 `;
 
+const insertAdminQuery = 
+`
+    INSERT INTO u03_users
+    ( username, name, password, role_id)
+    VALUES(?, ?,?,?);
+`;
+
+const insertUserQuery = 
+`
+    INSERT INTO u03_users
+    ( username, name, password, role_id, region_id)
+    VALUES(?,?,?,?,?);
+`;
+
+const updatePassQuery = 
+`
+    update u03_users set password = ? where id = ?
+`;
+
+const deleteUserQuery =
+`
+    DELETE FROM u03_users WHERE id = ?;
+`;
+
 
 async function isValidUser(username, password) {
     try{
@@ -56,11 +78,8 @@ async function isValidUser(username, password) {
         
     }catch(err){
         return null;
-    }
-    
-    
+    }    
 }
-
 
 async function getUsers(){
     try{
@@ -72,4 +91,54 @@ async function getUsers(){
     }
 }
 
-module.exports = {isValidUser,getUsers};
+async function insertUser(user){
+    try{
+        let query;
+        let params;
+
+        let password = await bcrypt.hash(user.password,8)
+
+        if(user.role_id === 1){
+            //admin
+            query =insertAdminQuery;
+            params =[user.username,user.name,password,user.role_id];
+        }else{
+            //user
+            query = insertUserQuery;
+            //( username, name, password, role_id, region_id)
+            params =[user.username,user.name,password,user.role_id,user.region_id];
+        }
+                
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+
+async function changePass(user,newPass){
+    try{
+        let query = updatePassQuery;
+        let password = await bcrypt.hash(newPass,8)
+        let params = [password,user];
+                
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+
+async function deleteUser(user){
+    try{
+        let query = deleteUserQuery;
+        let params = [user.id];
+        
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+
+module.exports = {isValidUser,getUsers,insertUser,changePass,deleteUser};

@@ -48,8 +48,9 @@ router.post(constants.contextURL + constants.apiURL + '/solve', solutionsApi.sol
 
 //Grid management
 router.get(constants.contextURL + constants.apiURL + "/getUsers",usersApi.getUsers);
-//router.post(constants.contextURL + constants.apiURL + "/saveUser",usersApi.saveNode);
-//router.post(constants.contextURL + constants.apiURL + "/deleteUser",usersApi.deleteNode);
+router.post(constants.contextURL + constants.apiURL + "/saveUser",usersApi.saveUser);
+router.post(constants.contextURL + constants.apiURL + "/changePass",usersApi.changePass);
+router.post(constants.contextURL + constants.apiURL + "/deleteUser",usersApi.deleteUser);
 
 router.get(constants.contextURL + constants.apiURL + "/getNodes/:scenarioId",nodesApi.getScenarioNodes);
 router.post(constants.contextURL + constants.apiURL + "/saveNode",nodesApi.saveNode);

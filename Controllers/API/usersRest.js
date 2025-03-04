@@ -40,7 +40,7 @@ async function getUsers(req,res){
  * @param {*} req 
  * @param {*} res 
  */
-async function saveNode(req,res){
+async function saveUser(req,res){
     try{
         const sessionData = req.session;
 
@@ -53,29 +53,17 @@ async function saveNode(req,res){
             return;
         }
 
-        let node = req.body;
-        const region_id = sessionData.user.region.id;
+        let user = req.body;
         let result;
-        if(!node.new_record){
-            //update
-            result = await nodesService.updateNode(node,region_id);  
-            res.status(200);
-            res.json({
-                "status"  : "success",
-                "total"   : result.length,
-                "records" : []
-            });          
-        }else{
-            //insert
-            result = await nodesService.insertNode(node,region_id);
-            res.status(200);
-            res.json({
-                "status"  : "success",
-                "total"   : result.changes,
-                "records" : []
-            });
-        }
         
+        //insert
+        result = await usersService.insertUser(user);
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : result.changes,
+            "records" : []
+        });        
     }catch(error){
         console.log(error);
         res.status(500);
@@ -83,7 +71,7 @@ async function saveNode(req,res){
     }
 }
 
-async function deleteNode(req,res){
+async function changePass(req,res){
     try{
         const sessionData = req.session;
 
@@ -96,12 +84,9 @@ async function deleteNode(req,res){
             return;
         }
         
-        let node = req.body;
-        const region_id = sessionData.user.region.id;
-        let result = await nodesService.deleteNode(node,region_id);
-        await flowsService.deleteFlowsByNodeIn(node,region_id);
-        await flowsService.deleteFlowsByNodeOut(node,region_id);
-       
+        let user = req.body;
+        let result = await usersService.changePass(user.user,user.password);
+               
         res.status(200);
         res.json({
             "status"  : "success",
@@ -115,4 +100,33 @@ async function deleteNode(req,res){
     }
 }
 
-module.exports={getUsers, saveNode,deleteNode}
+async function deleteUser(req,res){
+    try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+        
+        let user = req.body;
+        let result = await usersService.deleteUser(user);
+               
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : result.changes,
+            "records" : []
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+module.exports={getUsers, saveUser, changePass,deleteUser}

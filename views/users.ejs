@@ -31,136 +31,117 @@
     <script type="module">
 
         import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
-        let isEdit = false;
+        let currentSelected = -1;
 
         $("document").ready(function(){
             $.get("/WF/api/getUsers", function(data, status){
                 let recs = data.records;
                 grid.records = recs;
+                //grid.toolbar.disable("passChange");
                 grid.refresh();
             });
         });
 
         function getNewEmptyRecord(){
-            let genId = 1;
-            if(grid.records.length > 0){
-                let lastElement = grid.records[grid.records.length - 1];
-                genId = lastElement.recid + 1;
-            }
             
             let record = {
-                id: genId,
-                node_id: 'N'+genId,
-                description: '',
-                min_capacity:0.0,
-                current_vol:0.0,
-                max_capacity:0.0
+                username: '',
+                name:'',
+                role: {id:<%=roles[1].id%>,text:'<%=roles[1].name%>'},
+                region:{id:<%=regions[1].id%>,text:'<%=regions[1].name%>'}
             }
 
             return record;
         }
-
-        function getSelectedRecord(){
-            let selected = grid.getSelection();
-            let rec = grid.get(selected)[0];
-
-            let record = {
-                id: rec.recid,
-                node_id: rec.node_id,
-                description: rec.description,
-                min_capacity:rec.min_capacity,
-                current_vol:rec.current_vol,
-                max_capacity:rec.max_capacity
-            }
-
-            return record;
-        }
-
 
         function setForm(record){
             let rec = {
-                new_scenario_id : 'Change',
-                new_id : record.id,
-                new_node_id : record.node_id,
-                new_description: record.description,
-                new_min_capacity:record.min_capacity,
-                new_current_vol: record.current_vol,
-                new_max_capacity:record.max_capacity
+                new_username : record.username,
+                new_name : record.name,
+                new_region :record.region,
+                new_role: record.role
             };
-            w2ui.nodesForm.record = rec;
-            w2ui.nodesForm.refresh();
+            w2ui.usersForm.record = rec;
+            w2ui.usersForm.refresh();
         }
 
 
         function openFormPopup(){
-            
-            let nodesForm = new w2form({
-                name: 'nodesForm',
+            let usersForm = new w2form({
+                name: 'usersForm',
                 style: 'border: 0px; background-color: transparent;',
                 fields: [
-                    { field: 'new_scenario_id', type: 'text', required: true, 
-                        html: { label: 'Scenario Id', attr: 'readonly style="width: 100%";' }
+                    { field: 'new_username', type: 'text', required: true, 
+                        html: { label: 'Username', attr: 'placeholder = "Give me the username" style="width: 100%";' }
                     },
-                    { field: 'new_id', type: 'int', required: true, editable:false, 
-                        html: { label: 'Id', attr: 'readonly style="width: 100%";' }
+                    { field: 'new_name', type: 'text', required: true, 
+                        html: { label: 'Name', attr: 'placeholder = "Give me the name" style="width: 100%";' }
                     },
-                    { field: 'new_node_id', type: 'text', required: true, editable:true, 
-                        html: { label: 'Node Id', attr: 'style="width: 100%;"placeholder="Nodes Id" ' }
+                    { field: 'new_role', type: 'list', required: true,
+                        html: { label: 'Role',attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<roles.length;i++){%>
+                            {id:<%=roles[i].id%>,text:'<%=roles[i].name%>'}, 
+                            <%}%>
+                        ]},
                     },
-                    { field: 'new_description', type: 'text', required: false, editable:true, 
-                        html: { label: 'Description', attr: 'style="width: 100%;"placeholder="About this Node" ' }
+                    { field: 'new_region', type: 'list', required: true,
+                        html: { label: 'Region',attr: 'style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<regions.length;i++){%>
+                            {id:<%=regions[i].id%>,text:'<%=regions[i].name%>'}, 
+                            <%}%>
+                        ]},
                     },
-                    { field: 'new_min_capacity', type: 'float', required: true, editable:true, 
-                        html: { label: 'Min capacity', attr: 'style="width: 100%";' }
+                    { field: 'new_pass', type: 'password', required: true,
+                        html: { label: 'Password',attr: ' placeholder = "Type the pass" style="width: 100%"' },
                     },
-                    { field: 'new_current_vol', type: 'float', required: true, editable:true, 
-                        html: { label: 'Current Vol.', attr: 'style="width: 100%";' }
-                    },
-                    { field: 'new_max_capacity', type: 'float', required: true, editable:true, 
-                        html: { label: 'Max capacity.', attr: 'style="width: 100%";' }
+                    { field: 'new_pass2', type: 'password', required: true,
+                        html: { label: 'Password',attr: ' placeholder = "Repeate the pass" style="width: 100%"' },
                     }
                 ],
+                onRender:function(event){
+                    usersForm.show('new_region');
+                },
+                onChange:function(event){
+                    let modifiedField = event.target;
+
+                    if(modifiedField === 'new_role'){
+                        let selectedRole = usersForm.record.new_role;
+                        if(selectedRole.text === 'user'){
+                            usersForm.show('new_region');
+                        }else{
+                            usersForm.hide('new_region');
+                        }
+                    }
+                },
                 actions: {
                     Reset() { 
-                        if(isEdit) 
-                            setForm(getSelectedRecord());
-                        else
-                            setForm(getNewEmptyRecord());
+                        setForm(getNewEmptyRecord());
                     },
                     Save() { 
-                        this.validate(); 
+                        this.validate();
 
-                        let curr_min = nodesForm.record.new_min_capacity;
-                        let curr_vol = nodesForm.record.new_current_vol;
-                        let curr_max = nodesForm.record.new_max_capacity;
+                        let pass = usersForm.record.new_pass;
+                        let pass2 = usersForm.record.new_pass2;
 
-                        if(curr_min > curr_vol){
-                            w2alert("Min capacity cant be bigger than current vol.");
+                        if(pass !== pass2){
+                            w2alert("Not the same password");
                             return;
                         }
 
-                        if(curr_vol > curr_max){
-                            w2alert("Current Vol cant be bigger than Max capacity.");
-                            return;
+                        let user = {
+                            username:usersForm.record.new_username,
+                            name:usersForm.record.new_name,
+                            role_id: usersForm.record.new_role.id,
+                            region_id: usersForm.record.new_region.id,
+                            password:pass
                         }
 
-                        let node = {
-                            new_record:!isEdit,
-                            scenario_id:nodesForm.record.new_scenario_id,
-                            id:nodesForm.record.new_id,
-                            node_id:nodesForm.record.new_node_id,
-                            description:nodesForm.record.new_description,
-                            min_capacity: curr_min ,
-                            current_vol: curr_vol,
-                            max_capacity: curr_max
-                        }
-
-                        //https://stackoverflow.com/questions/2845459/jquery-how-to-make-post-use-contenttype-application-json
-                        //proper way to ajax
                         $.ajax({
-                            url:'/WF/api/saveNode', 
+                            url:'/WF/api/saveUser', 
                             type:'POST',
-                            data: JSON.stringify(node), 
+                            data: JSON.stringify(user), 
                             dataType:"json",
                             contentType:"application/json; charset=utf-8",
                             success:function(response){
@@ -175,20 +156,97 @@
             });
 
             w2popup.open({
-                title   : 'Nodes Form',
-                body    : '<div id="nodesForm" style="width: 100%; height: 100%;"></div>',
+                title   : 'Users Form',
+                body    : '<div id="usersForm" style="width: 100%; height: 100%;"></div>',
                 style   : 'padding: 15px 0px 0px 0px',
                 width   : 400,
                 height  : 420,
                 showMax : false
             })
             .then((event) => {
-                w2ui.nodesForm.render('#nodesForm');
-                if(isEdit) 
-                    setForm(getSelectedRecord());
-                else
-                    setForm(getNewEmptyRecord());
+                w2ui.usersForm.render('#usersForm');
+                setForm(getNewEmptyRecord());  
+            });
+        }
 
+
+        function openPassChangeForm(){
+            
+            let passForm = new w2form({
+                name: 'passForm',
+                style: 'border: 0px; background-color: transparent;',
+                fields: [
+                    { field: 'new_pass', type: 'password', required: true,
+                        html: { label: 'Password',attr: ' placeholder = "Type the pass" style="width: 100%"' },
+                    },
+                    { field: 'new_pass2', type: 'password', required: true,
+                        html: { label: 'Password',attr: ' placeholder = "Repeate the pass" style="width: 100%"' },
+                    }
+                ],
+                actions: {
+                    Reset() { 
+                        let record = {
+                            new_pass:'',
+                            new_pass2:'',
+                        };
+                        w2ui.passForm.record = record;
+                        w2ui.passForm.refresh();
+
+                    },
+                    Save() { 
+                        this.validate();
+                        
+                        let pass = passForm.record.new_pass;
+                        let pass2 = passForm.record.new_pass2;
+
+                        if(pass !== pass2){
+                            w2alert("Not the same password");
+                            return;
+                        }
+
+                        if(currentSelected < 0){
+                            return;
+                        }
+
+                        let user = {
+                            user:currentSelected,
+                            password:passForm.record.new_pass,
+                            
+                        }
+
+                        $.ajax({
+                            url:'/WF/api/changePass', 
+                            type:'POST',
+                            data: JSON.stringify(user), 
+                            dataType:"json",
+                            contentType:"application/json; charset=utf-8",
+                            success:function(response){
+                                if(response)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            }
+                        });
+                    }
+                }
+            });
+
+            w2popup.open({
+                title   : "Restore User's Password",
+                body    : '<div id="passForm" style="width: 100%; height: 100%;"></div>',
+                style   : 'padding: 15px 0px 0px 0px',
+                width   : 400,
+                height  : 220,
+                showMax : false
+            })
+            .then((event) => {
+                let record = {
+                    new_pass:'',
+                    new_pass2:'',
+                };
+                w2ui.passForm.record = record;
+                w2ui.passForm.refresh();
+                w2ui.passForm.render('#passForm');
             });
         }
 
@@ -200,46 +258,65 @@
             show: {
                 header:true,
                 toolbar: true,
-                //toolbarAdd: true,
+                toolbarAdd: true,
                 //toolbarEdit: true,
-                //toolbarDelete: true
+                toolbarDelete: true
+            },
+            toolbar:{
+                items: [
+                    { type: 'break' },
+                    { type: 'button', id: 'passChange', disabled:true, text: 'Change Password', icon: 'fa fa-key' }
+                ],
+                onClick: function (target, data) {
+                    if(target === 'passChange'){
+                        openPassChangeForm(); 
+                    }
+                }
             },
             multiSearch: true,
             searches: [
                 { field: 'recid', label: 'ID ', type: 'int' },
-                { field: 'node_id', label: 'Node', type: 'text' },
-                { field: 'current_vol', label: 'Current', type: 'int' },
-                { field: 'min_capacity', label: 'Min', type: 'int' },
-                { field: 'max_capacity', label: 'Max', type: 'int' },
+                { field: 'username', label: 'User', type: 'text' },
+                { field: 'role_name', label: 'Role', type: 'text' },
+                { field: 'region_name', label: 'Region', type: 'text' }
             ],
             columns: [
                 { field: 'recid', text: 'Id', size:'10%', sortable:true, attr: 'align=center' },
-                { field: 'username', text: 'User',sortable:true,size:'30%' },
-                { field: 'role_name', text: 'Role', size:'30%' },
-                { field: 'region_name', text: 'Region V.',sortable:true,size:'30%'},//,render:'float:02' },
+                { field: 'username', text: 'User',sortable:true,size:'25%' },
+                { field: 'name', text: 'Name',sortable:true,size:'35%' },
+                { field: 'role_name', text: 'Role', size:'15%' },
+                { field: 'region_name', text: 'Region V.',sortable:true,size:'15%'},//,render:'float:02' },
             ],
+            onSelect:function(event){
+                if(event.type === 'select'){
+                    let current = event.detail.clicked.recid;
+                    if(current === currentSelected ){
+                        //unselect
+                        currentSelected = -1;
+                        grid.toolbar.disable("passChange");
+                    }else{
+                        //new selection
+                        currentSelected = current;
+                        grid.toolbar.enable("passChange");
+                    }
+                } //item selected
+                return;
+            },
             onAdd: function (event) {
                 event.preventDefault();
-                isEdit = false;
-                openFormPopup();
-            },
-            onEdit: function(){
-                event.preventDefault();
-                isEdit = true;
                 openFormPopup();
             },
             onDelete: function (event) {
                 event.preventDefault();
                 let selected = grid.getSelection();
                 let node = {
-                  scenario_id : 'Change',
                   id: selected  
                 };
                 
 
                 w2confirm({
-                    msg: 'Do you want to delete this node?',
-                    title: "DELETE NODE",
+                    msg: 'Do you want to delete this user?',
+                    title: "DELETE USER",
                     width: 450,        // width of the dialog
                     height: 220,       // height of the dialog
                     btn_yes: {
@@ -256,7 +333,7 @@
                     },
                     callBack: function(answer){
                         if(answer === 'yes'){
-                            $.post('/WF/api/deleteNode', node, function(respuesta){
+                            $.post('/WF/api/deleteUser', node, function(respuesta){
                                 if(respuesta)
                                     window.location.reload();
                                 else

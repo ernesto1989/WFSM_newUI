@@ -204,6 +204,15 @@
                         let curr_vol = flowsForm.record.new_current_flow;
                         let curr_max = flowsForm.record.new_max_flow;
 
+
+                        if( flowsForm.record.new_type.id > 1 && flowsForm.record.new_origin.text === 'IN' ){
+                            w2alert("Variable Node can't be INPUT to the system");
+                        }
+
+                        if( flowsForm.record.new_type.id > 1 && flowsForm.record.new_destiny.text === 'OUT' ){
+                            w2alert("Variable Node can't be OUTPUT of the system");
+                        }
+
                         if( flowsForm.record.new_type.id > 1 && curr_min > curr_vol){
                             w2alert("Min Flow cant be bigger than current flow.");
                             return;
@@ -213,7 +222,7 @@
                             w2alert("Current Flow cant be bigger than Max Flow.");
                             return;
                         }
-
+                        
                         if(flowsForm.record.new_origin.text === 'IN')
                             flowsForm.record.new_origin.id = 0;
 
