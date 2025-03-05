@@ -121,7 +121,7 @@
                         html: { label: 'Scenario Id', attr: 'readonly style="width: 100%";' }
                     },
                     { field: 'new_type', type: 'list',
-                        html: { label: 'Flow Type',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
+                        html: { label: 'Flow Type',attr: 'style="width: 100%"' },
                         options: { items: [
                             <% for(let i =0;i<flow_types.length;i++){%>
                             {id:<%=flow_types[i].type_id%>,text:'<%=flow_types[i].type%>'}, 
@@ -129,7 +129,7 @@
                         ]},
                     },
                     { field: 'new_origin', type: 'list',
-                        html: { label: 'Origin',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
+                        html: { label: 'Origin',attr: 'style="width: 100%"' },
                         options: { items: [
                             {id:(maxNodeId + 1),text:'IN'}, 
                             <% for(let i =0;i<nodes.length;i++){%>
@@ -138,7 +138,7 @@
                         ]},
                     },
                     { field: 'new_destiny', type: 'list',
-                        html: { label: 'Destiny',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
+                        html: { label: 'Destiny',attr: 'style="width: 100%"' },
                         options: { items: [
                             {id:(maxNodeId + 1),text:'OUT'},
                             <% for(let i =0;i<nodes.length;i++){%>
@@ -147,13 +147,13 @@
                         ]},
                     },
                     { field: 'new_min_flow', type: 'float', required: true, editable:true, 
-                        html: { label: 'Min. Flow', attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        html: { label: 'Min. Flow', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_current_flow', type: 'float', required: true, editable:true, 
                         html: { label: 'Current Flow.', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_max_flow', type: 'float', required: true, editable:true, 
-                        html: { label: 'Max Flow.', attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        html: { label: 'Max Flow.', attr: 'style="width: 100%";' }
                     }
                 ],
                 onChange:function(event){
@@ -281,16 +281,10 @@
             show: {
                 header:true,
                 toolbar: true,
-                <% if(user_info.role.name === 'admin' && scenarioId === base_scenario ){ %>
-                //if user is admin and is in the base scenario, then can CRUD the nodes
+                <% if((user_info.role.name === 'admin' && scenarioId === base_scenario) || (user_info.role.name === 'user' && scenarioId !== base_scenario)){ %>
                 toolbarAdd: true,
                 toolbarEdit: true,
                 toolbarDelete: true
-                <%}%>
-
-                <% if(user_info.role.name === 'user' && scenarioId !== base_scenario ){ %>
-                //if user is user and is in a custom scenario, then can edit few attrs of the nodes
-                toolbarEdit: true,
                 <%}%>
             },
             searches: [
