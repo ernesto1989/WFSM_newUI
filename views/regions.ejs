@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regions</title>
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-uWxY/CJNBR+1zjPWmfnSnVxwRheevXITnMqoEIeG1LJrdI0GlVs/9cVSyPYXdcSF" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-kQtW33rZJAHjgefvhyyzcGF3C5TFyBQBA13V1RKPf4uH+bwyzQxZ6CmMZHmNBEfJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html,
+        body{
+            height: 100%;
+        }
+        
+        .container-fluid {
+            height:93%
+        }
+
+        #content-grid {
+            margin:auto;
+            width: 98%;
+            height: 95%;
+            padding: 2px;
+        }
+    </style>  
+    <script type="module">
+
+        import { w2grid, w2utils, w2form, w2ui, w2popup, w2alert, w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+
+        $("document").ready(function(){
+            $.get("/WF/api/getRegions", function(data, status){
+                let recs = data.records;
+                grid.records = recs;
+                grid.refresh();
+            });
+        });
+      
+        function openFormPopup(){
+            
+            let regionsForm = new w2form({
+                name: 'regionsForm',
+                style: 'border: 0px; background-color: transparent;',
+                fields: [
+                    { field: 'input_region', type: 'list', required:true,
+                        html: { label: 'New Region',attr: 'placeholder="Pick one" style="width: 100%"' },
+                        options: { items: [
+                            <% for(let i =0;i<regions.length;i++){%>
+                            {id:'<%=regions[i].region_id%>',text:'<%=regions[i].name%>'}, 
+                            <%}%>
+                        ]},
+                    }
+                ],
+                actions: {
+                    Reset() { 
+                        this.clear(); 
+                    },
+                    Save() { 
+                        this.validate(); 
+
+                        let selected = regionsForm.record.input_region.id;
+                        
+                        let region = {
+                            region_id: selected
+                        }
+                        
+
+                        //https://stackoverflow.com/questions/2845459/jquery-how-to-make-post-use-contenttype-application-json
+                        //proper way to ajax
+                        $.ajax({
+                            url:'/WF/api/createNewRegion', 
+                            type:'POST',
+                            data: JSON.stringify(region), 
+                            dataType:"json",
+                            contentType:"application/json; charset=utf-8",
+                            success:function(response){
+                                if(response)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            }
+                        });
+                    }
+                }
+            });
+
+            w2popup.open({
+                title   : 'New Region',
+                body    : '<div id="regionsForm" style="width: 100%; height: 100%;"></div>',
+                style   : 'padding: 15px 0px 0px 0px',
+                width   : 400,
+                height  : 220,
+                showMax : false
+            })
+            .then((event) => {
+                w2ui.regionsForm.render('#regionsForm');
+            });
+        }
+
+
+        let grid = new w2grid({
+            name: 'grid',
+            box: '#content-grid',
+            header  : 'Regions',
+            show: {
+                header:true,
+                toolbar: true,
+                toolbarAdd: true,
+                toolbarDelete: true
+                
+            },
+            multiSearch: true,
+            searches: [
+                { field: 'recid', label: 'ID ', type: 'int' },
+                { field: 'region_name', label: 'Name', type: 'text' }
+            ],
+            columns: [
+                { field: 'recid', text: 'Id', size:'10%', sortable:true, attr: 'align=center' },
+                { field: 'region_name', text: 'Name',sortable:true,size:'15%' },
+                { field: 'description', text: 'Description', size:'45%' },
+                { field: 'nodes', text: 'Total Nodes',sortable:true,size:'15%'},//,render:'float:02' },
+                { field: 'flows', text: 'Total Flows',sortable:true,size:'15%'}//,render:'float:02'},
+            ],
+            onAdd: function (event) {
+                event.preventDefault();
+                openFormPopup();
+            },
+            onDelete: function (event) {
+                event.preventDefault();
+                let selected = grid.getSelection();
+                            
+                w2confirm({
+                    msg: 'Do you want to delete this node?',
+                    title: "DELETE NODE",
+                    width: 450,        // width of the dialog
+                    height: 220,       // height of the dialog
+                    btn_yes: {
+                        text: 'yes',   // text for yes button (or yes_text)
+                        class: 'btn-danger',     // class for yes button (or yes_class)
+                        style: 'background-color:red;',     // style for yes button (or yes_style)
+                        onClick: null  // callBack for yes button (or yes_callBack)
+                    },
+                    btn_no: {
+                        text: 'No',    // text for no button (or no_text)
+                        class: '',     // class for no button (or no_class)
+                        style: '',     // style for no button (or no_style)
+                        onClick: null  // callBack for no button (or no_callBack)
+                    },
+                    callBack: function(answer){
+                        if(answer === 'yes'){
+                            $.post('/WF/api/deleteNode', node, function(respuesta){
+                                if(respuesta)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            });
+                        } 
+                    }
+                });   
+            }
+            
+        });
+    </script>
+</head>
+<body>
+    <div class="container-fluid" style="width:100%;height:100%;">
+        <div id="content-grid" style="width:95%;height:95%;margin: 5px;">
+        </div>
+    </div>
+</body>
+</html>

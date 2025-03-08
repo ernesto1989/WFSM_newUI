@@ -141,8 +141,35 @@ CREATE TABLE `z01_scenarios` (
   UNIQUE KEY `Scenario_un` (`scenario_id`,`region_id`)
 );
 
+CREATE TABLE `i01_regions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `region_id` varchar(5) DEFAULT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
 
+CREATE TABLE `i02_nodes` (
+  `region_id` int DEFAULT NULL,
+  `id` int DEFAULT NULL,
+  `node_id` varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `max_capacity` decimal(18,2) DEFAULT NULL,
+  `min_capacity` decimal(18,2) DEFAULT NULL,
+  `current_vol` decimal(18,2) DEFAULT NULL,
+  `Lat` varchar(100) DEFAULT NULL,
+  `Long` varchar(100) DEFAULT NULL
+);
 
+CREATE TABLE `i03_flows` (
+  `region_id` int NOT NULL,
+  `origin` int DEFAULT NULL,
+  `destiny` int DEFAULT NULL,
+  `current_flow` decimal(18,2) DEFAULT NULL,
+  `type_id` int DEFAULT NULL,
+  `fmax` decimal(18,2) DEFAULT NULL,
+  `fmin` decimal(18,2) DEFAULT NULL
+);
 
 INSERT INTO wfms.a01_nodes (scenario_id,region_id,id,node_id,description,max_capacity,min_capacity,current_vol,Lat,`Long`) VALUES
 	 ('BASE_CONDITION',0,1,'N01','Node #01 - Testing Scenario',100.00,70.00,80.00,NULL,NULL),
@@ -468,4 +495,60 @@ begin
 	delete from s01_solution_detail where scenario_id = scenarioId and region_id = regionId;
 	delete from s02_proposed_flows where scenario_id = scenarioId and region_id = regionId;
 	delete from z01_scenarios where scenario_id = scenarioId and region_id = regionId;
+END
+
+CREATE PROCEDURE create_new_region(in baseScenarioName varchar(30), in regionId varchar(30))
+begin
+	
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		ROLLBACK;
+	END;
+	start transaction;
+	
+	INSERT INTO u01_regions
+	(region_id, name, description)
+	select 
+		region_id, name, description 
+	from i01_regions 
+	where region_id = regionId;
+
+	set @genIdD = (select id from u01_regions where region_id = regionId);
+		
+	
+
+	INSERT INTO z01_scenarios
+	(scenario_id, region_id, description, `type`, capacity_units, time_units, recalc_trl, recalc_solution)
+	select
+		baseScenarioName, @genIdD, 'BASE CONDITION SCENARIO', 0, i01.capacity_units , i01.time_units , 1, 1
+	from i01_regions i01 where i01.region_id = regionId;
+
+	select * from z01_scenarios;
+
+
+	INSERT INTO a01_nodes(scenario_id, region_id, id, node_id, description, max_capacity, min_capacity, current_vol, Lat, `Long`)
+	select
+		baseScenarioName,
+		@genIdD,
+		id, 
+		node_id,
+		description,
+		max_capacity,
+		min_capacity,
+		current_vol,
+		Lat,
+		`Long`
+	FROM i02_nodes where region_id = regionId;
+	
+	INSERT INTO a02_flows(scenario_id, region_id, origin, destiny, current_flow, type_id, fmax, fmin)
+	select
+		baseScenarioName,
+		@genIdD,
+		origin, destiny, current_flow, type_id, fmax, fmin
+	from i03_flows where region_id = regionId;	
+
+	select * from z01_scenarios;
+	select * from a01_nodes where region_id = @ID;
+
+	commit;
 END
