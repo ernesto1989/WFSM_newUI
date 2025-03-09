@@ -94,4 +94,32 @@ async function createNewRegion(req,res){
 }
 
 
-module.exports = {getRegion,getRegions,createNewRegion};
+async function updateRegions(req,res){
+    try{
+        const sessionData = req.session;
+
+        if (!sessionData.isLoggedIn) {
+            res.status(401);
+            res.json({
+                "status"  : "failed",
+                "error"   : "Unauthorized"
+            });
+            return;
+        }
+
+        const result = await regionsService.updateRegions();
+
+        res.status(200);
+        res.json({
+            "status"  : "success",
+            "total"   : result.length,
+            "records" : result
+        });
+    }catch(error){
+        console.log(error);
+        res.status(500);
+        res.send(error);
+    }
+}
+
+module.exports = {getRegion,getRegions,createNewRegion,updateRegions};

@@ -40,6 +40,7 @@ router.get(constants.contextURL+'/solution/:scenarioId', templates.solutionsView
 router.post(constants.contextURL+'/login', templates.postLogin);
 router.post(constants.contextURL + constants.apiURL+'/getRegion', regionsApi.getRegion);
 router.post(constants.contextURL + constants.apiURL+'/createNewRegion', regionsApi.createNewRegion);
+router.post(constants.contextURL + constants.apiURL+'/updateRegions', regionsApi.updateRegions);
 router.post(constants.contextURL + constants.apiURL+'/getScenario', scenariosApi.getScenario);
 router.post(constants.contextURL + constants.apiURL + '/getScenarioTRL', scenariosApi.getScenarioTRL);
 router.post(constants.contextURL + constants.apiURL + '/saveScenario', scenariosApi.saveScenario);

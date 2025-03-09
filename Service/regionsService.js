@@ -43,6 +43,10 @@ const createNewRegionQuery =
 `
     call create_new_region(?,?)
 `;
+const updateRegionsQuery =
+`
+    call update_regions(?)
+`;
 
 /**
  * This method gets the Regions list
@@ -119,4 +123,15 @@ async function createNewRegion(region){
     }
 }
 
-module.exports = {getRegions,getRegionById,getAllRegions,getInputRegions,getRegionDetails,createNewRegion}
+async function updateRegions(){
+    try{
+        let query = updateRegionsQuery;
+        let params = [constants.BASE_SCENARIO_ID]
+        qResult = await dataSource.getDataWithParams(query,params);
+        return qResult.rows;
+    }catch(err){
+        return [];
+    }
+}
+
+module.exports = {getRegions,getRegionById,getAllRegions,getInputRegions,getRegionDetails,createNewRegion,updateRegions}

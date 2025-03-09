@@ -113,6 +113,28 @@
                 toolbarDelete: true
                 
             },
+            toolbar:{
+                items: [
+                    { type: 'break' },
+                    { type: 'button', id: 'update_regions', text: 'Update Regions', icon: 'fa fa-location' }
+                ],
+                onClick: function (target, data) {
+                    if(target === 'update_regions'){
+                        $.ajax({
+                            url:'/WF/api/updateRegions', 
+                            type:'POST',
+                            dataType:"json",
+                            contentType:"application/json; charset=utf-8",
+                            success:function(response){
+                                if(response)
+                                    window.location.reload();
+                                else
+                                    alert("Something went wrong")
+                            }
+                        });
+                    }
+                }
+            },
             multiSearch: true,
             searches: [
                 { field: 'recid', label: 'ID ', type: 'int' },
