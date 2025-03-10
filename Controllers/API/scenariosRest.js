@@ -114,7 +114,7 @@ async function saveScenario(req,res){
 
             const timeToLimit = await axios({
                 method: 'get',
-                url: 'http://localhost:5000/WF/TimeToLimit',
+                url: 'http://localhost:4000/WF/TimeToLimit',
                 data:{
                     'nodes':nodes,
                     'flows':flows
@@ -163,7 +163,7 @@ async function recalcTRL(req,res){
 
         const timeToLimit = await axios({
             method: 'get',
-            url: 'http://localhost:5000/WF/TimeToLimit',
+            url: 'http://localhost:4000/WF/TimeToLimit',
             data:{
                 'nodes':nodes,
                 'flows':flows

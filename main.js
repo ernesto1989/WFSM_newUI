@@ -1,7 +1,10 @@
 /**
  * Water flow scenario manager
  * 
- * Water Management System
+ * Water Management System.
+ * 
+ * Install node on digital ocean: 
+ * https://www.digitalocean.com/community/tutorials/how-to-install-node-js-with-nvm-node-version-manager-on-a-vps
  * 
  * 07/15/2024
  * 
