@@ -2,7 +2,7 @@ const mysql = require('mysql2')
 //const constants = require("../constants");
 require('dotenv').config()
 
-const {HOST, PORT, USER, PASS,DB} = process.env
+const {HOST, PORT, USR, PASS,DB} = process.env
 
 
 /**
@@ -34,7 +34,7 @@ async function open(){
     
     const connection = mysql.createConnection({
       host: HOST,//constants.dbHost,
-      user: USER,//constants.dbUser,
+      user: USR,//The OS has a env variable called USER, causing an error on DB login.
       port: PORT,//constants.dbPort,
       password: PASS,//constants.dbPass,
       database: DB,//constants.dbName,
