@@ -64,7 +64,7 @@ async function solve(req,res){
 
         const solution = await axios({
             method: 'get',
-            url: 'http://localhost:5000/WF/Solve',
+            url: 'http://localhost:4000/WF/Solve',
             data:{
                 'nodes':nodes,
                 'flows':flows
