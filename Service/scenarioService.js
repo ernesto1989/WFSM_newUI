@@ -7,9 +7,10 @@ const getScenariosQuery =
         z01.cdate,
         z01.description,
         z01.type,
+        x03.description as description_type,
         z01.capacity_units,
         z01.time_units,
-        z01a.origin_id as parent_id,
+        z01a.scenario_id as parent_id,
         (select count(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.region_id = z01.region_id) as nodes,
         (select count(*) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.region_id = z01.region_id) as flows,
         COALESCE(
@@ -18,7 +19,9 @@ const getScenariosQuery =
             ),'Unsolved') AS Status 
     FROM z01_scenarios z01 
     left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.region_id  = z01.region_id
+    join x03_scenario_types x03 on x03.id = z01.type
     where z01.region_id = ?
+    order by z01.cdate asc
 `;
 
 const getScenarioByIdQuery = 
@@ -27,6 +30,7 @@ const getScenarioByIdQuery =
         z01.cdate,
         z01.description,
         z01.type,
+        x03.description as description_type,
         z01.capacity_units,
         z01.time_units,
         z01a.scenario_id as origin_id,
@@ -44,7 +48,9 @@ const getScenarioByIdQuery =
             'Unsolved') AS Optimal_Solution 
     FROM z01_scenarios z01 
     left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.region_id = z01.region_id
+    join x03_scenario_types x03 on x03.id = z01.type
     where z01.scenario_id = ? and z01.region_id = ?
+    order by z01.cdate asc
 `;
 
 const getScenarioTRLQuery = 

@@ -553,28 +553,28 @@ begin
 	commit;
 END
 
-
-
-CREATE PROCEDURE update_regions(in baseScenarioName varchar(30))
+CREATE PROCEDURE `update_regions`(in baseScenarioName varchar(30))
 BEGIN
 	
 	UPDATE a01_nodes a01
-	SET a01.current_vol = (
+	SET a01.current_vol = COALESCE((
 		SELECT i02.current_vol from i02_nodes i02
 		where i02.id = a01.id and i02.region_id = (
 			select u01.region_id from u01_regions u01 WHERE u01.id = a01.region_id 
 		)
-	)
-	where a01.scenario_id = baseScenarioName;
+	),a01.current_vol)
+	where a01.scenario_id = baseScenarioName and a01.region_id > 0;
 
 	UPDATE a02_flows a02
-	SET a02.current_flow = (
+	SET a02.current_flow = COALESCE((
 		SELECT i03.current_flow from i03_flows i03
 		where i03.origin = a02.origin and i03.destiny = a02.destiny and i03.region_id = (
 			select u01.region_id from u01_regions u01 WHERE u01.id = a02.region_id 
 		)
-	)
-	where a02.scenario_id = baseScenarioName;
+	),a02.current_flow)
+	where scenario_id = baseScenarioName and a02.region_id > 0;
 
-	
+	update z01_scenarios z01
+	set z01.recalc_trl = 1,z01.recalc_solution = 1 where z01.scenario_id = baseScenarioName
+	and z01.region_id > 0;
 END

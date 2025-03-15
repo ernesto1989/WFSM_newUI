@@ -290,7 +290,9 @@
 
                 <% if(user_info.role.name === 'user' && scenarioId !== base_scenario ){ %>
                 //if user is user and is in a custom scenario, then can edit few attrs of the nodes
+                toolbarAdd: true,
                 toolbarEdit: true,
+                toolbarDelete: true
                 <%}%>
             },
             searches: [

@@ -20,7 +20,6 @@ const rolesService = require("../../Service/rolesService")
 
 //Scenario Types. Must be checked.
 const scenario_type = [
-    //{id:"0",desc:"Real Time"},
     {id:"1",desc:"Proposed"},
     {id:"2",desc:"Empty"}
 ]
@@ -143,6 +142,35 @@ async function homePage(req,res){
     session[0].region = sessionData.user.region;
     let scenarios = await scenariosService.getScenarios(sessionData.user.region.id);
     res.render('index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
+}
+
+
+async function index2(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            //region: sessionData.user.region.name, 
+            role: sessionData.user.role.name
+        }
+    ]
+
+    if(sessionData.user.role_id == 1){
+        // user is admin and should not have a region assigned
+        let regions = await regionsService.getRegions();
+        res.render('admin', {user_info:session[0], regions_list:regions,base_scenario:constants.BASE_SCENARIO_ID});
+        return;
+    }
+
+    session[0].region = sessionData.user.region;
+    let scenarios = await scenariosService.getScenarios(sessionData.user.region.id);
+    res.render('index2', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
 async function regionsGrid(req,res){
@@ -335,4 +363,4 @@ async function solutionsView(req,res){
 }
 
 
-module.exports = {getLogin,postLogin,logout,index,homePage,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin,logout,index,homePage, index2,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
