@@ -175,20 +175,22 @@
                         }
                     }
 
-                    /*
-                        On this part of the code, I'm trying to prevent de user to select and Input and Output out of the system
-                    */
-                    if(modifiedField === 'new_origin'){
-                        if(selectedType.id === 1 && w2ui.flowsForm.record.new_origin.text === 'IN' ){
-                            w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].text%>"};
-                        }
-                    }
 
-                    if(modifiedField === 'new_destiny'){
-                        if(selectedType.id === 1 && w2ui.flowsForm.record.new_destiny.text === 'OUT' ){
-                            w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].text%>"};
-                        }
-                    }
+                    // /*
+                    //     Justa validate before sending the data to the server
+                    //     On this part of the code, I'm trying to prevent de user to select and Input and Output out of the system
+                    // */
+                    // if(modifiedField === 'new_origin'){
+                    //     if(selectedType.id === 1 && w2ui.flowsForm.record.new_origin.text === 'IN' ){
+                    //         w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
+                    //     }
+                    // }
+
+                    // if(modifiedField === 'new_destiny'){
+                    //     if(selectedType.id === 1 && w2ui.flowsForm.record.new_destiny.text === 'OUT' ){
+                    //         w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
+                    //     }
+                    // }
                 },
                 actions: {
                     Reset() { 
@@ -205,24 +207,45 @@
                         let curr_max = flowsForm.record.new_max_flow;
 
 
-                        if( flowsForm.record.new_type.id > 1 && flowsForm.record.new_origin.text === 'IN' ){
-                            w2alert("Variable Node can't be INPUT to the system");
+                        if( flowsForm.record.new_type.id === 2 && flowsForm.record.new_origin.text === 'IN' ){
+                            w2alert("Variable Flow can't be INPUT to the system");
                         }
 
-                        if( flowsForm.record.new_type.id > 1 && flowsForm.record.new_destiny.text === 'OUT' ){
-                            w2alert("Variable Node can't be OUTPUT of the system");
+                        if( flowsForm.record.new_type.id === 2 && flowsForm.record.new_destiny.text === 'OUT' ){
+                            w2alert("Variable Flow can't be OUTPUT of the system");
                         }
 
-                        if( flowsForm.record.new_type.id > 1 && curr_min > curr_vol){
+                        if(flowsForm.record.new_type.id === 2 && curr_min > curr_max){
+                            w2alert("Min Flow cant be bigger than Max Flow.");
+                            return;
+                        }
+
+                        if( flowsForm.record.new_type.id === 2 && curr_min > curr_vol){
                             w2alert("Min Flow cant be bigger than current flow.");
                             return;
                         }
 
-                        if(flowsForm.record.new_type.id > 1 && curr_vol > curr_max){
+                        if(flowsForm.record.new_type.id === 2 && curr_vol > curr_max){
                             w2alert("Current Flow cant be bigger than Max Flow.");
                             return;
                         }
+
+                        if(flowsForm.record.new_type.id === 1 && (flowsForm.record.new_origin.text === 'IN' && flowsForm.record.new_destiny.text === 'OUT')){
+                            w2alert("Flow can't be from IN to OUT");
+                            return;
+                        }
+
+                        if(flowsForm.record.new_type.id === 1 && (flowsForm.record.new_origin.text !== 'IN' && flowsForm.record.new_destiny.text !== 'OUT')){
+                            w2alert("Flow must be from IN to internal node or internal node to OUT");
+                            return;
+                        }
+
+                        if(flowsForm.record.new_origin.id === flowsForm.record.new_destiny.id){
+                            w2alert("Invalid Origin and Destiny");
+                            return;
+                        }
                         
+
                         if(flowsForm.record.new_origin.text === 'IN')
                             flowsForm.record.new_origin.id = 0;
 
@@ -304,9 +327,10 @@
             columns: [
                 { field: 'recid', text: 'Id',sortable:true,size:'5%' },
                 { field: 'origin', hidden:true },
-                { field: 'origin_node', text: 'Origin',sortable:true, size:'10%' },
+                { field: 'origin_node', text: 'Origin',sortable:true, size:'5%' },
                 { field: 'destiny', hidden:true },
-                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'10%' },
+                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'5%' },
+                { field: 'description', text: 'Description',sortable:false, size:'10%' },
                 { field: 'type_id', hidden:true },
                 { field: 'type', text: 'Type', size:'10%' },
                 { field: 'fmin', text: 'Min F', size:'15%',sortable:true},//,render:'float:02' },

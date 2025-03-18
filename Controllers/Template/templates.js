@@ -245,8 +245,8 @@ async function nodesGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].region = sessionData.user.region;
     }else{
-        if(!sessionData.user.region){
-            let regionId = req.params.regionId;
+        let regionId = req.params.regionId;
+        if(!sessionData.user.region || sessionData.user.region.id != regionId){
             let region = await regionsService.getRegionById(regionId);
             sessionData.user.region = region[0];
             sessionData.user.region_id = region[0].id;
@@ -284,8 +284,8 @@ async function flowsGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].region = sessionData.user.region;
     }else{
-        if(!sessionData.user.region){
-            let regionId = req.params.regionId;
+        let regionId = req.params.regionId;
+        if(!sessionData.user.region || sessionData.user.region.id != regionId){
             let region = await regionsService.getRegionById(regionId);
             sessionData.user.region = region[0];
             sessionData.user.region_id = region[0].id;

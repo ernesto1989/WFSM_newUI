@@ -12,6 +12,7 @@ const getFlowsQuery =
         ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id, 
         a02.scenario_id, 
         a02.origin as origin, 
+        a02.flow_desc as description,
         coalesce(a01o.node_id,'IN') as origin_node, 
         a02.destiny as destiny, 
         coalesce(a01d.node_id,'OUT') as destiny_node, 
