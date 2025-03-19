@@ -1,4 +1,5 @@
 const flowsService = require("../../Service/flowsService")
+const socketServer = require("../../socketserver");
 
 /**
  * Method that returns the list of nodes from a specific scenario.
@@ -72,7 +73,7 @@ async function saveFlow(req,res){
                 "records" : []
             });
         }
-        
+        socketServer.sendMessageToUser(sessionData.user.id,'Node update');
     }catch(error){
         console.log(error);
         res.status(500);

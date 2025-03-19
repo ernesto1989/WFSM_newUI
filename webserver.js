@@ -12,9 +12,9 @@
  * 07/10/2024
  */
 const constants = require("./constants")
+const socketServer = require("./socketserver");
 const express = require('express');
 const bodyParser = require('body-parser');
-const webSocket = require('ws');
 const cors = require('cors');
 const session = require('express-session');
 const router = require("./Controllers/router");
@@ -41,24 +41,7 @@ function initWebProject(){
      
     app.use(router);
 
-    //https://www.youtube.com/watch?v=wV-fDdHhGqs&t=30s
-    const wss = new webSocket.Server({ server:server }); //create a server from http module to be able to integrate WS support  
-
-    wss.on('connection', ws => {
-        console.log("New client connected");
-        //ws.send('Welcome New Client!!');
-
-        ws.on('message', message => {
-            //message from any client
-            console.log(`Received message => ${message}`);
-            ws.send(`Hello, you sent => ${message}`);
-        });
-
-        ws.on('close', () => {
-            console.log('Client disconnected');
-        });
-    });
-
+    socketServer.initWebSocket(server);   
 
     server.listen(constants.port, () => {
         console.log(`Waterflow Scenario Manager service running on port ${constants.port}`);

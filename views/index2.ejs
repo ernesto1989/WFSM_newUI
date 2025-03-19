@@ -35,24 +35,27 @@
         
         import { w2tabs, w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
-        let scenarios = new Map;
+        let scenarios = new Map();
         let form;
         let details_grid;
         let selected_scenario;
 
-        const socket = new WebSocket('ws://localhost:3000');
+        const socket = new WebSocket('ws://localhost:3000?userId=<%=user_info.username%>');
 
         socket.onopen = function(){
             console.log('Connected to server');
-            sendMessage();
         }
 
         socket.addEventListener("open",function(event){
             console.log('Connected to server');
         });
 
-        socket.addEventListener("message",function(event){
-            alert("Server says: " + event.data);
+        socket.addEventListener("message",function(e){
+            //alert("Server says: " + event.data);
+            let message = JSON.parse(e.data)
+            if(message.action === 'update_scenario'){
+                updateScenario(message.scenario_id);
+            }
         });
 
 
@@ -76,6 +79,11 @@
                     description: '<%=scenarios_list[i].description%>',
                     origin_id: '<%=scenarios_list[i].origin_id%>',
                     type: <%=scenarios_list[i].type%>,
+                    description_type: '<%=scenarios_list[i].description_type%>',
+                    nodes: '<%=scenarios_list[i].nodes%>',
+                    flows: '<%=scenarios_list[i].flows%>',
+                    Proposed_Solution: '<%=scenarios_list[i].Proposed_Solution%>',
+                    Optimal_Solution: '<%=scenarios_list[i].Optimal_Solution%>',
                     capacity_units:'<%=scenarios_list[i].capacity_units%>',
                     time_units:'<%=scenarios_list[i].time_units%>'
                 };
@@ -88,6 +96,23 @@
             showScenario("<%=base_scenario%>");
         });
 
+        function updateScenario(scenarioId){
+            let scenario = {scenario_id:scenarioId}
+            $.post('/WF/api/getScenario', scenario, function(respuesta){
+                let s = respuesta.records.scenario_details[0];
+                scenarios.set(s.scenario_id,s);
+                if(selected_scenario.scenario_id === s.scenario_id){
+                    selected_scenario = s; // actualiza el scenario seleccionado.
+                    setForm(s);
+                    setDetails(s);
+                }
+            });
+        }
+
+        /**
+         * Function that sets a scenario in the form.
+         * It receives a scenario and sets the form with the scenario data.
+         */
         function setForm(scenario){
             form.record = scenario;
             form.refresh();
@@ -139,24 +164,12 @@
          * It could be improved by getting the scenario from the scenarios map.
          */
         function showScenario(scenarioID){
-            let scenario = {scenario_id:scenarioID}
+            //let scenario = {scenario_id:scenarioID}
             if(scenarioID !== selected_scenario.scenario_id){
-                $.post('/WF/api/getScenario', scenario, function(respuesta){
-                    let s;
-                    if(respuesta){
-                        selected_scenario = respuesta.records.scenario_details[0];
-                        let s = respuesta.records.scenario_details[0];
-                        setForm(s);
-                        setDetails(s);
-                    } else {
-                        alert("Something went wrong")
-                    }
-                });
-            }else{
-                setForm(selected_scenario);
-                setDetails(selected_scenario);
-            }
-            
+                selected_scenario = scenarios.get(scenarioID);
+            }//else{
+            setForm(selected_scenario);
+            setDetails(selected_scenario);
         }
 
         /**

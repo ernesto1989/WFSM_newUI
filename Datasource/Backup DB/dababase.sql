@@ -58,7 +58,7 @@ CREATE TABLE `s01_solution_detail` (
   `NMin` decimal(18,2) DEFAULT NULL,
   `NMax` decimal(18,2) DEFAULT NULL,
   `NActual` decimal(18,2) DEFAULT NULL,
-  `T` varchar(100) DEFAULT NULL
+  `T` decimal(18,2) DEFAULT NULL
 );
 
 
