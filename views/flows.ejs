@@ -105,8 +105,14 @@
             w2ui.flowsForm.refresh();
 
             if(isEdit){
+                if(w2ui.flowsForm.record.new_type.id === 1){
+                    w2ui.flowsForm.hide('new_min_flow','new_max_flow');
+                }else{
+                    w2ui.flowsForm.show('new_min_flow','new_max_flow');
+                }
                 w2ui.flowsForm.disable('new_type','new_origin','new_destiny');
             }else{
+                w2ui.flowsForm.show('new_min_flow','new_max_flow');
                 w2ui.flowsForm.enable('new_type','new_origin','new_destiny');
             }
         }
@@ -129,7 +135,7 @@
                         ]},
                     },
                     { field: 'new_origin', type: 'list',
-                        html: { label: 'Origin',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
+                        html: { label: 'Origin',attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%"' },
                         options: { items: [
                             {id:(maxNodeId + 1),text:'IN'}, 
                             <% for(let i =0;i<nodes.length;i++){%>
@@ -138,7 +144,7 @@
                         ]},
                     },
                     { field: 'new_destiny', type: 'list',
-                        html: { label: 'Destiny',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
+                        html: { label: 'Destiny',attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%"' },
                         options: { items: [
                             {id:(maxNodeId + 1),text:'OUT'},
                             <% for(let i =0;i<nodes.length;i++){%>
@@ -147,13 +153,13 @@
                         ]},
                     },
                     { field: 'new_min_flow', type: 'float', required: true, editable:true, 
-                        html: { label: 'Min. Flow', attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        html: { label: 'Min. Flow', attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%";' }
                     },
                     { field: 'new_current_flow', type: 'float', required: true, editable:true, 
                         html: { label: 'Current Flow.', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_max_flow', type: 'float', required: true, editable:true, 
-                        html: { label: 'Max Flow.', attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        html: { label: 'Max Flow.', attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%";' }
                     }
                 ],
                 onChange:function(event){
@@ -165,32 +171,37 @@
                         if(selectedType.id === 1){
                             w2ui.flowsForm.record.new_origin = {id:(maxNodeId + 1),text:"IN"};
                             w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
+
+                            w2ui.flowsForm.record.new_min_flow = 0.0;
+                            w2ui.flowsForm.record.new_max_flow = 0.0;
+
+                            w2ui.flowsForm.hide('new_min_flow','new_max_flow');
+
                             w2ui.flowsForm.refresh();
                         }
 
                         if(selectedType.id === 2){
                             w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
                             w2ui.flowsForm.record.new_destiny = {id:<%=nodes[1].id%>,text:"<%=nodes[1].node_id%>"};
+                            w2ui.flowsForm.show('new_min_flow','new_max_flow');
                             w2ui.flowsForm.refresh();
                         }
                     }
 
-
-                    // /*
-                    //     Justa validate before sending the data to the server
-                    //     On this part of the code, I'm trying to prevent de user to select and Input and Output out of the system
-                    // */
-                    // if(modifiedField === 'new_origin'){
-                    //     if(selectedType.id === 1 && w2ui.flowsForm.record.new_origin.text === 'IN' ){
-                    //         w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
-                    //     }
-                    // }
-
-                    // if(modifiedField === 'new_destiny'){
-                    //     if(selectedType.id === 1 && w2ui.flowsForm.record.new_destiny.text === 'OUT' ){
-                    //         w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
-                    //     }
-                    // }
+                    if(modifiedField === 'new_origin' ){
+                        let origin = w2ui.flowsForm.record.new_origin.text;
+                        if(selectedType.id === 1 && origin === 'IN'){
+                            w2ui.flowsForm.record.new_destiny = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
+                            w2ui.flowsForm.refresh();
+                        }
+                    }
+                    if(modifiedField === 'new_destiny' ){
+                        let destiny = w2ui.flowsForm.record.new_destiny.text;
+                        if(selectedType.id === 1 && destiny === 'OUT'){
+                            w2ui.flowsForm.record.new_origin = {id:<%=nodes[0].id%>,text:"<%=nodes[0].node_id%>"};
+                            w2ui.flowsForm.refresh();
+                        }
+                    }
                 },
                 actions: {
                     Reset() { 
@@ -327,15 +338,15 @@
             columns: [
                 { field: 'recid', text: 'Id',sortable:true,size:'5%' },
                 { field: 'origin', hidden:true },
-                { field: 'origin_node', text: 'Origin',sortable:true, size:'5%' },
+                { field: 'origin_node', text: 'Origin',sortable:true, size:'15%' },
                 { field: 'destiny', hidden:true },
-                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'5%' },
-                { field: 'description', text: 'Description',sortable:false, size:'10%' },
+                { field: 'destiny_node', text: 'Destiny',sortable:true, size:'15%' },
+                { field: 'description', text: 'Description',sortable:false, size:'30%' },
                 { field: 'type_id', hidden:true },
-                { field: 'type', text: 'Type', size:'10%' },
-                { field: 'fmin', text: 'Min F', size:'15%',sortable:true},//,render:'float:02' },
-                { field: 'current_flow', text: 'Current',sortable:true, size:'15%'},//,render:'float:02' },
-                { field: 'fmax', text: 'Max F.', size:'15%',sortable:true}//,render:'float:02' }
+                { field: 'type', text: 'Type', size:'11%' },
+                { field: 'fmin', text: 'Min F', size:'8%',sortable:true,render:'float:02' },
+                { field: 'current_flow', text: 'Current',sortable:true, size:'8%',render:'float:02' },
+                { field: 'fmax', text: 'Max F.', size:'8%',sortable:true,render:'float:02' }
             ],
             onAdd: function (event) {
                 <%if(nodes.length === 0) { %>   

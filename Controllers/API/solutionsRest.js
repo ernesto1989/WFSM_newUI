@@ -94,6 +94,8 @@ async function solve(req,res){
                     {}
                 });
             }
+            let message = {action:'update_scenario',scenario_id:scenarioId};
+            socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
         }else{
             res.status(500);
             res.json({

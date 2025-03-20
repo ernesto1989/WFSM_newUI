@@ -118,6 +118,8 @@ async function deleteNode(req,res){
             "total"   : result.changes,
             "records" : []
         });
+        let message = {action:'update_scenario',scenario_id:node.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);

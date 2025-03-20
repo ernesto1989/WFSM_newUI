@@ -33,45 +33,10 @@
     </style>
     <script type="module">
         
-        import { w2tabs, w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
+        import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
-        let scenarios = new Map();
-        let form;
-        let details_grid;
-        let selected_scenario;
-
-        const socket = new WebSocket('ws://localhost:3000?userId=<%=user_info.username%>');
-
-        socket.onopen = function(){
-            console.log('Connected to server');
-        }
-
-        socket.addEventListener("open",function(event){
-            console.log('Connected to server');
-        });
-
-        socket.addEventListener("message",function(e){
-            //alert("Server says: " + event.data);
-            let message = JSON.parse(e.data)
-            if(message.action === 'update_scenario'){
-                updateScenario(message.scenario_id);
-            }
-        });
-
-
-        function sendMessage(){
-            socket.send("Hello from client");
-        }
-
-        /**
-         * Function that is called when the page is fully loaded.
-         * It initializes the scenarios map and selects the base scenario ib tge sudebar.
-         * It also initializes the form and the details grid.
-         * At the end, it shows the base scenario.
-         * 
-         * Must be corrected the way the scenarios are selected.
-         */
-        $("document").ready(function(){            
+        let scenarios = new Map;
+        $("document").ready(function(){
             let scenario;
             <%for(let i = 0; i<scenarios_list.length;i++){%>
                 scenario = {
@@ -79,102 +44,81 @@
                     description: '<%=scenarios_list[i].description%>',
                     origin_id: '<%=scenarios_list[i].origin_id%>',
                     type: <%=scenarios_list[i].type%>,
-                    description_type: '<%=scenarios_list[i].description_type%>',
-                    nodes: '<%=scenarios_list[i].nodes%>',
-                    flows: '<%=scenarios_list[i].flows%>',
-                    Proposed_Solution: '<%=scenarios_list[i].Proposed_Solution%>',
-                    Optimal_Solution: '<%=scenarios_list[i].Optimal_Solution%>',
                     capacity_units:'<%=scenarios_list[i].capacity_units%>',
                     time_units:'<%=scenarios_list[i].time_units%>'
                 };
                 scenarios.set('<%=scenarios_list[i].scenario_id%>',scenario)
             <%}%>
+            
             //AS part of a general (and implementable) solution.... <%=base_scenario%> will always reflects the current situation.
             sidebar.select("<%=base_scenario%>"); // SELECT <%=base_scenario%> at the beginning.
-            defineTab1Elements();   
-            selected_scenario = {scenario_id: ''};
+            toolbar.enable('delete');
             showScenario("<%=base_scenario%>");
+
         });
 
-        function updateScenario(scenarioId){
-            let scenario = {scenario_id:scenarioId}
+        /*
+            Method that gets a scenario from backend by its ID.
+        */
+        function showScenario(scenarioID){
+            let scenario = {scenario_id:scenarioID}
             $.post('/WF/api/getScenario', scenario, function(respuesta){
-                let s = respuesta.records.scenario_details[0];
-                scenarios.set(s.scenario_id,s);
-                if(selected_scenario.scenario_id === s.scenario_id){
-                    selected_scenario = s; // actualiza el scenario seleccionado.
-                    setForm(s);
-                    setDetails(s);
+                if(respuesta){
+                    let s = respuesta.records.scenario_details[0];
+                    form.record = s;
+                    form.refresh();
+
+                    let details = [
+                        {element:'Nodes',number:`<a href="javascript:window.open('/WF/nodes/${s.scenario_id}','nodes','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=950
+                                    height=550');">${s.nodes}</a>`},
+                        {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','flows','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=1050
+                                    height=650');">${s.flows}</a>`},
+                        {element:"Proposed Solution",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=1050
+                                    height=950');">${s.Proposed_Solution}</a>`},
+                        {element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,
+                                    location=no,
+                                    status=no,
+                                    menubar=no,
+                                    scrollbars=yes,
+                                    resizable=yes,
+                                    width=1050
+                                    height=950');">${s.Optimal_Solution}</a>`}
+                    ];
+
+                    details_grid.records = details;
+                    details_grid.refresh();
+
+                    // let trl = respuesta.records.scenario_trl;
+                    // grid.header = "Scenario Details - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
+                    // grid.records = trl;
+                    // grid.refresh();
+                    //let selectedS = scenarios.get(s);
+                } else {
+                    alert("Something went wrong")
                 }
             });
         }
 
         /**
-         * Function that sets a scenario in the form.
-         * It receives a scenario and sets the form with the scenario data.
-         */
-        function setForm(scenario){
-            form.record = scenario;
-            form.refresh();
-        }
-
-        function setDetails(s){
-            let details = [
-                {element:'Nodes',number:`<a href="javascript:window.open('/WF/nodes/${s.scenario_id}','nodes','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=950
-                            height=550');">${s.nodes}</a>`},
-                {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','flows','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=650');">${s.flows}</a>`},
-                {element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=950');">${s.Proposed_Solution}</a>`},
-                {element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=950');">${s.Optimal_Solution}</a>`}
-            ];
-            details_grid.records = details;
-            details_grid.refresh();
-        }
-
-        /**
-         * Method that receives an ID and displays the scenario with certain ID in the form and the details grid.
-         * 
-         * Right now, it gets the scenario from the backend.
-         * It could be improved by getting the scenario from the scenarios map.
-         */
-        function showScenario(scenarioID){
-            //let scenario = {scenario_id:scenarioID}
-            if(scenarioID !== selected_scenario.scenario_id){
-                selected_scenario = scenarios.get(scenarioID);
-            }//else{
-            setForm(selected_scenario);
-            setDetails(selected_scenario);
-        }
-
-        /**
          * Method that deletes the selected scenario.
-         * It shows a confirmation dialog before deleting the scenario.
          */
         function deleteScenario(){
             let scenario = {'scenario_id':form.record.scenario_id}
@@ -212,10 +156,6 @@
             });            
         }
 
-        /**
-         * Method that clears the new scenario form.
-         * It is called when the user clicks on the reset button.
-         */
         function clearNewScenarioForm(){
             let selectedScenario = scenarios.get('<%=base_scenario%>')
             let record = {
@@ -232,12 +172,6 @@
             w2ui.scenarioCreator.refresh();
         }
 
-        /**
-         * Method that handles the creation of a new scenario.
-         * First, opens a popup with the corresponding Creation Form.
-         * It initializes the form and the fields.
-         * It also defines the actions for the buttons.
-         */
         function openNewScenarioPopup(){
             
             let cForm = new w2form({
@@ -357,50 +291,6 @@
             });
         }
 
-        /**
-         * Method that defines the W2UI elements of the first tab.
-         * It initializes the form and the details grid.
-         * 
-         * Main Tab may eventually change.
-         */
-        function defineTab1Elements(){
-            form = new w2form({
-                box: '#scenario_details_form',
-                name: 'scenario_details_form',
-                header:"Scenario Details",
-                fields: [
-                    { field: 'scenario_id', type: 'text', required: true, editable:false, 
-                        html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
-                    },
-                    { field: 'origin_id', type: 'text', required: true, 
-                        html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
-                    },
-                    { field: 'cdate', type: 'text', required: true, 
-                        html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                    },
-                    { field: 'description_type', type: 'text', required: true, 
-                        html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                    },
-
-                    { field: 'description', type: 'textarea', 
-                        html: { label: 'About this', attr: ' style="width: 100%; height: 60px; resize:none;" readonly' }
-                    }
-                ]
-            });
-
-            details_grid = new w2grid({
-                name: 'scenario_details_grid',
-                box: '#scenario_details_grid',
-                header:"Elements",
-                show: { header: true },
-                columns: [
-                    { field: 'element', text: '', size: '50%' },
-                    { field: 'number', text: '#', size: '50%' }
-                ]
-            });
-            
-        }
-
         let toolbar = new w2toolbar({
             box: '#toolbar',
             name: 'toolbar',
@@ -408,7 +298,7 @@
                 { type: 'button', id: 'home', text: 'Water Flow Scenario Management', icon: 'fa fa-house' },
                 { type: 'break' },
                 { type: 'button', id: 'new', text: 'Create', icon: 'fa fa-pencil' },
-                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash'},
+                { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash', disabled: true },
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
                     { type: 'button', id: 'region', text: '<%=user_info.region.name%>', icon: 'fa fa-circle-info' },
@@ -444,9 +334,7 @@
             }
         });
 
-        /**
-         * Defines the sidebar where user can select the scenario to be displayed.
-         */
+
         let sidebar = new w2sidebar({
             box: '#sidebar',
             name: 'sidebar',
@@ -454,39 +342,55 @@
             nodes: [
                 <% for(let i =0; i<scenarios_list.length;i++){ %>
                 { 
-                    id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', icon:"fa fa-house",
+                    id: '<%=scenarios_list[i].scenario_id%>', text: '<%=scenarios_list[i].scenario_id%>', /*expanded: false, group: true,*/ icon:"fa fa-house",
                 },
                 <%}%>
             ],
             onClick:function(evt){
                 let id = evt.target;
+
                 let scenario = id;//substrings[0];
-                w2ui.tabs.select("scenario_info");
-                query('#selected-tab').html('<%- include("partials/selectedScenario")%>');
-                defineTab1Elements();
+                
+                toolbar.enable('delete')
                 showScenario(scenario);
             }
         });
 
-        let tabs = new w2tabs({
-            box: '#tabs',
-            name: 'tabs',
-            active: 'scenario_info',
-            tabs: [
-                { id: 'scenario_info', text: 'Scenario Info' },
-                { id: 'map', text: 'Map' }
-            ],
-            onClick(event) {
-                if(event.target === 'scenario_info'){
-                    query('#selected-tab').html('<%- include("partials/selectedScenario")%>');
-                    defineTab1Elements();
-                    showScenario(selected_scenario.scenario_id);
-                } else if(event.target === 'map'){
-                    query('#selected-tab').html('<iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/dc1d3f78-81e2-49a4-9a94-36b95a1a2187/page/wy0zE?config=%7B%22ds0.region_id%22%3A%22<%=user_info.region.name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
+
+        let form = new w2form({
+            box: '#scenario_details',
+            name: 'scenario_details',
+            header:"Scenario Details",
+            fields: [
+                { field: 'scenario_id', type: 'text', required: true, editable:false, 
+                    html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'origin_id', type: 'text', required: true, 
+                    html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'cdate', type: 'text', required: true, 
+                    html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+                { field: 'type', type: 'text', required: true, 
+                    html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
+                },
+
+                { field: 'description', type: 'textarea', 
+                    html: { label: 'About this', attr: ' style="width: 100%; height: 60px; resize:none;" readonly' }
                 }
-            }
+            ]
         });
 
+        let details_grid = new w2grid({
+            name: 'scenario_details',
+            box: '#scenario_details_grid',
+            header:"Elements",
+            show: { header: true },
+            columns: [
+                { field: 'element', text: '', size: '50%' },
+                { field: 'number', text: '#', size: '50%' }
+            ]
+        })
     </script>
 </head>
 <body>
@@ -496,12 +400,19 @@
             </div>
         </div>
         <div class="row" id="contenido">
-            <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -20px; height:100%">
+            <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -30px; height:100%">
             </div>
-            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:25px;">
-                <div class="row" style="height: 100%;">
-                    <div id="tabs" style="margin-top: 5px; width: 100%;"></div>
-                    <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><%-include('partials/selectedScenario.ejs')%></div>
+            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
+                <div class="row" style="height: 46.5%;">
+                    <div class="col-sm-10 col-md-10" id="scenario_details" style="width:75%;height: 100%;">
+                    </div>
+                    <div class="col-sm-2 col-md-2" id="scenario_details_grid" style="margin-left: 8px; width: 24%; height: 100%;">
+                    </div>
+                </div>
+                <div class="row" style="height: 52.5%; margin-top: 5px;">
+                    <div id="scenario_map" style="width:100%;height: 100%;padding-left: 0%;padding-right: 0%;">
+                        <iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/dc1d3f78-81e2-49a4-9a94-36b95a1a2187/page/wy0zE?config=%7B%22ds0.region_id%22%3A%22<%=user_info.region.name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
                 </div>
             </div>
         </div>

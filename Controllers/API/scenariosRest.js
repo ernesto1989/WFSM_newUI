@@ -42,7 +42,12 @@ async function getScenario(req,res){
     }
 }
 
-
+/**
+ * Method that gets the Scenario's time to reach the limit, acoording to the nodes and flows.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 async function getScenarioTRL(req,res){
     try{
         const sessionData = req.session;
@@ -123,7 +128,6 @@ async function saveScenario(req,res){
             });
             
             let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
-
             total += result.changes + result2.changes + result3.changes + result4.changes;
         }
 
@@ -134,7 +138,8 @@ async function saveScenario(req,res){
             "records" : 
             {}
         });
-
+        let message = {action:'update_scenario',scenario_id:scenario.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);

@@ -170,7 +170,7 @@ async function index2(req,res){
 
     session[0].region = sessionData.user.region;
     let scenarios = await scenariosService.getScenarios(sessionData.user.region.id);
-    res.render('index2', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
+    res.render('previous_index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
 async function regionsGrid(req,res){

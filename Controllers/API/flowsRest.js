@@ -73,7 +73,8 @@ async function saveFlow(req,res){
                 "records" : []
             });
         }
-        socketServer.sendMessageToUser(sessionData.user.id,'Node update');
+        let message = {action:'update_scenario',scenario_id:flow.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);
@@ -103,6 +104,8 @@ async function deleteFlow(req,res){
             "total"   : result.changes,
             "records" : []
         });
+        let message = {action:'update_scenario',scenario_id:flow.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);

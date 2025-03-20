@@ -36,7 +36,25 @@
         import { w2sidebar, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
 
         let selectedRegion = 0;
-        let scenarios = new Map;
+        let scenarios = new Map();
+
+        const socket = new WebSocket('ws://localhost:3000?userId=<%=user_info.username%>');
+
+        socket.onopen = function(){
+            console.log('Connected to server');
+        }
+
+        // socket.addEventListener("open",function(event){
+        //     console.log('Connected to server');
+        // });
+
+        socket.addEventListener("message",function(e){
+            //alert("Server says: " + event.data);
+            let message = JSON.parse(e.data)
+            if(message.action === 'update_scenario'){
+                window.location.reload(); //refresh page but don't like this solution
+            }
+        });
 
         $("document").ready(function(){
             let scenario;
