@@ -82,6 +82,7 @@ const deleteScenarioQuery = "call delete_scenario(?,?)";
 const deleteA03Query = "delete from a03_time_to_reach_limit where scenario_id = ? and region_id = ?";
 const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenarios z01 where scenario_id = ? and region_id = ?";
 
+const updateTRLFlag = 'UPDATE z01_scenarios SET recalc_trl = ? WHERE scenario_id = ? and region_id = ?';
 
 /**
  * Service that obtains the whole Scenario's list
@@ -216,4 +217,14 @@ async function getScenarioUnits(scenarioId,region_id){
     }
 }
 
-module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,deleteA03,insertA03,getScenarioUnits};
+async function updateScenarioTRLFlag(flag,scenarioId,region_id){
+    try{
+        let query = updateTRLFlag;
+        let params = [flag,scenarioId,region_id];
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,deleteA03,insertA03,getScenarioUnits,updateScenarioTRLFlag};

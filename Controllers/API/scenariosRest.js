@@ -108,7 +108,7 @@ async function saveScenario(req,res){
         let total = 0;
         let result = await scenarioService.createEmptyScenario(scenario,region_id);
 
-        total = result.changes
+        total = result.changes;
 
         if(scenario.type == 1){
             //Proposed
@@ -128,8 +128,9 @@ async function saveScenario(req,res){
                 headers:{'Content-Type':'application/json'}
             });
             
-            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
-            total += result.changes + result2.changes + result3.changes + result4.changes;
+            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id);
+            total += result2.changes + result3.changes + result4.changes;
+            await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
         }
 
         res.status(200);
@@ -179,7 +180,7 @@ async function recalcTRL(req,res){
         
         let r1 = await scenarioService.deleteA03(scenario.scenario_id,region_id);
         let r = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
-
+        await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
         res.status(200);
         res.json({
             "status"  : "success",

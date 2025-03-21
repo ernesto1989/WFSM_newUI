@@ -44,11 +44,11 @@
                     grid.refresh();
                     
 
-                    // if(s.recalc_solution == 1){
-                    //     grid.toolbar.enable('solutionButton')
-                    // }else{
-                    //     grid.toolbar.disable('solutionButton')
-                    // }
+                    if(s.recalc_solution == 1){
+                        grid.toolbar.enable('solutionButton')
+                    }else{
+                        grid.toolbar.disable('solutionButton')
+                    }
 
                 } else {
                     alert("Something went wrong")

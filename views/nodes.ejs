@@ -125,7 +125,7 @@
                     },
                     { field: 'new_max_capacity', type: 'float', required: true, editable:true, 
                         html: { label: 'Max capacity.', 
-                        attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%";' }
                     }
                 ],
                 actions: {

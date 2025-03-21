@@ -42,11 +42,11 @@
                     grid.records = trl;
                     grid.refresh();
                     
-                    // if(s.recalc_trl == 1){
-                    //     grid.toolbar.enable('trlButton')
-                    // }else{
-                    //     grid.toolbar.disable('trlButton')
-                    // }
+                    if(s.recalc_trl == 1){
+                        grid.toolbar.enable('trlButton')
+                    }else{
+                        grid.toolbar.disable('trlButton')
+                    }
 
                 } else {
                     alert("Something went wrong")
