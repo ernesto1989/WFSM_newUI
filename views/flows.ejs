@@ -54,6 +54,7 @@
                 let record = {
                     origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
                     destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
+                    description: '',
                     type: {id:'<%=flow_types[1].type_id%>',text:'<%=flow_types[1].type%>'},
                     min_flow:0.0,
                     current_flow:0.0,
@@ -81,6 +82,7 @@
             let record = {
                 origin: {id:rec.origin,text:rec.origin_node},
                 destiny: {id:rec.destiny,text:rec.destiny_node},
+                description: rec.description,
                 type: {id:rec.type_id,text:rec.type},
                 min_flow:rec.fmin,
                 current_flow:rec.current_flow,
@@ -96,6 +98,7 @@
                 new_scenario_id : '<%=scenarioId%>',
                 new_origin :record.origin, 
                 new_destiny : record.destiny,
+                new_desc: record.description,
                 new_type: record.type,
                 new_min_flow:record.min_flow,
                 new_current_flow: record.current_flow,
@@ -151,6 +154,9 @@
                             {id:<%=nodes[i].id%>,text:'<%=nodes[i].node_id%>'}, 
                             <%}%>
                         ]},
+                    },
+                    { field: 'new_desc', type: 'text',  
+                        html: { label: 'Description', attr: 'style="width: 100%;" placeholder="About this flow"' }
                     },
                     { field: 'new_min_flow', type: 'float', required: true, editable:true, 
                         html: { label: 'Min. Flow', attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%";' }
@@ -273,6 +279,7 @@
                             scenario_id:flowsForm.record.new_scenario_id,
                             origin:flowsForm.record.new_origin.id,
                             destiny:flowsForm.record.new_destiny.id,
+                            flow_desc:flowsForm.record.new_desc,
                             type:flowsForm.record.new_type.id,
                             fmin: curr_min ,
                             current_flow: curr_vol,
@@ -295,7 +302,7 @@
                 body    : '<div id="flowsForm" style="width: 100%; height: 100%;"></div>',
                 style   : 'padding: 15px 0px 0px 0px',
                 width   : 400,
-                height  : 420,
+                height  : 480,
                 showMax : false
             })
             .then((event) => {
