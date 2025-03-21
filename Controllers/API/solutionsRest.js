@@ -2,6 +2,7 @@ const service = require("../../Service/solutionsService")
 const scenarioService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
+const socketServer = require("../../socketserver");
 const axios = require('axios')
 
 /**
