@@ -37,6 +37,7 @@
 
         let scenarios = new Map();
         let form;
+        let dform;
         let details_grid;
         let selected_scenario;
 
@@ -46,10 +47,6 @@
             console.log('Connected to server');
         }
 
-        // socket.addEventListener("open",function(event){
-        //     console.log('Connected to server');
-        // });
-
         socket.addEventListener("message",function(e){
             //alert("Server says: " + event.data);
             let message = JSON.parse(e.data)
@@ -58,24 +55,12 @@
             }
         });
 
-
-        // function sendMessage(){
-        //     socket.send("Hello from client");
-        // }
-
-        /**
-         * Function that is called when the page is fully loaded.
-         * It initializes the scenarios map and selects the base scenario ib tge sudebar.
-         * It also initializes the form and the details grid.
-         * At the end, it shows the base scenario.
-         * 
-         * Must be corrected the way the scenarios are selected.
-         */
         $("document").ready(function(){            
             let scenario;
             <%for(let i = 0; i<scenarios_list.length;i++){%>
                 scenario = {
                     scenario_id:'<%=scenarios_list[i].scenario_id%>',
+                    cdate: '<%=scenarios_list[i].cdate%>',
                     description: '<%=scenarios_list[i].description%>',
                     origin_id: '<%=scenarios_list[i].origin_id%>',
                     type: <%=scenarios_list[i].type%>,
@@ -91,7 +76,6 @@
             <%}%>
             //AS part of a general (and implementable) solution.... <%=base_scenario%> will always reflects the current situation.
             sidebar.select("<%=base_scenario%>"); // SELECT <%=base_scenario%> at the beginning.
-            defineTab1Elements();   
             selected_scenario = {scenario_id: ''};
             showScenario("<%=base_scenario%>");
         });
@@ -119,40 +103,13 @@
         }
 
         function setDetails(s){
+           
             let details = [
-                {element:'Nodes',number:`<a href="javascript:window.open('/WF/nodes/${s.scenario_id}','nodes','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=950
-                            height=550');">${s.nodes}</a>`},
-                {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','flows','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=650');">${s.flows}</a>`},
-                {element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=950');">${s.Proposed_Solution}</a>`},
-                {element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,
-                            location=no,
-                            status=no,
-                            menubar=no,
-                            scrollbars=yes,
-                            resizable=yes,
-                            width=1050
-                            height=950');">${s.Optimal_Solution}</a>`}
-            ];
+                {element:'Nodes',number: `<a href="javascript:window.open('/WF/nodes/${s.scenario_id}','nodes','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=950,height=550');">${s.nodes}</a>`},
+                {element:"Flows",number: `<a href="javascript:window.open('/WF/flows/${s.scenario_id}','flows','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=650');">${s.flows}</a>`},
+                {element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Proposed_Solution}</a>`},
+                {element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Optimal_Solution}</a>`}
+            ]; 
             details_grid.records = details;
             details_grid.refresh();
         }
@@ -248,7 +205,7 @@
                         html: { label: 'Scenario ID', attr: 'style="width: 100%"; placeholder="Give the Scenario a name" ' }
                     },
                     { field: 'new_description', type: 'textarea', required: false, editable:true, 
-                        html: { label: 'Scenario ID', attr: 'style="width: 100%;"placeholder="About this scenario" ' }
+                        html: { label: 'Scenario ID', attr: 'style="width: 100%;" placeholder="About this scenario" ' }
                     },
                     { field: 'new_type', type: 'list',
                         html: { label: 'Scenario Type', attr: 'style="width: 100%"' },
@@ -357,49 +314,47 @@
             });
         }
 
-        /**
-         * Method that defines the W2UI elements of the first tab.
-         * It initializes the form and the details grid.
-         * 
-         * Main Tab may eventually change.
-         */
-        function defineTab1Elements(){
-            form = new w2form({
-                box: '#scenario_details_form',
-                name: 'scenario_details_form',
-                header:"Scenario Details",
-                fields: [
-                    { field: 'scenario_id', type: 'text', required: true, editable:false, 
-                        html: { label: 'Scenario ID', attr: 'style="width: 100%" readonly' }
-                    },
-                    { field: 'origin_id', type: 'text', required: true, 
-                        html: {label: 'Base Scenario ID', attr: 'style="width: 100%" readonly'}
-                    },
-                    { field: 'cdate', type: 'text', required: true, 
-                        html: { label: 'Creation Date', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                    },
-                    { field: 'description_type', type: 'text', required: true, 
-                        html: { label: 'Scenario Type', attr: 'class="col-md-6 col-lg-6" style="width: 100%" readonly' }
-                    },
-
-                    { field: 'description', type: 'textarea', 
-                        html: { label: 'About this', attr: ' style="width: 100%; height: 60px; resize:none;" readonly' }
-                    }
-                ]
-            });
-
-            details_grid = new w2grid({
-                name: 'scenario_details_grid',
-                box: '#scenario_details_grid',
-                header:"Elements",
-                show: { header: true },
-                columns: [
-                    { field: 'element', text: '', size: '50%' },
-                    { field: 'number', text: '#', size: '50%' }
-                ]
-            });
+        form = new w2form({
+            box: '#scenario_general_form',
+            name: 'scenario_general_form',
+            header:"General Information",
+            fields: [
+                { field: 'scenario_id', type: 'text', required: true, editable:false, 
+                    html: { 
+                        label: 'Scenario ID', 
+                        attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'origin_id', type: 'text', required: true, 
+                    html: {
+                        label: 'Base Scenario ID', 
+                        attr: 'style="width: 100%" readonly'}
+                },
+                { field: 'cdate',  type: 'text', required: true, 
+                    html: { 
+                        label: 'Creation Date', 
+                        attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'description_type', type: 'text', required: true, 
+                    html: { 
+                        label: 'Scenario Type',                     
+                        attr: 'style="width: 100%" readonly' }
+                },
+                { field: 'description', type: 'textarea', 
+                    html: {  label: 'Descr.', attr: ' style=" width: 100%; height: 40px; resize:none;" readonly' }
+                }
+            ]
+        });
             
-        }
+        details_grid = new w2grid({
+            name: 'scenario_details_grid',
+            box: '#scenario_details_grid',
+            header:"Elements",
+            show: { header: true },
+            columns: [
+                { field: 'element', text: 'Element', size: '50%' },
+                { field: 'number', text: 'Total', size: '50%' }
+            ]
+        });
 
         let toolbar = new w2toolbar({
             box: '#toolbar',
@@ -409,6 +364,7 @@
                 { type: 'break' },
                 { type: 'button', id: 'new', text: 'Create', icon: 'fa fa-pencil' },
                 { type: 'button', id: 'delete', text: 'Delete', icon: 'fa fa-trash'},
+                { type: 'button', id: 'map', text: 'Oficial Map', icon: 'fa fa-map' },
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
                     { type: 'button', id: 'region', text: '<%=user_info.region.name%>', icon: 'fa fa-circle-info' },
@@ -429,6 +385,9 @@
                 if(selectedOp === 'delete'){
                     //deleting selected scenario.
                     deleteScenario();
+                }
+                if(selectedOp === 'map'){
+                    window.open('/WF/map','map','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1200,height=550');
                 }
                 if(selectedOp === 'user:pref'){
                     //preferences
@@ -461,29 +420,7 @@
             onClick:function(evt){
                 let id = evt.target;
                 let scenario = id;//substrings[0];
-                w2ui.tabs.select("scenario_info");
-                query('#selected-tab').html('<%- include("partials/selectedScenario")%>');
-                defineTab1Elements();
                 showScenario(scenario);
-            }
-        });
-
-        let tabs = new w2tabs({
-            box: '#tabs',
-            name: 'tabs',
-            active: 'scenario_info',
-            tabs: [
-                { id: 'scenario_info', text: 'Scenario Info' },
-                { id: 'map', text: 'Map' }
-            ],
-            onClick(event) {
-                if(event.target === 'scenario_info'){
-                    query('#selected-tab').html('<%- include("partials/selectedScenario")%>');
-                    defineTab1Elements();
-                    showScenario(selected_scenario.scenario_id);
-                } else if(event.target === 'map'){
-                    query('#selected-tab').html('<iframe width="100%" height="100%" src="https://lookerstudio.google.com/embed/reporting/dc1d3f78-81e2-49a4-9a94-36b95a1a2187/page/wy0zE?config=%7B%22ds0.region_id%22%3A%22<%=user_info.region.name%>%22%7D" frameborder="0" style="border:0" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>');
-                }
             }
         });
 
@@ -498,10 +435,15 @@
         <div class="row" id="contenido">
             <div class="col-sm-2 col-md-2" id="sidebar" style=" position:relative; padding: 2px; margin-left: -20px; height:100%">
             </div>
-            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:25px;">
+            <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
                 <div class="row" style="height: 100%;">
-                    <div id="tabs" style="margin-top: 5px; width: 100%;"></div>
-                    <div id="selected-tab" style="padding: 10px 0px;width: 100%;height: 98%;"><%-include('partials/selectedScenario.ejs')%></div>
+                    <div class="row" style="height: 40%;">
+                        <div class="col-sm-6 col-md-6" id="scenario_general_form" style="height: 100%; width:49.5%; margin-right: 1%;"></div>
+                        <div class="col-sm-6 col-md-6" id="scenario_details_grid" style="height: 100%; width:49.5%; ">NODES and FLOWS</div>
+                    </div>
+                    <div class="row" style="height: 60%; margin-top: 5px;">
+                        <div class="col-sm-12 col-md-12" id="scenario_filters_grid" style="height: 100%; ">Filters</div>
+                    </div>
                 </div>
             </div>
         </div>
