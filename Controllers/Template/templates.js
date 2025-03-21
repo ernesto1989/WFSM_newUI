@@ -173,6 +173,25 @@ async function index2(req,res){
     res.render('previous_index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
+async function regionsMap(req,res){ 
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            //region: sessionData.user.region.name, 
+            role: sessionData.user.role.name
+        }
+    ]
+    session[0].region = sessionData.user.region;
+    res.render('regionMap', {user_info:session[0]});
+}
+
 async function regionsGrid(req,res){
     const sessionData = req.session;
 
@@ -363,4 +382,4 @@ async function solutionsView(req,res){
 }
 
 
-module.exports = {getLogin,postLogin,logout,index,homePage, index2,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin,logout,index,homePage, index2, regionsMap,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
