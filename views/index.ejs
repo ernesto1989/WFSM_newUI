@@ -41,7 +41,7 @@
         let details_grid;
         let selected_scenario;
 
-        const socket = new WebSocket('ws://localhost:3000?userId=<%=user_info.username%>');
+        const socket = new WebSocket('ws://localhost:3000?userId=<%=user_info.username%>_index');
 
         socket.onopen = function(){
             console.log('Connected to server');

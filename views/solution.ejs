@@ -32,6 +32,20 @@
 
         import { w2tabs, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         
+        const socket = new WebSocket('ws://localhost:3000?userId=<%=username%>_solution');
+
+        socket.onopen = function(){
+            console.log('Connected to server');
+        }
+
+        socket.addEventListener("message",function(e){
+            //alert("Server says: " + event.data);
+            let message = JSON.parse(e.data)
+            if(message.action === 'update_scenario'){
+                window.location.reload();
+            }
+        });
+
         $("document").ready(function(){
             let scenario = {scenario_id:'<%=scenarioId%>'}
             $.post('/WF/api/getSolution', scenario, function(respuesta){

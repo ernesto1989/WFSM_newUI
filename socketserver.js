@@ -6,11 +6,13 @@ const { URL } = require('url');
 const users = new Map();
 
 function sendMessageToUser(userId, message) {
-    const ws = users.get(userId);
-    if (ws) {
-        ws.send(message);
-    } else {
-        console.log(`User ${userId} not connected`);
+    for(var k of users.entries()){
+        let key = k[0]; // look for all windows opened by user
+        if(key.startsWith(userId)){
+            //must be notified
+            const ws = users.get(key);
+            ws.send(message);
+        }
     }
 }
 

@@ -349,7 +349,7 @@ async function simulationView(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    res.render("simulator",{scenarioId:scenarioId,region_name:sessionData.user.region.name})
+    res.render("simulator",{scenarioId:scenarioId,region_name:sessionData.user.region.name,username:sessionData.user.username})
 }
 
 /**
