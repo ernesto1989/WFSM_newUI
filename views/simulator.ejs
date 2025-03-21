@@ -54,14 +54,16 @@
                     let trl = respuesta.records.scenario_trl;
                     grid.header = "TRL Analysis - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
                     grid.records = trl;
-                    grid.refresh();
+                    
                     
                     if(s.recalc_trl == 1){
-                        grid.toolbar.enable('trlButton')
+                        grid.toolbar.enable('trlButton');
+                        grid.header = "TRL Analysis - Outdated";
                     }else{
-                        grid.toolbar.disable('trlButton')
+                        grid.toolbar.disable('trlButton');
+                        grid.header = "TRL Analysis";
                     }
-
+                    grid.refresh();
                 } else {
                     alert("Something went wrong")
                 }
@@ -91,7 +93,7 @@
         let grid = new w2grid({
             name: 'trl_details',
             box: '#trl_grid',
-            header:"TRL Analysis",
+            //header:"TRL Analysis",
             show: { header: true,toolbar:true,toolbarSearch:true },
             toolbar: {
                 items: [
@@ -146,7 +148,7 @@
                 { field: 'outcoming_flow', text: 'Out', size: '10%'},//,render:'float:02' },
                 { field: 'time_to_reach_limit', text: 'TRL', size: '10%' }
             ]
-        })
+        });
 
     </script>
 </head>

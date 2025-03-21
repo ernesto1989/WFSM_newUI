@@ -42,6 +42,12 @@
                 let recs = data.records;
                 grid.records = recs;
                 grid.refresh();
+
+                <% if(recalcSolution === 0 && scenarioId !== base_scenario) { %>
+                    //recalc solution is zero, so no changes must be done.
+                    grid.toolbar.disable("w2ui-add");
+                <%}%>
+
             });
         });
 
@@ -238,6 +244,15 @@
                 { field: 'current_vol', text: 'Current',sortable:true,size:'15%',render:'float:02'},
                 { field: 'max_capacity', text: 'Max V.',sortable:true, size:'15%',render:'float:02'}
             ],
+            onClick: function(event){
+                <% if(recalcSolution === 0 && scenarioId !== base_scenario) { %>
+                    //recalc solution is zero, so no changes must be done.
+                    event.onComplete = function(){
+                        this.toolbar.disable("w2ui-edit");
+                        this.toolbar.disable("w2ui-delete");
+                    }
+                <%}%>
+            },
             onAdd: function (event) {
                 event.preventDefault();
                 isEdit = false;

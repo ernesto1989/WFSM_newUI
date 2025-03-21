@@ -53,16 +53,17 @@
                     //
                     let s = respuesta.records.scenario[0];
                     grid.records = respuesta.records.solution;
-                    grid.header = "Optimal Flow Between Nodes - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
-                    
-                    grid.refresh();
-                    
+                    grid.header = "Optimal Flow Between Nodes - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;                    
 
                     if(s.recalc_solution == 1){
-                        grid.toolbar.enable('solutionButton')
+                        grid.toolbar.enable('solutionButton');
+                        grid.header = "Optimal Flows Between Nodes - Outdated";
                     }else{
-                        grid.toolbar.disable('solutionButton')
+                        grid.toolbar.disable('solutionButton');
+                        grid.header = "Optimal Flows Between Nodes";
                     }
+
+                    grid.refresh();
 
                 } else {
                     alert("Something went wrong")
@@ -93,7 +94,7 @@
         let grid = new w2grid({
             name: 'details',
             box: '#sol_grid',
-            header:"Optimal Flows Between Nodes",
+            //header:"Optimal Flows Between Nodes",
             show: { header: true,toolbar:true },
             toolbar: {
                 items: [

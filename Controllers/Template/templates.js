@@ -276,7 +276,8 @@ async function nodesGrid(req,res){
 
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId,session[0].region.id);
-    res.render("nodes",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    let recalcSolution = await scenariosService.getRecalcSolution(scenarioId,session[0].region.id);
+    res.render("nodes",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, recalcSolution:recalcSolution[0].recalc_solution });
 }
 
 /**
@@ -319,8 +320,8 @@ async function flowsGrid(req,res){
 
     if(!nodes)
         nodes = [];
-
-    res.render("flows",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
+    let recalcSolution = await scenariosService.getRecalcSolution(scenarioId,session[0].region.id);
+    res.render("flows",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types, recalcSolution:recalcSolution[0].recalc_solution});
 }
 
 /**
@@ -378,7 +379,7 @@ async function solutionsView(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    res.render("solution",{scenarioId:scenarioId,region_name:sessionData.user.region.name})
+    res.render("solution",{scenarioId:scenarioId,region_name:sessionData.user.region.name,username:sessionData.user.username})
 }
 
 

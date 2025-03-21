@@ -113,26 +113,24 @@
                 //{element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Optimal_Solution}</a>`}
             ]; 
 
-            if(s.recalc_trl === 1 && s.Proposed_Solution === 'Uncomputed' ){
+            if((s.recalc_trl === 1 && s.Proposed_Solution === 'Uncomputed') || s.recalc_trl === 0 ){
                 //has not been computed yet.
                 details.push({element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator_${s.scenario_id}','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Proposed_Solution}</a>`});
             }
             
-            if(s.recalc_trl === 1 && s.Proposed_Solution === 'Simulated'){
+            if(s.recalc_trl === 1 && s.Proposed_Solution === 'Evaluated'){
                 //needs to be recomputed.
                 details.push({element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator_${s.scenario_id}','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">Req. Update</a>`});
             }
             
-            if(s.recalc_trl === 0){
-                //doesnt need to be recomputed.
-                details.push({element:"Current State",number:`<a href="javascript:window.open('/WF/simulator/${s.scenario_id}','simulator_${s.scenario_id}','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Proposed_Solution}</a>`});
+            if((s.calc_solution === 1 && s.Optimal_Solution === 'Uncomputed') || s.calc_solution === 0 ){
+                //has not been computed yet.
+                details.push({element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050 height=950');">${s.Optimal_Solution}</a>`});
             }
 
-
-            if(s.calc_solution === 1){
-                details.push({element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution_${s.scenario_id}','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">Uncomputed</a>`});
-            }else{
-                details.push({element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution_${s.scenario_id}','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050, height=950');">${s.Optimal_Solution}</a>`});
+            if(s.calc_solution === 1 && s.Optimal_Solution === 'Optimal'){
+                //needs to be recomputed.
+                details.push({element:"Optimal Solution",number:`<a href="javascript:window.open('/WF/solution/${s.scenario_id}','solution','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1050 height=950');">Req. Update</a>`});
             }
 
             details_grid.records = details;
@@ -393,7 +391,7 @@
                 { type: 'spacer' },
                 { type: 'menu', id: 'user', text: '<%= user_info.username %>', icon: 'fa fa-user', items:[
                     { type: 'button', id: 'region', text: '<%=user_info.region.name%>', icon: 'fa fa-circle-info' },
-                    { type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
+                    //{ type: 'button', id: 'pref', text: 'My Preferences', icon: 'fa fa-user' },
                     { type: 'button', id: 'sout', text: 'Sign Out', icon: 'fa fa-user-slash' }
                 ] 
             }],
@@ -416,11 +414,11 @@
                 }
                 if(selectedOp === 'user:pref'){
                     //preferences
-                    alert("Preferences");
+                    console.log("Preferences");
                 }
                 if(selectedOp === 'user:region'){
                     //preferences
-                    alert("My region is: <%=user_info.region.name%>");
+                    console.log("My region is: <%=user_info.region.name%>");
                 }
                 if(selectedOp === 'user:sout'){
                     window.location.href = '/WF/logout';
@@ -462,12 +460,12 @@
             </div>
             <div class="col-sm-10 col-md-10" id="main-content" style="height: 100%;position:relative;left:10px;">
                 <div class="row" style="height: 100%;">
-                    <div class="row" style="height: 40%;">
-                        <div class="col-sm-6 col-md-6" id="scenario_general_form" style="height: 100%; width:49.5%; margin-right: 1%;"></div>
-                        <div class="col-sm-6 col-md-6" id="scenario_details_grid" style="height: 100%; width:49.5%; ">NODES and FLOWS</div>
+                    <div class="row" style="height: 45%;">
+                        <div class="col-sm-6 col-md-6" id="scenario_general_form" style="height: 100%; width:55.5%; margin-right: 1%;"></div>
+                        <div class="col-sm-6 col-md-6" id="scenario_details_grid" style="height: 100%; width:43.5%; "></div>
                     </div>
-                    <div class="row" style="height: 60%; margin-top: 5px;">
-                        <div class="col-sm-12 col-md-12" id="scenario_filters_grid" style="height: 100%; ">Filters</div>
+                    <div class="row" style="height: 55%; margin-top: 5px;">
+                        <div class="col-sm-12 col-md-12" id="scenario_filters_grid" style="height: 100%; "></div>
                     </div>
                 </div>
             </div>
