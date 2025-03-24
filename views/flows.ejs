@@ -55,8 +55,16 @@
 
 
         function getNewEmptyRecord(){
-            <%if(nodes.length > 0) { %>            
+            <%if(nodes.length > 0) { %>         
+                let genId = 1;
+
+                if(grid.records.length > 0){
+                    let lastElement = grid.records[grid.records.length - 1];
+                    genId = lastElement.recid + 1;
+                }
+
                 let record = {
+                    flow_id:genId,
                     origin: {id:'<%=nodes[0].id%>',text:'<%=nodes[0].node_id%>'},
                     destiny: {id:'<%=nodes[1].id%>',text:'<%=nodes[1].node_id%>'},
                     description: '',
@@ -85,6 +93,7 @@
                 rec.destiny = maxNodeId + 1; // in order to show it on the screen
 
             let record = {
+                flow_id:rec.recid,
                 origin: {id:rec.origin,text:rec.origin_node},
                 destiny: {id:rec.destiny,text:rec.destiny_node},
                 description: rec.description,
@@ -101,6 +110,7 @@
         function setForm(record){
             let rec = {
                 new_scenario_id : '<%=scenarioId%>',
+                new_flow_id:record.flow_id,
                 new_origin :record.origin, 
                 new_destiny : record.destiny,
                 new_desc: record.description,
@@ -133,6 +143,9 @@
                 fields: [
                     { field: 'new_scenario_id', type: 'text', required: true, 
                         html: { label: 'Scenario Id', attr: 'readonly style="width: 100%";' }
+                    },
+                    { field: 'new_flow_id', type: 'text', required: true, 
+                        html: { label: 'Flow Id', attr: 'readonly style="width: 100%";' }
                     },
                     { field: 'new_type', type: 'list',
                         html: { label: 'Flow Type',attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%"' },
@@ -282,6 +295,7 @@
                         let flow = {
                             new_record:!isEdit,
                             scenario_id:flowsForm.record.new_scenario_id,
+                            id:flowsForm.record.new_flow_id,
                             origin:flowsForm.record.new_origin.id,
                             destiny:flowsForm.record.new_destiny.id,
                             flow_desc:flowsForm.record.new_desc,
@@ -392,15 +406,14 @@
                     According to the model, the IN node is 0 and the OUT node is 0
                     so we need to change the values to match the model.
                 */
-                if(rec.origin_node === 'IN')
-                    rec.origin = 0;
-                if(rec.destiny_node === 'OUT')
-                    rec.destiny = 0;
+                // if(rec.origin_node === 'IN')
+                //     rec.origin = 0;
+                // if(rec.destiny_node === 'OUT')
+                //     rec.destiny = 0;
 
                 let flow = {
                   scenario_id : '<%=scenarioId%>',
-                  origin: rec.origin,
-                  destiny: rec.destiny  
+                  id: rec.recid
                 };
                 
                 w2confirm({

@@ -8,8 +8,8 @@ const dataSource = require('../Datasource/MySQLMngr');
 
 const getFlowsQuery = 
 `    SELECT 
-        ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS recid, 
-        ROW_NUMBER() OVER(PARTITION BY 'scenario_id' ) AS id, 
+        a02.id AS recid,  
+        a02.id AS id,  
         a02.scenario_id, 
         a02.origin as origin, 
         a02.flow_desc as description,
@@ -29,10 +29,10 @@ const getFlowsQuery =
     WHERE a02.scenario_id = ? and a02.region_id = ?
 `;
 
-const selectInsertA02 = "INSERT INTO a02_flows(scenario_id,region_id, origin, destiny, current_flow, type_id, fmax, fmin) SELECT ?, region_id, origin, destiny, COALESCE(current_flow,0), type_id, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flows a02 WHERE a02.scenario_id = ? and a02.region_id = ?";
-const insertFlowQuery = "Insert into a02_flows(scenario_id, region_id,origin, destiny, flow_desc, current_flow,type_id,fmax,fmin) Values (?,?,?,?,?,?,?,?,?)";
-const updateFlowQuery = "Update a02_flows set flow_desc = ?, current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ? and region_id = ?";
-const deleteFlowQuery = "Delete from a02_flows where scenario_id = ? and origin = ? and destiny = ? and region_id = ?";
+const selectInsertA02 = "INSERT INTO a02_flows(scenario_id,id,region_id, origin, destiny, current_flow, type_id, fmax, fmin) SELECT ?, region_id, id,origin, destiny, COALESCE(current_flow,0), type_id, COALESCE(fmax,0), COALESCE(fmin,0) FROM a02_flows a02 WHERE a02.scenario_id = ? and a02.region_id = ?";
+const insertFlowQuery = "Insert into a02_flows(scenario_id,id,region_id,origin, destiny, flow_desc, current_flow,type_id,fmax,fmin) Values (?,?,?,?,?,?,?,?,?,?)";
+const updateFlowQuery = "Update a02_flows set flow_desc = ?, current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and id = ? and region_id = ?";
+const deleteFlowQuery = "Delete from a02_flows where scenario_id = ? and id = ? and region_id = ?";
 const deleteFlowsByNodeInQuery = "Delete from a02_flows where scenario_id = ? and region_id = ? and destiny = ?"
 const deleteFlowsByNodeOutQuery = "Delete from a02_flows where scenario_id = ? and region_id = ? and origin = ?"
 
@@ -75,8 +75,8 @@ async function copyA02(scenarioObj,region_id){
 async function insertFlow(flow,region_id){
     try{
         let query = insertFlowQuery;
-        //scenario_id,origin, destiny, current_flow,type,fmax,fmin
-        let params =[flow.scenario_id, region_id,flow.origin,flow.destiny,flow.flow_desc,flow.current_flow, flow.type,flow.fmax,flow.fmin];
+        //scenario_id,id,region_id,origin, destiny, flow_desc, current_flow,type_id,fmax,fmin
+        let params =[flow.scenario_id,flow.id,region_id,flow.origin,flow.destiny,flow.flow_desc,flow.current_flow, flow.type,flow.fmax,flow.fmin];
         
        qResult = await dataSource.updateData(query,params);
         return qResult;
@@ -90,7 +90,7 @@ async function updateFlow(flow,region_id){
     try{
         let query = updateFlowQuery;
         //Update a02_flows set current_flow = ?, fmax = ?, fmin = ? Where scenario_id = ? and origin = ? and destiny = ?
-        let params = [flow.flow_desc,flow.current_flow,flow.fmax,flow.fmin,flow.scenario_id,flow.origin,flow.destiny, region_id];
+        let params = [flow.flow_desc,flow.current_flow,flow.fmax,flow.fmin,flow.scenario_id,flow.id, region_id];
         
         qResult = await dataSource.updateData(query,params);
         return qResult;
@@ -102,7 +102,7 @@ async function updateFlow(flow,region_id){
 async function deleteFlow(flow,region_id){
     try{
         let query = deleteFlowQuery;
-        let params = [flow.scenario_id,flow.origin,flow.destiny,region_id]
+        let params = [flow.scenario_id,flow.id,region_id]
         
         qResult = await dataSource.updateData(query,params);
         return qResult;
