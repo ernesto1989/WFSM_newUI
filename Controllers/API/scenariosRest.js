@@ -107,7 +107,7 @@ async function saveScenario(req,res){
         const scenario = req.body;
         let total = 0;
         let result = await scenarioService.createEmptyScenario(scenario,region_id);
-
+        let msg = '';
         total = result.changes;
 
         if(scenario.type == 1){
@@ -117,19 +117,28 @@ async function saveScenario(req,res){
 
             let nodes = await nodesService.getNodes(scenario.scenario_id,region_id);
             let flows = await flowsService.getFlows(scenario.scenario_id,region_id);
-
-            const timeToLimit = await axios({
-                method: 'get',
-                url: 'http://localhost:4000/WF/TimeToLimit',
-                data:{
-                    'nodes':nodes,
-                    'flows':flows
-                },
-                headers:{'Content-Type':'application/json'}
-            });
+            let timeToLimit;
+            let result4;
             
-            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id);
-            total += result2.changes + result3.changes + result4.changes;
+            try{
+                timeToLimit = await axios({
+                    method: 'get',
+                    url: 'http://localhost:4000/WF/TimeToLimit',
+                    data:{
+                        'nodes':nodes,
+                        'flows':flows
+                    },
+                    headers:{'Content-Type':'application/json'}
+                });
+                result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id);
+            }catch(err){
+                msg = 'OSF Service Unavailable';
+            }
+
+            if(result4)
+                total += result2.changes + result3.changes + result4.changes;
+            else
+                total += result2.changes + result3.changes;
             await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
         }
 
@@ -138,7 +147,8 @@ async function saveScenario(req,res){
             "status"  : "success",
             "total"   : total , //change
             "records" : 
-            {}
+            {},
+            "message":msg
         });
         let message = {action:'update_scenario',scenario_id:scenario.scenario_id};
         socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
