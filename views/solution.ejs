@@ -32,6 +32,20 @@
 
         import { w2tabs, query,  w2form, w2ui, w2popup, w2alert, w2grid, w2toolbar,w2confirm } from 'https://rawgit.com/vitmalina/w2ui/master/dist/w2ui.es6.min.js'
         
+        const socket = new WebSocket('ws://localhost:3000?userId=<%=username%>_solution');
+
+        socket.onopen = function(){
+            console.log('Connected to server');
+        }
+
+        socket.addEventListener("message",function(e){
+            //alert("Server says: " + event.data);
+            let message = JSON.parse(e.data)
+            if(message.action === 'update_scenario'){
+                window.location.reload();
+            }
+        });
+
         $("document").ready(function(){
             let scenario = {scenario_id:'<%=scenarioId%>'}
             $.post('/WF/api/getSolution', scenario, function(respuesta){
@@ -39,16 +53,17 @@
                     //
                     let s = respuesta.records.scenario[0];
                     grid.records = respuesta.records.solution;
-                    grid.header = "Optimal Flow Between Nodes - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;
-                    
-                    grid.refresh();
-                    
+                    grid.header = "Optimal Flow Between Nodes - capacity Units: " + s.capacity_units + " - Time Units: " + s.time_units;                    
 
-                    // if(s.recalc_solution == 1){
-                    //     grid.toolbar.enable('solutionButton')
-                    // }else{
-                    //     grid.toolbar.disable('solutionButton')
-                    // }
+                    if(s.recalc_solution == 1){
+                        grid.toolbar.enable('solutionButton');
+                        grid.header = "Optimal Flows Between Nodes - Outdated";
+                    }else{
+                        grid.toolbar.disable('solutionButton');
+                        grid.header = "Optimal Flows Between Nodes";
+                    }
+
+                    grid.refresh();
 
                 } else {
                     alert("Something went wrong")
@@ -79,7 +94,7 @@
         let grid = new w2grid({
             name: 'details',
             box: '#sol_grid',
-            header:"Optimal Flows Between Nodes",
+            //header:"Optimal Flows Between Nodes",
             show: { header: true,toolbar:true },
             toolbar: {
                 items: [

@@ -12,16 +12,18 @@
  * 07/10/2024
  */
 const constants = require("./constants")
+const socketServer = require("./socketserver");
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
 const router = require("./Controllers/router");
 
-
 function initWebProject(){
    
     const app = express();
+    const server = require('http').createServer(app);
+    
     app.set('view engine', 'ejs');
     
     app.use(cors());
@@ -39,7 +41,9 @@ function initWebProject(){
      
     app.use(router);
 
-    app.listen(constants.port, () => {
+    socketServer.initWebSocket(server);   
+
+    server.listen(constants.port, () => {
         console.log(`Waterflow Scenario Manager service running on port ${constants.port}`);
     });
 

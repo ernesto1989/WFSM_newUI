@@ -2,6 +2,7 @@ const scenarioService = require("../../Service/scenarioService")
 
 const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
+const socketServer = require("../../socketserver");
 const axios = require('axios')
 
 /**
@@ -42,7 +43,12 @@ async function getScenario(req,res){
     }
 }
 
-
+/**
+ * Method that gets the Scenario's time to reach the limit, acoording to the nodes and flows.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
 async function getScenarioTRL(req,res){
     try{
         const sessionData = req.session;
@@ -101,8 +107,8 @@ async function saveScenario(req,res){
         const scenario = req.body;
         let total = 0;
         let result = await scenarioService.createEmptyScenario(scenario,region_id);
-
-        total = result.changes
+        let msg = '';
+        total = result.changes;
 
         if(scenario.type == 1){
             //Proposed
@@ -111,20 +117,30 @@ async function saveScenario(req,res){
 
             let nodes = await nodesService.getNodes(scenario.scenario_id,region_id);
             let flows = await flowsService.getFlows(scenario.scenario_id,region_id);
-
-            const timeToLimit = await axios({
-                method: 'get',
-                url: 'http://localhost:4000/WF/TimeToLimit',
-                data:{
-                    'nodes':nodes,
-                    'flows':flows
-                },
-                headers:{'Content-Type':'application/json'}
-            });
+            let timeToLimit;
+            let result4;
             
-            let result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
+            try{
+                timeToLimit = await axios({
+                    method: 'get',
+                    url: 'http://localhost:4000/WF/TimeToLimit',
+                    data:{
+                        'nodes':nodes,
+                        'flows':flows
+                    },
+                    headers:{'Content-Type':'application/json'}
+                });
+                result4 = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id);
+            }catch(err){
+                msg = 'OSF Service Unavailable';
+            }
 
-            total += result.changes + result2.changes + result3.changes + result4.changes;
+            if(result4)
+                total += result2.changes + result3.changes + result4.changes;
+            else{
+                total += result2.changes + result3.changes;
+                await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
+            }
         }
 
         res.status(200);
@@ -132,9 +148,11 @@ async function saveScenario(req,res){
             "status"  : "success",
             "total"   : total , //change
             "records" : 
-            {}
+            {},
+            "message":msg
         });
-
+        let message = {action:'update_scenario',scenario_id:scenario.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);
@@ -173,7 +191,7 @@ async function recalcTRL(req,res){
         
         let r1 = await scenarioService.deleteA03(scenario.scenario_id,region_id);
         let r = await scenarioService.insertA03(scenario.scenario_id,timeToLimit.data,region_id)
-
+        await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
         res.status(200);
         res.json({
             "status"  : "success",

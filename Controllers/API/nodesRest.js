@@ -1,5 +1,6 @@
 const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
+const socketServer = require("../../socketserver");
 
 
 /**
@@ -83,7 +84,8 @@ async function saveNode(req,res){
                 "records" : []
             });
         }
-        
+        let message = {action:'update_scenario',scenario_id:node.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);
@@ -116,6 +118,8 @@ async function deleteNode(req,res){
             "total"   : result.changes,
             "records" : []
         });
+        let message = {action:'update_scenario',scenario_id:node.scenario_id};
+        socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
     }catch(error){
         console.log(error);
         res.status(500);

@@ -7,26 +7,7 @@ const getScenariosQuery =
         z01.cdate,
         z01.description,
         z01.type,
-        z01.capacity_units,
-        z01.time_units,
-        z01a.origin_id as parent_id,
-        (select count(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.region_id = z01.region_id) as nodes,
-        (select count(*) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.region_id = z01.region_id) as flows,
-        COALESCE(
-            (SELECT CASE WHEN sol >= 1 then 'Solved' WHEN sol = 0 then 'Unsolved' END AS Solved FROM 
-                (SELECT count(*) as sol FROM s02_proposed_flows sd WHERE sd.scenario_id = z01.scenario_id and sd.region_id = z01.region_id GROUP BY sd.scenario_id) AS sdetail
-            ),'Unsolved') AS Status 
-    FROM z01_scenarios z01 
-    left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.region_id  = z01.region_id
-    where z01.region_id = ?
-`;
-
-const getScenarioByIdQuery = 
-`   SELECT 
-        z01.scenario_id,
-        z01.cdate,
-        z01.description,
-        z01.type,
+        x03.description as description_type,
         z01.capacity_units,
         z01.time_units,
         z01a.scenario_id as origin_id,
@@ -35,16 +16,47 @@ const getScenarioByIdQuery =
         z01.recalc_trl, 
         z01.recalc_solution, 
         COALESCE(
-            (SELECT CASE WHEN sim >= 1 then 'Simulated' WHEN sim = 0 then 'Uncomputed' END AS simulated 
+            (SELECT CASE WHEN sim >= 1 then 'Evaluated' WHEN sim = 0 then 'Uncomputed' END AS simulated 
             FROM (SELECT count(*) as sim FROM a03_time_to_reach_limit a03 WHERE a03.scenario_id = z01.scenario_id and a03.region_id = z01.region_id GROUP BY a03.scenario_id) AS psol),
             'Uncomputed') AS Proposed_Solution,
         COALESCE(
-            (SELECT CASE WHEN sol >= 1 then 'Solved' WHEN sol = 0 then 'Unsolved' END AS Solved 
+            (SELECT CASE WHEN sol >= 1 then 'Optimal' WHEN sol = 0 then 'Uncomputed' END AS Solved 
             FROM (SELECT count(*) as sol FROM s02_proposed_flows sd WHERE sd.scenario_id = z01.scenario_id and sd.region_id = z01.region_id GROUP BY sd.scenario_id) AS sdetail),
-            'Unsolved') AS Optimal_Solution 
+            'Uncomputed') AS Optimal_Solution  
+    FROM z01_scenarios z01 
+    left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.region_id  = z01.region_id
+    join x03_scenario_types x03 on x03.id = z01.type
+    where z01.region_id = ?
+    order by z01.cdate asc
+`;
+
+const getScenarioByIdQuery = 
+`   SELECT 
+        z01.scenario_id,
+        z01.cdate,
+        z01.description,
+        z01.type,
+        x03.description as description_type,
+        z01.capacity_units,
+        z01.time_units,
+        z01a.scenario_id as origin_id,
+        (select count(*) from a01_nodes a01 where a01.scenario_id = z01.scenario_id and a01.region_id = z01.region_id) as nodes,
+        (select count(*) from a02_flows a02 where a02.scenario_id = z01.scenario_id and a02.region_id = z01.region_id) as flows, 
+        z01.recalc_trl, 
+        z01.recalc_solution, 
+        COALESCE(
+            (SELECT CASE WHEN sim >= 1 then 'Evaluated' WHEN sim = 0 then 'Uncomputed' END AS simulated 
+            FROM (SELECT count(*) as sim FROM a03_time_to_reach_limit a03 WHERE a03.scenario_id = z01.scenario_id and a03.region_id = z01.region_id GROUP BY a03.scenario_id) AS psol),
+            'Uncomputed') AS Proposed_Solution,
+        COALESCE(
+            (SELECT CASE WHEN sol >= 1 then 'Optimal' WHEN sol = 0 then 'Uncomputed' END AS Solved 
+            FROM (SELECT count(*) as sol FROM s02_proposed_flows sd WHERE sd.scenario_id = z01.scenario_id and sd.region_id = z01.region_id GROUP BY sd.scenario_id) AS sdetail),
+            'Uncomputed') AS Optimal_Solution 
     FROM z01_scenarios z01 
     left join z01_scenarios z01a on z01a.scenario_id = z01.origin_id and z01a.region_id = z01.region_id
+    join x03_scenario_types x03 on x03.id = z01.type
     where z01.scenario_id = ? and z01.region_id = ?
+    order by z01.cdate asc
 `;
 
 const getScenarioTRLQuery = 
@@ -69,7 +81,9 @@ const insertCalcA03 = "INSERT INTO a03_time_to_reach_limit(scenario_id,region_id
 const deleteScenarioQuery = "call delete_scenario(?,?)"; 
 const deleteA03Query = "delete from a03_time_to_reach_limit where scenario_id = ? and region_id = ?";
 const scenarioUnitsQuery = "select capacity_units,time_units from z01_scenarios z01 where scenario_id = ? and region_id = ?";
+const recalcSolutionQuery = "select recalc_solution from z01_scenarios z01 where scenario_id = ? and region_id = ?";
 
+const updateTRLFlag = 'UPDATE z01_scenarios SET recalc_trl = ? WHERE scenario_id = ? and region_id = ?';
 
 /**
  * Service that obtains the whole Scenario's list
@@ -204,4 +218,25 @@ async function getScenarioUnits(scenarioId,region_id){
     }
 }
 
-module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,deleteA03,insertA03,getScenarioUnits};
+async function getRecalcSolution(scenarioId,region_id){
+    try{
+        let query = recalcSolutionQuery;
+        let params = [scenarioId,region_id]
+        qResult = await dataSource.getDataWithParams(query,params);
+        return qResult.rows;
+    }catch(err){
+        return err;
+    }
+}
+
+async function updateScenarioTRLFlag(flag,scenarioId,region_id){
+    try{
+        let query = updateTRLFlag;
+        let params = [flag,scenarioId,region_id];
+        qResult = await dataSource.updateData(query,params);
+        return qResult;
+    }catch(err){
+        return err;
+    }
+}
+module.exports = {getScenarios,getScenarioById,getScenarioTRLById,createEmptyScenario,deleteScenario,deleteA03,insertA03,getScenarioUnits,getRecalcSolution,updateScenarioTRLFlag};

@@ -42,6 +42,12 @@
                 let recs = data.records;
                 grid.records = recs;
                 grid.refresh();
+
+                <% if(recalcSolution === 0 && scenarioId !== base_scenario) { %>
+                    //recalc solution is zero, so no changes must be done.
+                    grid.toolbar.disable("w2ui-add");
+                <%}%>
+
             });
         });
 
@@ -110,22 +116,22 @@
                     },
                     { field: 'new_node_id', type: 'text', required: true, editable:true, 
                         html: { label: 'Node Id', 
-                        attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%;"placeholder="Nodes Id" ' }
+                        attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%;"placeholder="Nodes Id" ' }
                     },
                     { field: 'new_description', type: 'text', required: false, editable:true, 
                         html: { label: 'Description', 
-                        attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%>  style="width: 100%;"placeholder="About this Node" ' }
+                        attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%>  style="width: 100%;"placeholder="About this Node" ' }
                     },
                     { field: 'new_min_capacity', type: 'float', required: true, editable:true, 
                         html: { label: 'Min capacity', 
-                        attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%>  style="width: 100%";' }
+                        attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%>  style="width: 100%";' }
                     },
                     { field: 'new_current_vol', type: 'float', required: true, editable:true, 
                         html: { label: 'Current Vol.', attr: 'style="width: 100%";' }
                     },
                     { field: 'new_max_capacity', type: 'float', required: true, editable:true, 
                         html: { label: 'Max capacity.', 
-                        attr: '<% if(user_info.role.name === "user" && scenarioId !== base_scenario ){ %> readonly <%}%> style="width: 100%";' }
+                        attr: '<% if(user_info.role.name === "user" && scenarioId === base_scenario ){ %> readonly <%}%> style="width: 100%";' }
                     }
                 ],
                 actions: {
@@ -217,7 +223,9 @@
 
                 <% if(user_info.role.name === 'user' && scenarioId !== base_scenario ){ %>
                 //if user is user and is in a custom scenario, then can edit few attrs of the nodes
+                toolbarAdd: true,
                 toolbarEdit: true,
+                toolbarDelete: true
                 <%}%>
             },
             multiSearch: true,
@@ -232,10 +240,19 @@
                 { field: 'recid', text: 'Id', size:'10%', sortable:true, attr: 'align=center' },
                 { field: 'node_id', text: 'Node',sortable:true,size:'20%' },
                 { field: 'description', text: 'Description', size:'25%' },
-                { field: 'min_capacity', text: 'Min V.',sortable:true,size:'15%'},//,render:'float:02' },
-                { field: 'current_vol', text: 'Current',sortable:true,size:'15%'},//,render:'float:02'},
-                { field: 'max_capacity', text: 'Max V.',sortable:true, size:'15%'},//,render:'float:02'}
+                { field: 'min_capacity', text: 'Min V.',sortable:true,size:'15%',render:'float:02' },
+                { field: 'current_vol', text: 'Current',sortable:true,size:'15%',render:'float:02'},
+                { field: 'max_capacity', text: 'Max V.',sortable:true, size:'15%',render:'float:02'}
             ],
+            onClick: function(event){
+                <% if(recalcSolution === 0 && scenarioId !== base_scenario) { %>
+                    //recalc solution is zero, so no changes must be done.
+                    event.onComplete = function(){
+                        this.toolbar.disable("w2ui-edit");
+                        this.toolbar.disable("w2ui-delete");
+                    }
+                <%}%>
+            },
             onAdd: function (event) {
                 event.preventDefault();
                 isEdit = false;

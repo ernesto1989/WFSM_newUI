@@ -20,7 +20,6 @@ const rolesService = require("../../Service/rolesService")
 
 //Scenario Types. Must be checked.
 const scenario_type = [
-    //{id:"0",desc:"Real Time"},
     {id:"1",desc:"Proposed"},
     {id:"2",desc:"Empty"}
 ]
@@ -145,6 +144,54 @@ async function homePage(req,res){
     res.render('index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
 }
 
+
+async function index2(req,res){
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            //region: sessionData.user.region.name, 
+            role: sessionData.user.role.name
+        }
+    ]
+
+    if(sessionData.user.role_id == 1){
+        // user is admin and should not have a region assigned
+        let regions = await regionsService.getRegions();
+        res.render('admin', {user_info:session[0], regions_list:regions,base_scenario:constants.BASE_SCENARIO_ID});
+        return;
+    }
+
+    session[0].region = sessionData.user.region;
+    let scenarios = await scenariosService.getScenarios(sessionData.user.region.id);
+    res.render('previous_index', {base_scenario:constants.BASE_SCENARIO_ID,user_info:session[0],scenarios_list:scenarios, scenario_types:scenario_type, capacity_units:capacity_units,time_units:time_units});
+}
+
+async function regionsMap(req,res){ 
+    const sessionData = req.session;
+
+    if (!sessionData.isLoggedIn) {
+        return res.redirect('/WF/login');
+    }
+
+    let session = [
+        {
+            username: sessionData.user.username,
+            name: sessionData.user.name,
+            //region: sessionData.user.region.name, 
+            role: sessionData.user.role.name
+        }
+    ]
+    session[0].region = sessionData.user.region;
+    res.render('regionMap', {user_info:session[0]});
+}
+
 async function regionsGrid(req,res){
     const sessionData = req.session;
 
@@ -217,8 +264,8 @@ async function nodesGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].region = sessionData.user.region;
     }else{
-        if(!sessionData.user.region){
-            let regionId = req.params.regionId;
+        let regionId = req.params.regionId;
+        if(!sessionData.user.region || sessionData.user.region.id != regionId){
             let region = await regionsService.getRegionById(regionId);
             sessionData.user.region = region[0];
             sessionData.user.region_id = region[0].id;
@@ -229,7 +276,8 @@ async function nodesGrid(req,res){
 
     let scenarioId = req.params.scenarioId;
     let units = await scenariosService.getScenarioUnits(scenarioId,session[0].region.id);
-    res.render("nodes",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units});
+    let recalcSolution = await scenariosService.getRecalcSolution(scenarioId,session[0].region.id);
+    res.render("nodes",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, recalcSolution:recalcSolution[0].recalc_solution });
 }
 
 /**
@@ -256,8 +304,8 @@ async function flowsGrid(req,res){
     if(sessionData.user.role_id == 2){
         session[0].region = sessionData.user.region;
     }else{
-        if(!sessionData.user.region){
-            let regionId = req.params.regionId;
+        let regionId = req.params.regionId;
+        if(!sessionData.user.region || sessionData.user.region.id != regionId){
             let region = await regionsService.getRegionById(regionId);
             sessionData.user.region = region[0];
             sessionData.user.region_id = region[0].id;
@@ -272,8 +320,8 @@ async function flowsGrid(req,res){
 
     if(!nodes)
         nodes = [];
-
-    res.render("flows",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types});
+    let recalcSolution = await scenariosService.getRecalcSolution(scenarioId,session[0].region.id);
+    res.render("flows",{user_info:session[0],scenarioId:scenarioId,base_scenario:constants.BASE_SCENARIO_ID, capacity_units:units[0].capacity_units,time_units:units[0].time_units, nodes:nodes,flow_types:types, recalcSolution:recalcSolution[0].recalc_solution});
 }
 
 /**
@@ -302,7 +350,7 @@ async function simulationView(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    res.render("simulator",{scenarioId:scenarioId,region_name:sessionData.user.region.name})
+    res.render("simulator",{scenarioId:scenarioId,region_name:sessionData.user.region.name,username:sessionData.user.username})
 }
 
 /**
@@ -331,8 +379,8 @@ async function solutionsView(req,res){
     }
 
     let scenarioId = req.params.scenarioId;
-    res.render("solution",{scenarioId:scenarioId,region_name:sessionData.user.region.name})
+    res.render("solution",{scenarioId:scenarioId,region_name:sessionData.user.region.name,username:sessionData.user.username})
 }
 
 
-module.exports = {getLogin,postLogin,logout,index,homePage,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}
+module.exports = {getLogin,postLogin,logout,index,homePage, index2, regionsMap,regionsGrid,usersGrid,nodesGrid,flowsGrid,simulationView,solutionsView}

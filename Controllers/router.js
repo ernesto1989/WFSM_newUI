@@ -27,6 +27,8 @@ router.get(constants.indexURL, templates.index);
 router.get(constants.contextURL+'/login', templates.getLogin);
 router.get(constants.contextURL+'/logout', templates.logout);
 router.get(constants.contextURL, templates.homePage);
+router.get(constants.contextURL + '/index2', templates.index2);
+router.get(constants.contextURL+'/map', templates.regionsMap);
 router.get(constants.contextURL+'/regions', templates.regionsGrid);
 router.get(constants.contextURL+'/users', templates.usersGrid);
 router.get(constants.contextURL+'/nodes/:scenarioId', templates.nodesGrid);

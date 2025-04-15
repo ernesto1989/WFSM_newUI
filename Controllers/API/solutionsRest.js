@@ -2,6 +2,7 @@ const service = require("../../Service/solutionsService")
 const scenarioService = require("../../Service/scenarioService")
 const nodesService = require("../../Service/nodesService")
 const flowsService = require("../../Service/flowsService")
+const socketServer = require("../../socketserver");
 const axios = require('axios')
 
 /**
@@ -94,6 +95,8 @@ async function solve(req,res){
                     {}
                 });
             }
+            let message = {action:'update_scenario',scenario_id:scenarioId};
+            socketServer.sendMessageToUser(sessionData.user.username,JSON.stringify(message));
         }else{
             res.status(500);
             res.json({
