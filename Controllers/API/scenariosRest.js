@@ -137,9 +137,10 @@ async function saveScenario(req,res){
 
             if(result4)
                 total += result2.changes + result3.changes + result4.changes;
-            else
+            else{
                 total += result2.changes + result3.changes;
-            await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
+                await scenarioService.updateScenarioTRLFlag(0,scenario.scenario_id,region_id);
+            }
         }
 
         res.status(200);
